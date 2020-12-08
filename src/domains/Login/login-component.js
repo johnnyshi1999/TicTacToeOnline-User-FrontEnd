@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Login({onLogin}) {
   const classes = useStyles();
-  const [usernameValue, setUsernameValue] = useState("");
+  const [emailValue, setEmailValue] = useState("");
   const [passwordValue, setPasswordValue] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginMessage, setLoginMessage] = useState("");
@@ -57,11 +57,13 @@ export default function Login({onLogin}) {
   const handleSubmit = async () => {
     try {
       const data = {
-        username: usernameValue,
+        email: emailValue,
         password: passwordValue,
       }
-      const result = await Axios.post(API.url + "/users/login", data);
+      const result = await Axios.post(API.url + "/auth/login", data);
       const responseData = result.data;
+
+      console.log(responseData);
 
       if (responseData.token) {
         const token = responseData.token;
@@ -99,14 +101,14 @@ export default function Login({onLogin}) {
         </Typography>
         <form className={classes.form} noValidate>
           <TextField
-            onChange = {(e) => handleChange(e, setUsernameValue)}
+            onChange = {(e) => handleChange(e, setEmailValue)}
             variant="outlined"
             margin="normal"
             required
             fullWidth
-            id="username"
-            label="Username"
-            name="username"
+            id="email"
+            label="Email"
+            name="email"
             autoFocus
           />
           <TextField

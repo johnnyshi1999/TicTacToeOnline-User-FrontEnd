@@ -46,7 +46,6 @@ export default function SignUp() {
 
   const {setAuthTokens} = useAuth();
 
-  const [usernameValue, setUsernameValue] = useState("");
   const [passwordValue, setPasswordValue] = useState("");
   const [emailValue, setEmailValue] = useState("");
   const [firstNameValue, setFirstNameValueValue] = useState("");
@@ -56,7 +55,7 @@ export default function SignUp() {
   const [doesSignedUp, setDoesSignedUp] = useState(false);
 
   const checkInput = () => {
-    if (firstNameValue.length === 0 || lastNameValue.length === 0 || usernameValue.length === 0 || emailValue.length === 0) {
+    if (firstNameValue.length === 0 || lastNameValue.length === 0 ||  emailValue.length === 0) {
       return "Mssing Information, please fill out all of required fields";
     }
     if (passwordValue.length < 5) {
@@ -71,7 +70,6 @@ export default function SignUp() {
 
   const handleSignUp = async () => {
     const newUser = {
-      username: usernameValue,
       firstName: firstNameValue,
       lastName: lastNameValue,
       password: passwordValue,
@@ -84,7 +82,7 @@ export default function SignUp() {
       return;
     }
     try {
-      const result = await Axios.post(API.url + "/users/signup", newUser);
+      const result = await Axios.post(API.url + "/auth/signup", newUser);
       console.log(result);
       const data = result.data;
 
@@ -122,17 +120,16 @@ export default function SignUp() {
         </Typography>
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+          <Grid item xs={12}>
               <TextField
-                onChange={(e) => handleChange(e, setUsernameValue)}
-                autoComplete="username"
-                name="username"
+                onChange={(e) => handleChange(e, setEmailValue)}
                 variant="outlined"
                 required
                 fullWidth
-                id="username"
-                label="Username"
-                autoFocus
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -160,18 +157,7 @@ export default function SignUp() {
                 autoComplete="lname"
               />
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                onChange={(e) => handleChange(e, setEmailValue)}
-                variant="outlined"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-              />
-            </Grid>
+            
             <Grid item xs={12}>
               <TextField
                 onChange={(e) => handleChange(e, setPasswordValue)}
