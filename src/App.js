@@ -55,7 +55,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <React.Fragment>
+      <React.Fragment>
           <CssBaseline />
           {/* <Backdrop className={classes.backdrop} open={!isLoaded}>
               <CircularProgress color="inherit" />

@@ -1,3 +1,5 @@
+/*global FB*/
+
 import React, { useEffect, useState } from "react";
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
@@ -40,7 +42,7 @@ export default function DefaultAppBar() {
     };
 
     const handleLogOut = () => {
-        setAnchorEl(null);
+        setAnchorEl(null); 
         setAuthTokens(null);
     };
 
