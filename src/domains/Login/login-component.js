@@ -63,7 +63,7 @@ export default function Login({onLogin}) {
         email: emailValue,
         password: passwordValue,
       }
-      const result = await Axios.post(API.url + "/auth/login", data);
+      const result = await Axios.post(API.url + "/api/auth/login", data);
       const responseData = result.data;
 
       console.log(responseData);
