@@ -43,7 +43,10 @@ export default function DefaultAppBar() {
 
     const handleLogOut = () => {
         setAnchorEl(null); 
-        setAuthTokens(null);
+        FB.api('/me/permissions', 'delete', null, () => {
+            window.FB.logout();
+            setAuthTokens(null);
+        });       
     };
 
     const handleProfile = () => {

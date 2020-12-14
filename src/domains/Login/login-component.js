@@ -9,12 +9,13 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Axios from 'axios';
+
+import ReactDOM from 'react-dom';
 
 import API from "../../services/api.js";
 import { Redirect } from 'react-router-dom';
@@ -76,7 +77,6 @@ export default function Login({onLogin}) {
       else {
         setLoginMessage(responseData.message);
       }
-      
     } catch(error) {
       console.log(error);
     }
@@ -91,10 +91,12 @@ export default function Login({onLogin}) {
     // Full docs on the response object can be found in the documentation
     // for FB.getLoginStatus().
     if (response.status === 'connected') {
+      const fbloginbutton = document.getElementById("thisisafacebookbutton");  
 
       /*********** Send access token to backend here ***********/
 
       setAuthTokens(response.authResponse.accessToken);
+      if(fbloginbutton) fbloginbutton.remove();
       // Logged into your app and Facebook.
       setIsLoggedIn(true);
     } else {
@@ -107,7 +109,7 @@ export default function Login({onLogin}) {
   // Button.  See the onlogin handler attached to it in the sample
   // code below.
   const checkLoginState = useCallback(async () => {
-    FB.login((response) => { 
+    FB.getLoginStatus((response) => { 
       //Turn on loading dropback before calling this
       statusChangeCallback(response);
     });
@@ -115,44 +117,54 @@ export default function Login({onLogin}) {
 
   // Init FB login for this component
   useEffect(() => {
-    window.fbAsyncInit = () => {
-        FB.init({
-          appId      : process.env.REACT_APP_FACEBOOK_APP_ID,
-          cookie     : true,  // enable cookies to allow the server to access
-                            // the session
-          xfbml      : true,  // parse social plugins on this page
-          version    : 'v2.6' // use version 2.6
-        });
-    
-        // Now that we've initialized the JavaScript SDK, we call
-        // FB.getLoginStatus().  This function gets the state of the
-        // person visiting this page and can return one of three states to
-        // the callback you provide.  They can be:
-        //
-        // 1. Logged into your app ('connected')
-        // 2. Logged into Facebook, but not your app ('not_authorized')
-        // 3. Not logged into Facebook and can't tell if they are logged into
-        //    your app or not.
-        //
-        // These three cases are handled in the callback function.
 
-        FB.Event.subscribe('auth.statusChange', async (response) => {
-          if (response.authResponse) {
-            checkLoginState();
-          } else {
-            console.log('---->User cancelled login or did not fully authorize.');
-          }
-        });
+    window.fbAsyncInit = () => {
+      FB.init({
+        appId      : process.env.REACT_APP_FACEBOOK_APP_ID,
+        cookie     : true,  // enable cookies to allow the server to access
+                          // the session
+        xfbml      : true,  // parse social plugins on this page
+        version    : 'v2.6' // use version 2.6
+      });
+  
+      // Now that we've initialized the JavaScript SDK, we call
+      // FB.getLoginStatus().  This function gets the state of the
+      // person visiting this page and can return one of three states to
+      // the callback you provide.  They can be:
+      //
+      // 1. Logged into your app ('connected')
+      // 2. Logged into Facebook, but not your app ('not_authorized')
+      // 3. Not logged into Facebook and can't tell if they are logged into
+      //    your app or not.
+      //
+      // These three cases are handled in the callback function.      
+
+      FB.Event.subscribe('auth.statusChange', async (response) => {
+        if (response.authResponse) {
+          checkLoginState();
+        } else {
+          console.log('---->User is not fully authorized.');
+        }
+      });
+    };
+
+    // Load the SDK asynchronously
+    ((d, s, id) => {
+      const existingScript = d.getElementById(id);
+      if (existingScript) {
+        ReactDOM.render(<div id="FBLogin" className="fb-login-button" data-size="large" data-button-type="login_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false" data-width=""></div>, d.getElementById("facebookButtonNavigationDiv"));
+        console.log(d.getElementById("FBLogin"));
+        return;
+      }
+      const fjs = d.getElementsByTagName(s)[0];
+      const js = d.createElement(s); 
+      js.id = id;
+      js.src = `https://connect.facebook.net/en_US/sdk.js`;
+      fjs.parentNode.insertBefore(js, fjs);
+      js.onload = () => {
+        ReactDOM.render(<div id="FBLogin" className="fb-login-button" data-size="large" data-button-type="login_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false" data-width=""></div>, d.getElementById("facebookButtonNavigationDiv"));
       };
-      // Load the SDK asynchronously
-      ((d, s, id) => {
-        const fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) return;
-        const js = d.createElement(s); 
-        js.id = id;
-        js.src = "//connect.facebook.net/en_US/sdk.js";
-        fjs.parentNode.insertBefore(js, fjs);
-      })(document, 'script', 'facebook-jssdk');
+    })(document, 'script', 'facebook-jssdk');
   }, [checkLoginState]);
 
   if (isLoggedIn) {
@@ -212,9 +224,8 @@ export default function Login({onLogin}) {
             Sign In
           </Button>
 
-          {/* Facebook login button */}
-          <div className="fb-login-button" data-size="large" data-button-type="login_with" data-layout="rounded" data-auto-logout-link="false" data-use-continue-as="false" data-width=""></div>
-          
+          <div id="facebookButtonNavigationDiv"></div>
+
           <Grid container justify="flex-end">
             <Grid item>
               <Link href="/signup" variant="body2">
