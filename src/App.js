@@ -9,7 +9,8 @@ import Login from './domains/Login/login-component.js';
 import SignUp from "./domains/SignUp/signUp-component.js";
 import { AuthContext, AuthProvider, useAuth } from "./context/auth.js";
 import PrivateRoute from "./components/PrivateRoute.js";
-import CustomAppBar from './components/customAppBar-component.js'
+import CustomAppBar from './components/customAppBar-component.js';
+
 
 
 function App() {
