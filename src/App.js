@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, {  } from "react";
 
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { BrowserRouter as Router, Switch, Route, useParams, Redirect } from "react-router-dom";
-import Axios from 'axios';
+import { BrowserRouter as Router, Route } from "react-router-dom";
 
 import Index from './domains/Index/index-component.js';
 import Login from './domains/Login/login-component.js';
 import SignUp from "./domains/SignUp/signUp-component.js";
-import { AuthContext, AuthProvider, useAuth } from "./context/auth.js";
+import { AuthProvider } from "./context/auth.js";
 import PrivateRoute from "./components/PrivateRoute.js";
 import CustomAppBar from './components/customAppBar-component.js';
+import GameRoom from "./domains/GameRoom/gameRoom-component.js";
 
 
 
@@ -96,6 +96,7 @@ function App() {
             <PrivateRoute exact path="/" component={Index} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/signup" component={SignUp} />
+            <PrivateRoute exact path="/game/:id" component={GameRoom}/>
 
             {/* Hero unit */}
 
