@@ -1,5 +1,3 @@
-/*global FB*/
-
 import React from "react";
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
@@ -42,11 +40,7 @@ export default function DefaultAppBar() {
     };
 
     const handleLogOut = () => {
-        setAnchorEl(null); 
-        FB.api('/me/permissions', 'delete', null, () => {
-            window.FB.logout();
-            setAuthTokens(null);
-        });       
+        setAnchorEl(null);       
     };
 
     const handleProfile = () => {
@@ -57,7 +51,7 @@ export default function DefaultAppBar() {
         <AppBar position="relative">
             <Toolbar>
                 <Typography className={classes.title} variant="h6" color="inherit" noWrap component={Link} to='/' >
-                    RetroCool
+                    Caro Online
                 </Typography>
                 <div>
                     {authTokens ?

@@ -1,21 +1,58 @@
 import React from "react";
-import Game from "../../components/game-component.js"
+import RoomNavigation from "./components/Room-Navigation";
+import FilterSideMenu from "./components/Filter-Bar";
+import RoomsGrid from './components/Rooms-Grid';
 
-//import material-ui
+import { Grid, Container } from "@material-ui/core";
+import { makeStyles } from  "@material-ui/core";
 
-
-
-
-import { Typography } from "@material-ui/core";
-
-// import Link from '@material-ui/core/Link';
-
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+  },
+  content: {
+    flexGrow: 1,
+    overflow: 'auto',
+  },
+  appBarSpacer: theme.mixins.toolbar,
+  container: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(4),
+    paddingLeft: theme.spacing(4),
+    paddingRight: theme.spacing(4),
+  },  
+  pageContent: {
+    justifyContent: "flex-start",
+  },
+  roomNavigationBarArea: {
+    justifyContent: "center",
+    justifyItems: "center"
+  },
+  indexContentArea: {
+    justifyContent: "space-between",
+  }
+}));
 
 export default function Index() {
+  const classes = useStyles();
+
   return(
-    <div>
-      <Typography>Hello there</Typography>
-      <Game maxRow="5" maxCol="5" winCondition="3"></Game>
+    <div className={classes.root}>
+      <Container maxWidth="xl" className={classes.container}>
+        <Grid container spacing={3} className={classes.pageContent}>
+            <Grid container item xs={12} md={10} justify="center" className={classes.roomNavigationBarArea}>
+              <RoomNavigation/>
+            </Grid>  
+            <Grid container item xs={0} md={2}>
+            </Grid>   
+            <Grid container item xs={12} md={10} justify="center" className={classes.indexContentArea}>
+              <FilterSideMenu/>
+              <RoomsGrid/>
+            </Grid>  
+            <Grid container item xs={0} md={2}>
+            </Grid>             
+        </Grid>
+      </Container>
     </div>
   );
 }
