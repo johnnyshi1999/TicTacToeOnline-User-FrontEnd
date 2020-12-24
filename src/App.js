@@ -9,7 +9,8 @@ import SignUp from "./domains/SignUp/signUp-component.js";
 import { AuthProvider } from "./context/auth.js";
 import PrivateRoute from "./components/PrivateRoute.js";
 import CustomAppBar from "./components/customAppBar-component.js";
-import ChatBox from "./components/ChatBox.js";
+import ChatBox from "./components/ChatBox/ChatBox.js";
+import Ranking from "./domains/Ranking/Ranking.js";
 
 function App() {
   return (
@@ -23,6 +24,10 @@ function App() {
               <PrivateRoute exact path="/" component={Index} />
               <Route path="/login" component={Login} />
               <Route path="/signup" component={SignUp} />
+
+              <Route path="/ranking">
+                <Ranking />
+              </Route>
 
               {/* Test area */}
               <Route path="/test/chatBox">

@@ -8,7 +8,7 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React from "react";
-import MessageItem from "./ChatBox/MessageItem";
+import MessageItem from "./MessageItem";
 import SendIcon from "@material-ui/icons/Send";
 
 const chatData = [
