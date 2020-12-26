@@ -1,7 +1,7 @@
 import React from "react";
 import {useState} from "react";
 
-import RoomGridItem from "./Room-GridItem";
+import RoomGridItem from "../../components/Room-GridItem-ForIndex/Room-GridItem";
 
 import { Grid, Select, FormControl, InputLabel, MenuItem, Typography} from "@material-ui/core";
 import { makeStyles } from  "@material-ui/core";

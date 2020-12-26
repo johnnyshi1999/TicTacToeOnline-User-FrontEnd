@@ -14,7 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Axios from 'axios';
 import API from '../../services/api';
-import { useAuth } from '../../context/auth';
+import { useAuth } from '../../contexts/auth';
 import { Redirect } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({

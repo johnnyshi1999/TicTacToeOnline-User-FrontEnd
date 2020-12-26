@@ -4,12 +4,12 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { BrowserRouter as Router, Switch, Route, useParams, Redirect } from "react-router-dom";
 import Axios from 'axios';
 
-import Index from './domains/Index/index-component.js';
-import Login from './domains/Login/login-component.js';
-import SignUp from "./domains/SignUp/signUp-component.js";
-import { AuthContext, AuthProvider, useAuth } from "./context/auth.js";
-import PrivateRoute from "./components/PrivateRoute.js";
-import CustomAppBar from './components/customAppBar-component.js';
+import Index from './views/Index/Index.js';
+import Login from './views/Login/Login.js';
+import SignUp from "./views/SignUp/SignUp.js";
+import { AuthContext, AuthProvider, useAuth } from "./contexts/auth.js";
+import PrivateRoute from "./components/PrivateRoute/PrivateRoute.js";
+import CustomAppBar from './components/CustomAppBar/CustomAppBar.js';
 
 
 

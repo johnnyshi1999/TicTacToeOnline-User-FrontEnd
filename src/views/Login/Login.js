@@ -15,7 +15,7 @@ import Axios from 'axios';
 
 import API from "../../services/api.js";
 import { Redirect } from 'react-router-dom';
-import { useAuth } from '../../context/auth.js';
+import { useAuth } from '../../contexts/auth.js';
 
 const useStyles = makeStyles((theme) => ({
   paper: {

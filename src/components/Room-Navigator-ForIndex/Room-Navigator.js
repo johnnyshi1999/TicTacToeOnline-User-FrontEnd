@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function RoomNavigation(props){
+export default function RoomNavigator(props){
     const classes = useStyles();
 
     return (

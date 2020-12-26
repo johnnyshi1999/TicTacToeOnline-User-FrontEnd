@@ -1,7 +1,7 @@
 import React from "react";
-import RoomNavigation from "./components/Room-Navigation";
-import FilterSideMenu from "./components/Filter-Bar";
-import RoomsGrid from './components/Rooms-Grid';
+import RoomNavigator from "../../components/Room-Navigator-ForIndex/Room-Navigator";
+import FilterSideMenu from "../../components/Filter-SideMenu-ForIndex/Filter-SideMenu";
+import RoomsGrid from '../../components/Rooms-Grid-ForIndex/Rooms-Grid';
 
 import { Grid, Container } from "@material-ui/core";
 import { makeStyles } from  "@material-ui/core";
@@ -41,7 +41,7 @@ export default function Index() {
       <Container maxWidth="xl" className={classes.container}>
         <Grid container spacing={3} className={classes.pageContent}>
             <Grid container item xs={12} md={10} justify="center" className={classes.roomNavigationBarArea}>
-              <RoomNavigation/>
+              <RoomNavigator/>
             </Grid>  
             <Grid container item xs={0} md={2}>
             </Grid>   

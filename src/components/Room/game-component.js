@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import Board from './board-component.js';
-import ServiceGame from '../services/serviceGame.js';
+import ServiceGame from '../../services/serviceGame.js';
 
 function Game(props) {
   const maxRow = props.maxRow;

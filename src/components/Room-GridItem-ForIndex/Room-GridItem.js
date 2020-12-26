@@ -131,7 +131,7 @@ export default function RoomGridItem({isPlaying}){
                     onMouseOut={(e)=>{setShowRoomButtons(false);}}>
                         <Paper className={classes.gridItemImageBlock}>
                             <Grid container item xs={12}>
-                                <img src={process.env.PUBLIC_URL + 'IndexDomain/TicTacToeBoardIcon.png'}
+                                <img src={process.env.PUBLIC_URL + 'Index/TicTacToeBoardIcon.png'}
                                 className={classes.roomIcon}/>
                             </Grid>
                         </Paper>
@@ -150,7 +150,7 @@ export default function RoomGridItem({isPlaying}){
                     </Grid>
                     <Grid container item xs={12} className={classes.roomRankArea}>
                         <Grid item xs={3}>
-                            <img src={process.env.PUBLIC_URL + 'IndexDomain/RankIcon.png'}
+                            <img src={process.env.PUBLIC_URL + 'Index/RankIcon.png'}
                                 className={classes.roomIcon}/>
                         </Grid>
                         <Grid item xs={8}>
