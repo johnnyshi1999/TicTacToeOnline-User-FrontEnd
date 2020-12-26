@@ -1,115 +1,50 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { BrowserRouter as Router, Switch, Route, useParams, Redirect } from "react-router-dom";
-import Axios from 'axios';
+import { AuthProvider } from "./contexts/auth.js";
+import CssBaseline from "@material-ui/core/CssBaseline";
 
-import Index from './views/Index/Index.js';
-import Login from './views/Login/Login.js';
-import SignUp from "./views/SignUp/SignUp.js";
-import { AuthContext, AuthProvider, useAuth } from "./contexts/auth.js";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute.js";
 import CustomAppBar from './components/CustomAppBar/CustomAppBar.js';
+import ChatBox from "./components/ChatBox/ChatBox.js";
 
-
+import Index from "./views/Index/Index";
+import Login from "./views/Login/Login";
+import SignUp from "./views/SignUp/SignUp";
+import Ranking from "./views/Ranking/Ranking";
 
 function App() {
-  // const existingTokens = localStorage.getItem("token");
-  // const [authTokens, setAuthTokens] = useState(existingTokens);
-  // const [isLoaded, setIsLoaded] = useState(true);
-
-  // const setTokens = (data) => {
-  //   if (data) {
-  //     localStorage.setItem("token", data);
-  //   }
-  //   else {
-  //     localStorage.removeItem("token");
-  //   }
-
-  //   setAuthTokens(data);
-  // }
-
-  // Axios.interceptors.request.use(
-  //   config => {
-  //     const token = localStorage.getItem('token');
-  //     config.headers.authorization = `Bearer ${token}`;
-  //     return config;
-  //   },
-  // )
-
-  // Axios.interceptors.response.use(
-  //   function (response) {
-  //     return response;
-  //   },
-  //   function (error) {
-  //     if (error.response) {
-  //       //if unauthorized, will direct back to login
-  //       if (error.response.status === 401) {
-  //         console.log("axios intercept");
-  //         setAuthTokens(null);
-  //       }
-  //     }
-  //     throw error;
-  //   }
-  // )
-
   return (
     <AuthProvider>
       <Router>
-      <React.Fragment>
+        <React.Fragment>
           <CssBaseline />
-          {/* <Backdrop className={classes.backdrop} open={!isLoaded}>
-              <CircularProgress color="inherit" />
-            </Backdrop> */}
-          {/* <AppBar position="relative">
-            <Toolbar>
-              <Typography className={classes.title} variant="h6" color="inherit" noWrap>
-                Retro Board List
-              </Typography>
-              {authTokens ?
-                (
-                  <IconButton
-                    aria-label="account of current user"
-                    aria-controls="menu-appbar"
-                    aria-haspopup="true"
-                    color="inherit"
-                  >
-                    <AccountCircle />
-                  </IconButton>
-                ) :
-                (
-                  <div>
-                    <Button className={classes.signUpButton} color="inherit" href="/signup">
-                      Sign Up
-                    </Button>
-                    <Button className={classes.loginButton} color="inherit" href="/login">
-                      Login
-                    </Button>
-                  </div>
-                )}
-
-            </Toolbar>
-          </AppBar> */}
           <CustomAppBar></CustomAppBar>
           <main>
-            
-            <Route exact path="/" component={Index} />
-            <Route exact path="/login" component={Login} />
-            <Route exact path="/signup" component={SignUp} />
+            <Switch>
+              {/* <PrivateRoute exact path="/" component={Index} /> */}
+              {/* <Route path="/login" component={Login} />
+              <Route path="/signup" component={SignUp} /> */}
 
-            {/* Hero unit */}
+              <PrivateRoute exact path="/">
+                <Index />
+              </PrivateRoute>
+              <Route path="/login">
+                <Login />
+              </Route>
+              <Route path="/signup">
+                <SignUp />
+              </Route>
+              <Route path="/ranking">
+                <Ranking />
+              </Route>
 
+              {/* Test area */}
+              <Route path="/test/chatBox">
+                <ChatBox />
+              </Route>
+            </Switch>
           </main>
-          {/* Footer */}
-          {/* <footer className={classes.footer}>
-            <Typography variant="h6" align="center" gutterBottom>
-              Footer
-        </Typography>
-            <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
-              Something here to give the footer a purpose!
-        </Typography>
-          </footer> */}
-          {/* End footer */}
         </React.Fragment>
       </Router>
     </AuthProvider>

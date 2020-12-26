@@ -1,58 +1,68 @@
 import React from "react";
-import RoomNavigator from "../../components/Room-Navigator-ForIndex/Room-Navigator";
-import FilterSideMenu from "../../components/Filter-SideMenu-ForIndex/Filter-SideMenu";
-import RoomsGrid from '../../components/Rooms-Grid-ForIndex/Rooms-Grid';
 
-import { Grid, Container } from "@material-ui/core";
-import { makeStyles } from  "@material-ui/core";
+//import material-ui
+import { makeStyles } from "@material-ui/core/styles";
+import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
+  icon: {
+    marginRight: theme.spacing(2),
   },
-  content: {
+  heroContent: {
+    backgroundColor: theme.palette.background.paper,
+    padding: theme.spacing(8, 0, 6),
+  },
+  heroButtons: {
+    marginTop: theme.spacing(4),
+  },
+  card: {
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+  },
+  cardMedia: {
+    paddingTop: "56.25%", // 16:9
+  },
+  cardContent: {
     flexGrow: 1,
-    overflow: 'auto',
   },
-  appBarSpacer: theme.mixins.toolbar,
-  container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
-    paddingLeft: theme.spacing(4),
-    paddingRight: theme.spacing(4),
-  },  
-  pageContent: {
-    justifyContent: "flex-start",
+  boardGrid: {
+    paddingTop: theme.spacing(3),
+    paddingBottom: theme.spacing(8),
   },
-  roomNavigationBarArea: {
-    justifyContent: "center",
-    justifyItems: "center"
+
+  footer: {
+    backgroundColor: theme.palette.background.paper,
+    padding: theme.spacing(6),
   },
-  indexContentArea: {
-    justifyContent: "space-between",
-  }
+
+  mainContainer: {
+    paddingTop: theme.spacing(8),
+    paddingBottom: theme.spacing(8),
+  },
+
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    margin: "auto",
+    width: "100%",
+  },
+
+  formControl: {
+    marginTop: theme.spacing(5),
+    mmarginBottom: theme.spacing(5),
+  },
+  dialogAction: {
+    marginTop: theme.spacing(5),
+    mmarginBottom: theme.spacing(100),
+  },
 }));
 
 export default function Index() {
   const classes = useStyles();
-
-  return(
-    <div className={classes.root}>
-      <Container maxWidth="xl" className={classes.container}>
-        <Grid container spacing={3} className={classes.pageContent}>
-            <Grid container item xs={12} md={10} justify="center" className={classes.roomNavigationBarArea}>
-              <RoomNavigator/>
-            </Grid>  
-            <Grid container item xs={0} md={2}>
-            </Grid>   
-            <Grid container item xs={12} md={10} justify="center" className={classes.indexContentArea}>
-              <FilterSideMenu/>
-              <RoomsGrid/>
-            </Grid>  
-            <Grid container item xs={0} md={2}>
-            </Grid>             
-        </Grid>
-      </Container>
-    </div>
+  return (
+    <Typography className={classes.dummyToIgnoreWarning}>
+      Hello there
+    </Typography>
   );
 }
