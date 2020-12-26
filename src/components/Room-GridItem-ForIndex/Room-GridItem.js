@@ -102,7 +102,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function RoomGridItem({isPlaying}){
+export default function RoomGridItem({roomItem, isPlaying}){
     const classes = useStyles();
 
     const [isRaised, setRaised] = useState(false);
@@ -117,12 +117,12 @@ export default function RoomGridItem({isPlaying}){
                 <Grid container item xs={12} className={classes.root}>
                     <Grid container item xs={3}>
                         <Typography variant="subtitle2" className={classes.roomId}>
-                            Mã phòng
+                            {(roomItem && roomItem.Id)? "Mã : " + roomItem.Id : "Mã phòng"}
                         </Typography>
                     </Grid>
                     <Grid container item xs={8}>
                         <Typography variant="subtitle2" className={classes.roomTitle}>
-                            Đây là một tên phòng rất dài để thể hiện rằng phần này xuống dòng được
+                            {(roomItem && roomItem.Name)? roomItem.Name : "Đây là một tên phòng rất dài để thể hiện rằng phần này xuống dòng được"}
                         </Typography>
                     </Grid>
                     <Grid container item xs={12} className={classes.roomImageAndOverlayArea}
@@ -144,8 +144,8 @@ export default function RoomGridItem({isPlaying}){
                         </div>
                     </Grid>
                     <Grid container item xs={12} className={classes.playingStatusArea}>
-                        <Typography variant="body1" className={isPlaying? classes.isPlayingStatus : classes.isNotPlayingStatus}>
-                            {isPlaying? "Đang chơi" : "Phòng chờ"}
+                        <Typography variant="body1" className={(roomItem && roomItem.isPlaying)? classes.isPlayingStatus : classes.isNotPlayingStatus}>
+                            {roomItem && roomItem.isPlaying? "Đang chơi" : "Phòng chờ"}
                         </Typography>
                     </Grid>
                     <Grid container item xs={12} className={classes.roomRankArea}>

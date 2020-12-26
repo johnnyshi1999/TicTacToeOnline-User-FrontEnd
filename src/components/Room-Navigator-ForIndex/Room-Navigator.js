@@ -3,6 +3,8 @@ import React from "react";
 import { Grid, TextField, Button, Paper} from "@material-ui/core";
 import { makeStyles } from  "@material-ui/core";
 
+import { useAuth } from '../../contexts/auth';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexDirection: "row",
@@ -36,6 +38,8 @@ const useStyles = makeStyles((theme) => ({
 export default function RoomNavigator(props){
     const classes = useStyles();
 
+    const {authTokens} = useAuth();
+
     return (
         <Grid container item xs={12} className={classes.root}>
 
@@ -55,13 +59,13 @@ export default function RoomNavigator(props){
             </Grid>
             
             <Grid container item xs={12} sm={2} className={classes.gridItem}>
-                <Button variant="contained" color="secondary" className={classes.button}>
+                <Button variant="contained" color="secondary" className={classes.button} disabled={authTokens ? false : true}>
                     Tạo phòng
                 </Button>
             </Grid>
             
             <Grid container item xs={12} sm={2} className={classes.gridItem}>
-                <Button variant="contained" color="secondary" className={classes.button}>
+                <Button variant="contained" color="secondary" className={classes.button} disabled={authTokens ? false : true}>
                     Chơi nhanh
                 </Button>
             </Grid>

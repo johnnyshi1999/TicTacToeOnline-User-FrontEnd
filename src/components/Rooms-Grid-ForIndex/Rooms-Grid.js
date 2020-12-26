@@ -26,6 +26,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+const testData = [
+    {Id: 1, Name: "Cùng chơi nào ~", isPlaying: true},
+    {Id: 2, Name: "Bạn bắt kịp được mình không ????", isPlaying: false},
+    {Id: 3, Name: "Room những con người Emo...", isPlaying: false},
+    {Id: 4, Name: "SĐT: 09774646555. Chịch xã giao", isPlaying: false}
+];
+
 export default function RoomsGrid({loadingCallback}){
     const classes = useStyles();
 
@@ -46,18 +53,13 @@ export default function RoomsGrid({loadingCallback}){
             </Grid>
             <Grid container item xs={12} className={classes.gridContainer}>
                 {/* Grid items */}
-                <Grid container item xs={6} md={4}>
-                    <RoomGridItem isPlaying={true}/>
-                </Grid>
-                <Grid container item xs={6} md={4}>
-                    <RoomGridItem/>
-                </Grid>
-                <Grid container item xs={6} md={4}>
-                    <RoomGridItem/>
-                </Grid>
-                <Grid container item xs={6} md={4}>
-                    <RoomGridItem/>
-                </Grid>
+                {
+                    testData.map(item => 
+                        <Grid container item xs={6} md={4}>
+                            <RoomGridItem roomItem={item}/>
+                        </Grid>
+                    )
+                }
             </Grid>
             
             <Grid container item xs={12} justify="center" className={classes.gridContainer}>
