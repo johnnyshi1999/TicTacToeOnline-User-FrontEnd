@@ -147,41 +147,41 @@ export default function RankingTable() {
   );
 }
 
-const rankInfo = [
-  {
-    name: "Challenger",
-    minTrophies: 1200,
-  },
-  {
-    name: "Grand master",
-    minTrophies: 1000,
-  },
-  {
-    name: "Master",
-    minTrophies: 800,
-  },
-  {
-    name: "Diamond",
-    minTrophies: 600,
-  },
-  {
-    name: "Platinum",
-    minTrophies: 400,
-  },
-  {
-    name: "Gold",
-    minTrophies: 300,
-  },
-  {
-    name: "Silver",
-    minTrophies: 200,
-  },
-  {
-    name: "Bronze",
-    minTrophies: 100,
-  },
-  {
-    name: "Iron",
-    minTrophies: 0,
-  },
-];
+// const rankInfo = [
+//   {
+//     name: "Challenger",
+//     minTrophies: 1200,
+//   },
+//   {
+//     name: "Grand master",
+//     minTrophies: 1000,
+//   },
+//   {
+//     name: "Master",
+//     minTrophies: 800,
+//   },
+//   {
+//     name: "Diamond",
+//     minTrophies: 600,
+//   },
+//   {
+//     name: "Platinum",
+//     minTrophies: 400,
+//   },
+//   {
+//     name: "Gold",
+//     minTrophies: 300,
+//   },
+//   {
+//     name: "Silver",
+//     minTrophies: 200,
+//   },
+//   {
+//     name: "Bronze",
+//     minTrophies: 100,
+//   },
+//   {
+//     name: "Iron",
+//     minTrophies: 0,
+//   },
+// ];

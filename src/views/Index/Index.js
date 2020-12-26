@@ -1,19 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 //import material-ui
-
-import Button from '@material-ui/core/Button';
-
-import Grid from '@material-ui/core/Grid';
-
-import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
-import AddIcon from '@material-ui/icons/Add';
-
-import { Paper, Typography } from "@material-ui/core";
-import Axios from "axios";
-
-// import Link from '@material-ui/core/Link';
+import { makeStyles } from "@material-ui/core/styles";
+import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   icon: {
@@ -27,12 +16,12 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(4),
   },
   card: {
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
   },
   cardMedia: {
-    paddingTop: '56.25%', // 16:9
+    paddingTop: "56.25%", // 16:9
   },
   cardContent: {
     flexGrow: 1,
@@ -57,10 +46,10 @@ const useStyles = makeStyles((theme) => ({
   },
 
   form: {
-    display: 'flex',
-    flexDirection: 'column',
-    margin: 'auto',
-    width: '100%',
+    display: "flex",
+    flexDirection: "column",
+    margin: "auto",
+    width: "100%",
   },
 
   formControl: {
@@ -75,7 +64,9 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Index() {
   const classes = useStyles();
-  return(
-    <Typography>Hello there</Typography>
+  return (
+    <Typography className={classes.dummyToIgnoreWarning}>
+      Hello there
+    </Typography>
   );
 }

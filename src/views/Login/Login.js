@@ -1,32 +1,32 @@
 /*global FB*/
 
-import React, { useEffect, useState, useCallback } from 'react';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Link from '@material-ui/core/Link';
-import Grid from '@material-ui/core/Grid';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
-import Axios from 'axios';
+import React, { useEffect, useState, useCallback } from "react";
+import Avatar from "@material-ui/core/Avatar";
+import Button from "@material-ui/core/Button";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import TextField from "@material-ui/core/TextField";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@material-ui/core/Checkbox";
+import Link from "@material-ui/core/Link";
+import Grid from "@material-ui/core/Grid";
+import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+import Typography from "@material-ui/core/Typography";
+import { makeStyles } from "@material-ui/core/styles";
+import Container from "@material-ui/core/Container";
+import Axios from "axios";
 
-import ReactDOM from 'react-dom';
+import ReactDOM from "react-dom";
 
 import API from "../../services/api.js";
-import { Redirect } from 'react-router-dom';
-import { useAuth } from '../../context/auth.js';
+import { Redirect } from "react-router-dom";
+import { useAuth } from "../../contexts/auth.js";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
   avatar: {
     margin: theme.spacing(1),
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(-2),
   },
   form: {
-    width: '100%', // Fix IE 11 issue.
+    width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
   submit: {
@@ -45,24 +45,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Login({onLogin}) {
+export default function Login({ onLogin }) {
   const classes = useStyles();
   const [emailValue, setEmailValue] = useState("");
   const [passwordValue, setPasswordValue] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginMessage, setLoginMessage] = useState("");
-  const {setAuthTokens} = useAuth();
+  const { setAuthTokens } = useAuth();
 
   const handleChange = (e, setValue) => {
     setValue(e.target.value);
-  }
+  };
 
   const handleSubmit = async () => {
     try {
       const data = {
         email: emailValue,
         password: passwordValue,
-      }
+      };
       const result = await Axios.post(API.url + "/api/auth/login", data);
       const responseData = result.data;
 
@@ -73,43 +73,45 @@ export default function Login({onLogin}) {
         console.log(token);
         setAuthTokens(responseData.token);
         setIsLoggedIn(true);
-      }
-      else {
+      } else {
         setLoginMessage(responseData.message);
       }
-    } catch(error) {
+    } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   // This is called with the results from from FB.getLoginStatus().
-  const statusChangeCallback = useCallback(async (response) => {
-    console.log('statusChangeCallback');
-    console.log(response);
-    // The response object is returned with a status field that lets the
-    // app know the current login status of the person.
-    // Full docs on the response object can be found in the documentation
-    // for FB.getLoginStatus().
-    if (response.status === 'connected') {
-      const fbloginbutton = document.getElementById("thisisafacebookbutton");  
+  const statusChangeCallback = useCallback(
+    async (response) => {
+      console.log("statusChangeCallback");
+      console.log(response);
+      // The response object is returned with a status field that lets the
+      // app know the current login status of the person.
+      // Full docs on the response object can be found in the documentation
+      // for FB.getLoginStatus().
+      if (response.status === "connected") {
+        const fbloginbutton = document.getElementById("thisisafacebookbutton");
 
-      /*********** Send access token to backend here ***********/
+        /*********** Send access token to backend here ***********/
 
-      setAuthTokens(response.authResponse.accessToken);
-      if(fbloginbutton) fbloginbutton.remove();
-      // Logged into your app and Facebook.
-      setIsLoggedIn(true);
-    } else {
-      setLoginMessage("User is not authorized");
-      setIsLoggedIn(false);
-    }
-  }, [setAuthTokens]);
+        setAuthTokens(response.authResponse.accessToken);
+        if (fbloginbutton) fbloginbutton.remove();
+        // Logged into your app and Facebook.
+        setIsLoggedIn(true);
+      } else {
+        setLoginMessage("User is not authorized");
+        setIsLoggedIn(false);
+      }
+    },
+    [setAuthTokens]
+  );
 
   // This function is called when someone finishes with the Login
   // Button.  See the onlogin handler attached to it in the sample
   // code below.
   const checkLoginState = useCallback(async () => {
-    FB.getLoginStatus((response) => { 
+    FB.getLoginStatus((response) => {
       //Turn on loading dropback before calling this
       statusChangeCallback(response);
     });
@@ -117,16 +119,15 @@ export default function Login({onLogin}) {
 
   // Init FB login for this component
   useEffect(() => {
-
     window.fbAsyncInit = () => {
       FB.init({
-        appId      : process.env.REACT_APP_FACEBOOK_APP_ID,
-        cookie     : true,  // enable cookies to allow the server to access
-                          // the session
-        xfbml      : true,  // parse social plugins on this page
-        version    : 'v2.6' // use version 2.6
+        appId: process.env.REACT_APP_FACEBOOK_APP_ID,
+        cookie: true, // enable cookies to allow the server to access
+        // the session
+        xfbml: true, // parse social plugins on this page
+        version: "v2.6", // use version 2.6
       });
-  
+
       // Now that we've initialized the JavaScript SDK, we call
       // FB.getLoginStatus().  This function gets the state of the
       // person visiting this page and can return one of three states to
@@ -137,13 +138,13 @@ export default function Login({onLogin}) {
       // 3. Not logged into Facebook and can't tell if they are logged into
       //    your app or not.
       //
-      // These three cases are handled in the callback function.      
+      // These three cases are handled in the callback function.
 
-      FB.Event.subscribe('auth.statusChange', async (response) => {
+      FB.Event.subscribe("auth.statusChange", async (response) => {
         if (response.authResponse) {
           checkLoginState();
         } else {
-          console.log('---->User is not fully authorized.');
+          console.log("---->User is not fully authorized.");
         }
       });
     };
@@ -152,25 +153,47 @@ export default function Login({onLogin}) {
     ((d, s, id) => {
       const existingScript = d.getElementById(id);
       if (existingScript) {
-        ReactDOM.render(<div id="FBLogin" className="fb-login-button" data-size="large" data-button-type="login_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false" data-width=""></div>, d.getElementById("facebookButtonNavigationDiv"));
+        ReactDOM.render(
+          <div
+            id="FBLogin"
+            className="fb-login-button"
+            data-size="large"
+            data-button-type="login_with"
+            data-layout="default"
+            data-auto-logout-link="false"
+            data-use-continue-as="false"
+            data-width=""
+          ></div>,
+          d.getElementById("facebookButtonNavigationDiv")
+        );
         console.log(d.getElementById("FBLogin"));
         return;
       }
       const fjs = d.getElementsByTagName(s)[0];
-      const js = d.createElement(s); 
+      const js = d.createElement(s);
       js.id = id;
       js.src = `https://connect.facebook.net/en_US/sdk.js`;
       fjs.parentNode.insertBefore(js, fjs);
       js.onload = () => {
-        ReactDOM.render(<div id="FBLogin" className="fb-login-button" data-size="large" data-button-type="login_with" data-layout="default" data-auto-logout-link="false" data-use-continue-as="false" data-width=""></div>, d.getElementById("facebookButtonNavigationDiv"));
+        ReactDOM.render(
+          <div
+            id="FBLogin"
+            className="fb-login-button"
+            data-size="large"
+            data-button-type="login_with"
+            data-layout="default"
+            data-auto-logout-link="false"
+            data-use-continue-as="false"
+            data-width=""
+          ></div>,
+          d.getElementById("facebookButtonNavigationDiv")
+        );
       };
-    })(document, 'script', 'facebook-jssdk');
+    })(document, "script", "facebook-jssdk");
   }, [checkLoginState]);
 
   if (isLoggedIn) {
-    return(
-      <Redirect to="/"></Redirect>
-    );
+    return <Redirect to="/"></Redirect>;
   }
 
   return (
@@ -183,12 +206,17 @@ export default function Login({onLogin}) {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <Typography variant="caption" className={classes.loginMessage} color="error" gutterBottom>
+        <Typography
+          variant="caption"
+          className={classes.loginMessage}
+          color="error"
+          gutterBottom
+        >
           {loginMessage}
         </Typography>
         <form className={classes.form} noValidate>
           <TextField
-            onChange = {(e) => handleChange(e, setEmailValue)}
+            onChange={(e) => handleChange(e, setEmailValue)}
             variant="outlined"
             margin="normal"
             required
@@ -199,7 +227,7 @@ export default function Login({onLogin}) {
             autoFocus
           />
           <TextField
-            onChange = {(e) => handleChange(e, setPasswordValue)}
+            onChange={(e) => handleChange(e, setPasswordValue)}
             variant="outlined"
             margin="normal"
             required

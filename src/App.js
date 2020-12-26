@@ -1,30 +1,40 @@
 import React from "react";
-
-import CssBaseline from "@material-ui/core/CssBaseline";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
-import Index from "./domains/Index/index-component.js";
-import Login from "./domains/Login/login-component.js";
-import SignUp from "./domains/SignUp/signUp-component.js";
-import { AuthProvider } from "./context/auth.js";
-import PrivateRoute from "./components/PrivateRoute.js";
-import CustomAppBar from "./components/customAppBar-component.js";
+import { AuthProvider } from "./contexts/auth.js";
+import CssBaseline from "@material-ui/core/CssBaseline";
+
+import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
+import CustomAppBar from "./components/CustomAppBar/CustomAppBar.js";
 import ChatBox from "./components/ChatBox/ChatBox.js";
-import Ranking from "./domains/Ranking/Ranking.js";
+
+import Index from "./views/Index/Index";
+import Login from "./views/Login/Login";
+import SignUp from "./views/SignUp/SignUp";
+import Ranking from "./views/Ranking/Ranking";
 
 function App() {
   return (
     <AuthProvider>
       <Router>
-      <React.Fragment>
+        <React.Fragment>
           <CssBaseline />
           <CustomAppBar></CustomAppBar>
           <main>
             <Switch>
-              <PrivateRoute exact path="/" component={Index} />
-              <Route path="/login" component={Login} />
-              <Route path="/signup" component={SignUp} />
+              {/* <PrivateRoute exact path="/" component={Index} /> */}
+              {/* <Route path="/login" component={Login} />
+              <Route path="/signup" component={SignUp} /> */}
 
+              <PrivateRoute exact path="/">
+                <Index />
+              </PrivateRoute>
+              <Route path="/login">
+                <Login />
+              </Route>
+              <Route path="/signup">
+                <SignUp />
+              </Route>
               <Route path="/ranking">
                 <Ranking />
               </Route>
@@ -35,16 +45,6 @@ function App() {
               </Route>
             </Switch>
           </main>
-          {/* Footer */}
-          {/* <footer className={classes.footer}>
-            <Typography variant="h6" align="center" gutterBottom>
-              Footer
-        </Typography>
-            <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
-              Something here to give the footer a purpose!
-        </Typography>
-          </footer> */}
-          {/* End footer */}
         </React.Fragment>
       </Router>
     </AuthProvider>
