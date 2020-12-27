@@ -3,7 +3,7 @@ import RoomNavigator from "../../components/Room-Navigator-ForIndex/Room-Navigat
 import FilterSideMenu from "../../components/Filter-SideMenu-ForIndex/Filter-SideMenu";
 import RoomsGrid from '../../components/Rooms-Grid-ForIndex/Rooms-Grid';
 
-import { Grid, Container } from "@material-ui/core";
+import { Grid, Container, Box } from "@material-ui/core";
 import { makeStyles } from  "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
@@ -43,14 +43,14 @@ export default function Index() {
             <Grid container item xs={12} md={10} justify="center" className={classes.roomNavigationBarArea}>
               <RoomNavigator/>
             </Grid>  
-            <Grid container item xs={0} md={2}>
-            </Grid>   
+            <Box component={Grid} container item md={2} display={{xs: "none", md:"flex"}}>
+            </Box>
             <Grid container item xs={12} md={10} justify="center" className={classes.indexContentArea}>
               <FilterSideMenu/>
               <RoomsGrid/>
             </Grid>  
-            <Grid container item xs={0} md={2}>
-            </Grid>             
+            <Box component={Grid} container item md={2} display={{xs: "none", md:"flex"}}>
+            </Box>             
         </Grid>
       </Container>
     </div>

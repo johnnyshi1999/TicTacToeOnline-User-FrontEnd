@@ -132,7 +132,7 @@ export default function RoomGridItem({roomItem, isPlaying}){
                         <Paper className={classes.gridItemImageBlock}>
                             <Grid container item xs={12}>
                                 <img src={process.env.PUBLIC_URL + 'Index/TicTacToeBoardIcon.png'}
-                                className={classes.roomIcon}/>
+                                className={classes.roomIcon} alt="RoomImage"/>
                             </Grid>
                         </Paper>
                         <div className={!showRoomButtons ? classes.roomImageOverlayFadeIn : classes.roomImageOverlayFadeOut}>
@@ -151,7 +151,7 @@ export default function RoomGridItem({roomItem, isPlaying}){
                     <Grid container item xs={12} className={classes.roomRankArea}>
                         <Grid item xs={3}>
                             <img src={process.env.PUBLIC_URL + 'Index/RankIcon.png'}
-                                className={classes.roomIcon}/>
+                                className={classes.roomIcon} alt="RankIcon"/>
                         </Grid>
                         <Grid item xs={8}>
                             <Typography variant="subtitle2" align="center">

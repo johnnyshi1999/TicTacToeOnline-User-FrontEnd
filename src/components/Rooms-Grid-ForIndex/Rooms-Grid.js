@@ -3,7 +3,7 @@ import {useState} from "react";
 
 import RoomGridItem from "../../components/Room-GridItem-ForIndex/Room-GridItem";
 
-import { Grid, Select, FormControl, InputLabel, MenuItem, Typography} from "@material-ui/core";
+import { Grid, Typography} from "@material-ui/core";
 import { makeStyles } from  "@material-ui/core";
 import { Pagination } from '@material-ui/lab';
 
@@ -54,8 +54,8 @@ export default function RoomsGrid({loadingCallback}){
             <Grid container item xs={12} className={classes.gridContainer}>
                 {/* Grid items */}
                 {
-                    testData.map(item => 
-                        <Grid container item xs={6} md={4}>
+                    testData.map((item, idx) => 
+                        <Grid key={"gridRoom"+idx} container item xs={6} md={4}>
                             <RoomGridItem roomItem={item}/>
                         </Grid>
                     )
