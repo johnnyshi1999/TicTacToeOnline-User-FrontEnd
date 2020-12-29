@@ -1,7 +1,23 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Game from '../../components/game-component';
-
+import API from "../../services/api";
+import { Button } from '@material-ui/core';
+import io from "socket.io-client";
 
 export default function GameRoom() {
-  return(<Game maxRow="5" maxCol="5" winCondition="3"></Game>);
+  
+  const [socket, setSocket] = useState();
+  useEffect(() => {
+    setSocket(io.connect(API.url));
+  }, [])
+  
+  
+  return(
+  <li>
+    <Button onClick = {() => socket.emit("enter-game", "hello")}>
+      test
+    </Button>
+    <Game maxRow="20" maxCol="20" winCondition="5"></Game>
+  </li>
+  );
 }

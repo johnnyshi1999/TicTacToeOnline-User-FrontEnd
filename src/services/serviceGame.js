@@ -1,5 +1,9 @@
+import { createGenerateClassName } from "@material-ui/core";
+import io from "socket.io-client";
+
+
 const ServiceGame = {
-calculateWinner(squares, winCondition, maxRow, maxCol, squareIndex) {
+  calculateWinner(squares, winCondition, maxRow, maxCol, squareIndex) {
 
     const rowNumber = (squareIndex - (squareIndex % maxRow)) / maxRow
     const colNumber = squareIndex % maxCol;
@@ -8,7 +12,7 @@ calculateWinner(squares, winCondition, maxRow, maxCol, squareIndex) {
     //do hang ngang
 
     let i = rowNumber;
-    let j = colNumber ;
+    let j = colNumber;
     let count = 1;
     let highlight = [];
     highlight.push(i * maxRow + j)
@@ -41,7 +45,7 @@ calculateWinner(squares, winCondition, maxRow, maxCol, squareIndex) {
     }
 
     if (count === winCondition) {
-      return {winner : protentialWinner, highlight: highlight};
+      return { winner: protentialWinner, highlight: highlight };
     }
 
     //do hang doc
@@ -68,7 +72,7 @@ calculateWinner(squares, winCondition, maxRow, maxCol, squareIndex) {
 
     while (i + 1 < maxRow) {
       i++;
-      const arrayIndex = i * maxRow + j; 
+      const arrayIndex = i * maxRow + j;
       if (squares[arrayIndex] === protentialWinner) {
         count++;
         highlight.push(arrayIndex);
@@ -79,7 +83,7 @@ calculateWinner(squares, winCondition, maxRow, maxCol, squareIndex) {
     }
 
     if (count === winCondition) {
-      return {winner : protentialWinner, highlight: highlight};
+      return { winner: protentialWinner, highlight: highlight };
     }
 
     //do duong cheo chinh
@@ -92,7 +96,7 @@ calculateWinner(squares, winCondition, maxRow, maxCol, squareIndex) {
     while (i - 1 >= 0 && j - 1 >= 0) {
       i--;
       j--;
-      const arrayIndex = i * maxRow + j; 
+      const arrayIndex = i * maxRow + j;
       if (squares[arrayIndex] === protentialWinner) {
         count++;
         highlight.push(arrayIndex);
@@ -108,7 +112,7 @@ calculateWinner(squares, winCondition, maxRow, maxCol, squareIndex) {
     while (i + 1 < maxRow && j + 1 < maxCol) {
       i++;
       j++;
-      const arrayIndex = i * maxRow + j; 
+      const arrayIndex = i * maxRow + j;
       if (squares[arrayIndex] === protentialWinner) {
         count++;
         highlight.push(arrayIndex);
@@ -119,7 +123,7 @@ calculateWinner(squares, winCondition, maxRow, maxCol, squareIndex) {
     }
 
     if (count === winCondition) {
-      return {winner : protentialWinner, highlight: highlight};
+      return { winner: protentialWinner, highlight: highlight };
     }
 
     //do duong cheo phu
@@ -133,7 +137,7 @@ calculateWinner(squares, winCondition, maxRow, maxCol, squareIndex) {
     while (i - 1 >= 0 && j + 1 < maxCol) {
       i--;
       j++;
-      const arrayIndex = i * maxRow + j; 
+      const arrayIndex = i * maxRow + j;
       if (squares[arrayIndex] === protentialWinner) {
         count++;
         highlight.push(arrayIndex);
@@ -149,7 +153,7 @@ calculateWinner(squares, winCondition, maxRow, maxCol, squareIndex) {
     while (i + 1 < maxRow && j - 1 >= 0) {
       i++;
       j--;
-      const arrayIndex = i * maxRow + j; 
+      const arrayIndex = i * maxRow + j;
       if (squares[arrayIndex] === protentialWinner) {
         count++;
         highlight.push(arrayIndex);
@@ -160,13 +164,11 @@ calculateWinner(squares, winCondition, maxRow, maxCol, squareIndex) {
     }
 
     if (count === winCondition) {
-      return {winner : protentialWinner, highlight: highlight};
+      return { winner: protentialWinner, highlight: highlight };
     }
 
     return null;
-
-
-}
+  }
 }
 
 export default ServiceGame;
