@@ -1,35 +1,32 @@
-import React, { useState } from 'react';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Link from '@material-ui/core/Link';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
-import Axios from 'axios';
-import API from '../../services/api';
-import { useAuth } from '../../context/auth';
-import { Redirect } from 'react-router-dom';
+import React, { useState } from "react";
+import Avatar from "@material-ui/core/Avatar";
+import Button from "@material-ui/core/Button";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import TextField from "@material-ui/core/TextField";
+import Link from "@material-ui/core/Link";
+import Grid from "@material-ui/core/Grid";
+import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+import Typography from "@material-ui/core/Typography";
+import { makeStyles } from "@material-ui/core/styles";
+import Container from "@material-ui/core/Container";
+import Axios from "axios";
+import API from "../../services/api";
+import { useAuth } from "../../contexts/auth";
+import { Redirect } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: '100%', // Fix IE 11 issue.
+    width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(3),
   },
   signUpMessage: {
@@ -56,18 +53,22 @@ export default function SignUp() {
   const [doesSignedUp, setDoesSignedUp] = useState(false);
 
   const checkInput = () => {
-    if (firstNameValue.length === 0 || lastNameValue.length === 0 || emailValue.length === 0) {
+    if (
+      firstNameValue.length === 0 ||
+      lastNameValue.length === 0 ||
+      emailValue.length === 0
+    ) {
       return "Mssing Information, please fill out all of required fields";
     }
     if (passwordValue.length < 5) {
       return "Password too short, must be more than 5 characters";
     }
     return null;
-  }
+  };
 
   const handleChange = (e, setValue) => {
     setValue(e.target.value);
-  }
+  };
 
   const handleSignUp = async () => {
     const newUser = {
@@ -76,7 +77,7 @@ export default function SignUp() {
       lastName: lastNameValue,
       password: passwordValue,
       email: emailValue,
-    }
+    };
     console.log(newUser);
     const check = checkInput();
     if (check) {
@@ -91,21 +92,17 @@ export default function SignUp() {
       if (data.token) {
         setAuthTokens(data.token);
         setDoesSignedUp(true);
-      }
-      else {
+      } else {
         setSignUpMessage(data.message);
       }
-
     } catch (error) {
       setSignUpMessage("Something went wrong, please try again");
       console.log(error);
     }
-  }
+  };
 
   if (doesSignedUp) {
-    return (
-      <Redirect to="/"></Redirect>
-    );
+    return <Redirect to="/"></Redirect>;
   }
   return (
     <Container component="main" maxWidth="xs">
@@ -117,7 +114,12 @@ export default function SignUp() {
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <Typography variant="caption" className={classes.signUpMessage} color="error" gutterBottom>
+        <Typography
+          variant="caption"
+          className={classes.signUpMessage}
+          color="error"
+          gutterBottom
+        >
           {signUpMessage}
         </Typography>
         <form className={classes.form} noValidate>
