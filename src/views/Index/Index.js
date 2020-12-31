@@ -13,7 +13,6 @@ import { useHistory } from "react-router";
 
 //import material-ui
 import { makeStyles } from "@material-ui/core/styles";
-import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   icon: {

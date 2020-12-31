@@ -3,6 +3,7 @@ import Game from '../../components/game-component';
 import API from "../../services/api";
 import { Button } from '@material-ui/core';
 import io from "socket.io-client";
+import './index.css';
 
 export default function GameRoom() {
   
