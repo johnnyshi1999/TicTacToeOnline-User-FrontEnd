@@ -1,14 +1,20 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Board from './board-component.js';
 import ServiceGame from '../services/serviceGame.js';
+import io from "socket.io-client";
+import API from "../services/api";
+
 
 function Game(props) {
-  const maxRow = props.maxRow;
-  const maxCol = props.maxCol;
+
+  const game = props.game;
+  const maxRow = props.game.maxRow;
+  const maxCol = props.game.maxCol;
   const length = maxRow * maxCol;
-  const winCondition = props.winCondition;
+  console.log(length);
+  const winCondition = props.game.winCondition;
   const [history, setHistory] = useState([{
-      squares: Array(length).fill(null),
+      squares: Array(25).fill(null),
       rowNumber: 0,
       colNumber: 0,
       winner: null,
@@ -19,6 +25,17 @@ function Game(props) {
   const [xIsNext, setXIsNext] = useState(true);
 
   const [sortOrder, setSortOrder] = useState(0);
+
+  const [socket, setSocket] = useState();
+
+  useEffect(() => {
+    setSocket(io.connect(API.url));
+    console.log(props.game);
+  }, []);
+
+  useEffect(() => () => {
+    // socket.disconnect();
+  },[])
 
   const handleClick = (i) => {
     const historySlice = history.slice(0, stepNumber + 1);
@@ -32,9 +49,11 @@ function Game(props) {
     
     if (xIsNext === true) {
       squares[i] = 'X';
+      socket.emit("make-move", {gameId: game._id, player: 1, position: i})
     }
     else {
       squares[i] = 'O';
+      socket.emit("make-move", {gameId: game._id, player: 2, position: i})
     }
 
     const winner = ServiceGame.calculateWinner(squares, winCondition, maxRow, maxCol, i);
@@ -42,6 +61,7 @@ function Game(props) {
     setHistory([...historySlice, {squares:squares, rowNumber: (i - (i % maxRow)) / maxRow, colNumber: i % maxCol, winner: winner }]);
     setStepNumber(historySlice.length);
     setXIsNext(!xIsNext);
+
   }
 
   const jumpTo = (move) => {
@@ -115,8 +135,8 @@ function Game(props) {
         <div className="game-board">
           <Board 
             squares={current.squares}
-            maxRow = {props.maxRow}
-            maxCol = {props.maxCol}
+            maxRow = {maxRow}
+            maxCol = {maxCol}
             winnerHighLight = {winner ? winner.highlight : []}
             onClick={(i) => handleClick(i)}/>
         </div>

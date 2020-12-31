@@ -64,18 +64,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Index() {
-  const history = useHistory();
+  // const history = useHistory();
   const handleCreateClick = async () => {
     const data = {
-      maxCol: 5,
-      maxRow: 5,
-      winCondition: 3,
+      maxCol: 20,
+      maxRow: 20,
+      winCondition: 5,
     }
     try {
       const result = await Axios.post(API.url + "/game/create", data);
       console.log(result);
       const gameLink = `/game/${result.data.game._id}`;
-      history.push(gameLink);
+      // history.push(gameLink);
+      window.location.href=gameLink;
     } catch(error) {
       console.log(error);
     }
