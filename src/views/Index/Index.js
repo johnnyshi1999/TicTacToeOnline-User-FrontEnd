@@ -18,7 +18,6 @@ import FilterSideMenu from "../../components/Filter-SideMenu-ForIndex/Filter-Sid
 import RoomsGrid from '../../components/Rooms-Grid-ForIndex/Rooms-Grid';
 
 import { Grid, Container, Box } from "@material-ui/core";
-import { makeStyles } from  "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {

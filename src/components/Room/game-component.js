@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import Board from './board-component.js';
-import ServiceGame from '../services/serviceGame.js';
+import ServiceGame from '../../services/serviceGame';
 import io from "socket.io-client";
-import API from "../services/api";
-import socket from '../services/socket';
+import socket from '../../services/socket';
 
 
 function Game(props) {

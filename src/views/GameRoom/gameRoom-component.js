@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import Game from '../../components/game-component';
 import API from "../../services/api";
 import { Button } from '@material-ui/core';
 import './index.css';
 import { useParams } from 'react-router';
 import Axios from 'axios';
 import { GameContext, useGame } from '../../contexts/game';
+import socket from '../../services/socket';
+import Game from "../../components/Room/game-component";
 
 export default function GameRoom() {
 
@@ -48,7 +49,7 @@ export default function GameRoom() {
     // </GameContext>
 
     <li>
-      {game ? <Game></Game> : <div>Loading</div>}
+      {game ? <Game game={game}></Game> : <div>Loading</div>}
 
     </li>
 
