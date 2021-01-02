@@ -28,13 +28,15 @@ const useStyles = makeStyles((theme) => ({
         overflowWrap: 'break-word',
         textAlign: 'justify',
         color: 'white',
+        maxWidth: '100%',
     },
     roomId: {
         paddingBottom: theme.spacing(1),
         fontWeight: 'bold',
         overflowWrap: 'break-word',
         textAlign: 'left',
-        color: 'white'
+        color: 'white',
+        maxWidth: '100%',
     },
     gridItemImageBlock: {
         padding: theme.spacing(1),
@@ -115,14 +117,14 @@ export default function RoomGridItem({roomItem, isPlaying}){
             onMouseOver={()=>setRaised(true)} 
             onMouseOut={()=>setRaised(false)}>
                 <Grid container item xs={12} className={classes.root}>
-                    <Grid container item xs={3}>
+                    <Grid container item xs={5}>
                         <Typography variant="subtitle2" className={classes.roomId}>
-                            {(roomItem && roomItem.Id)? "Mã : " + roomItem.Id : "Mã phòng"}
+                            {(roomItem && roomItem._id)? "Mã : " + roomItem._id : "<Mã phòng>"}
                         </Typography>
                     </Grid>
-                    <Grid container item xs={8}>
+                    <Grid container item xs={7}>
                         <Typography variant="subtitle2" className={classes.roomTitle}>
-                            {(roomItem && roomItem.Name)? roomItem.Name : "Đây là một tên phòng rất dài để thể hiện rằng phần này xuống dòng được"}
+                            {(roomItem && roomItem.Name)? roomItem.Name : "<Tên phòng>"}
                         </Typography>
                     </Grid>
                     <Grid container item xs={12} className={classes.roomImageAndOverlayArea}
@@ -145,7 +147,7 @@ export default function RoomGridItem({roomItem, isPlaying}){
                     </Grid>
                     <Grid container item xs={12} className={classes.playingStatusArea}>
                         <Typography variant="body1" className={(roomItem && roomItem.isPlaying)? classes.isPlayingStatus : classes.isNotPlayingStatus}>
-                            {roomItem && roomItem.isPlaying? "Đang chơi" : "Phòng chờ"}
+                            {roomItem && roomItem.IsPlaying? "Đang chơi" : "Phòng chờ"}
                         </Typography>
                     </Grid>
                     <Grid container item xs={12} className={classes.roomRankArea}>
@@ -158,6 +160,11 @@ export default function RoomGridItem({roomItem, isPlaying}){
                                 Rank Veteran
                             </Typography>
                         </Grid>
+                    </Grid>
+                    <Grid container item xs={12} className={classes.roomRankArea}>
+                        <Typography variant="body1" style={{fontStyle: 'italic'}}>
+                            {roomItem && roomItem.Description? roomItem.Description : "Không có mô tả phòng"}
+                        </Typography>
                     </Grid>
                 </Grid>
             </Paper>
