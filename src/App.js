@@ -12,8 +12,12 @@ import Index from "./views/Index/Index";
 import Login from "./views/Login/Login";
 import SignUp from "./views/SignUp/SignUp";
 import Ranking from "./views/Ranking/Ranking";
+import GameRoom from "./views/GameRoom/gameRoom-component";
+import socket from "./services/socket";
+
 
 function App() {
+  
   return (
     <AuthProvider>
       <Router>
@@ -29,20 +33,25 @@ function App() {
               <PrivateRoute exact path="/">
                 <Index />
               </PrivateRoute>
-              <Route path="/login">
+              <Route exact path="/login">
                 <Login />
               </Route>
-              <Route path="/signup">
+              <Route exact path="/signup">
                 <SignUp />
               </Route>
-              <Route path="/ranking">
+
+              <Route exact path="/game/:id">
+                <GameRoom />
+              </Route>
+              <Route exact path="/ranking">
                 <Ranking />
               </Route>
 
               {/* Test area */}
-              <Route path="/test/chatBox">
+              <Route exact path="/test/chatBox">
                 <ChatBox />
               </Route>
+              
             </Switch>
           </main>
         </React.Fragment>

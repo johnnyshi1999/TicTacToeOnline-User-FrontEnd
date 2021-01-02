@@ -39,9 +39,10 @@ export default function DefaultAppBar() {
         setAnchorEl(null);
     };
 
-    const handleLogOut = () => {
-        setAnchorEl(null);       
-    };
+  const handleLogOut = () => {
+    setAuthTokens(null);
+    setAnchorEl(null);
+  };
 
     const handleProfile = () => {
         console.log(authTokens);
