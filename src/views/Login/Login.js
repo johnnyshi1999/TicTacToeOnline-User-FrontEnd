@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -7,7 +7,6 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -16,7 +15,7 @@ import Axios from 'axios';
 
 import API from "../../services/api.js";
 import { Redirect } from 'react-router-dom';
-import { useAuth } from '../../context/auth.js';
+import { useAuth } from '../../contexts/auth.js';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -60,7 +59,7 @@ export default function Login({onLogin}) {
         email: emailValue,
         password: passwordValue,
       }
-      const result = await Axios.post(API.url + "/auth/login", data);
+      const result = await Axios.post(API.url + "/api/auth/login", data);
       const responseData = result.data;
 
       console.log(responseData);
@@ -74,7 +73,6 @@ export default function Login({onLogin}) {
       else {
         setLoginMessage(responseData.message);
       }
-      
     } catch(error) {
       console.log(error);
     }
@@ -136,6 +134,7 @@ export default function Login({onLogin}) {
           >
             Sign In
           </Button>
+
           <Grid container justify="flex-end">
             <Grid item>
               <Link href="/signup" variant="body2">
