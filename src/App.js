@@ -13,9 +13,11 @@ import Login from "./views/Login/Login";
 import SignUp from "./views/SignUp/SignUp";
 import Ranking from "./views/Ranking/Ranking";
 import GameRoom from "./views/GameRoom/gameRoom-component";
+import socket from "./services/socket";
 
 
 function App() {
+  
   return (
     <AuthProvider>
       <Router>

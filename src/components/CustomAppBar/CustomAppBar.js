@@ -40,6 +40,7 @@ export default function DefaultAppBar() {
   };
 
   const handleLogOut = () => {
+    setAuthTokens(null);
     setAnchorEl(null);
   };
 

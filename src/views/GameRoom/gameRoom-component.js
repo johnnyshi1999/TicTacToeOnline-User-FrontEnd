@@ -5,35 +5,58 @@ import { Button } from '@material-ui/core';
 import './index.css';
 import { useParams } from 'react-router';
 import Axios from 'axios';
+import { GameContext, useGame } from '../../contexts/game';
 
 export default function GameRoom() {
 
-  
+
 
   const params = useParams();
 
   const [game, setGame] = useState(null);
+  const [playerNumber, setPlayerNumber] = useState(0);
 
+  // const {game, setGame} = useGame();
 
-  const fetchData = async() => {
+  const fetchData = async () => {
     const result = await Axios.get(API.url + `/game/${params.id}`);
     setGame(result.data);
+    setPlayerNumber(1);
   }
 
   useEffect(() => {
     fetchData();
     console.log(game);
   }, []);
-  
-  return(
+
+  const gameActions = {};
+
+  gameActions.makeMove = async (position) => {
+    await socket.emit("make-move", { gameId: game._id, player: playerNumber, position: position });
+  }
+
+  const value = {
+    game: game,
+    playerNumber: playerNumber,
+    gameActions: gameActions,
+  }
+
+
+  return (
+    // <GameContext.Provider value = {value}>
+
+    // </GameContext>
+
     <li>
-      {game ? <Game maxRow="20" maxCol="20" winCondition="5" game = {game}></Game> : <div>Loading</div>}
-      
+      {game ? <Game></Game> : <div>Loading</div>}
+
     </li>
-    );
-  
+
+
+  );
+
   // if (game) {
-    
+
   // }
   // else {
   //   return (
@@ -42,5 +65,5 @@ export default function GameRoom() {
   //     </div>
   //   );
   // }
-  
+
 }

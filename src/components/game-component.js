@@ -3,6 +3,7 @@ import Board from './board-component.js';
 import ServiceGame from '../services/serviceGame.js';
 import io from "socket.io-client";
 import API from "../services/api";
+import socket from '../services/socket';
 
 
 function Game(props) {
@@ -26,16 +27,16 @@ function Game(props) {
 
   const [sortOrder, setSortOrder] = useState(0);
 
-  const [socket, setSocket] = useState();
+  // const [socket, setSocket] = useState();
 
-  useEffect(() => {
-    setSocket(io.connect(API.url));
-    console.log(props.game);
-  }, []);
+  // useEffect(() => {
+  //   setSocket(io.connect(API.url));
+  //   console.log(props.game);
+  // }, []);
 
-  useEffect(() => () => {
-    // socket.disconnect();
-  },[])
+  // useEffect(() => () => {
+  //   // socket.disconnect();
+  // },[])
 
   const handleClick = (i) => {
     const historySlice = history.slice(0, stepNumber + 1);

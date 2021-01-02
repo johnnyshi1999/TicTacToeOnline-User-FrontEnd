@@ -82,11 +82,16 @@ export default function Index() {
     }
   }
 
+  const handleJoinClick = async () => {
+
+  };
+
   
   return (
     <div>
       <Typography>Hello there</Typography>
       <Button onClick={handleCreateClick}>Create A Game</Button>
+      <Button onClick={handleJoinClick}>Create A Game</Button>
     </div>
   );
 }
