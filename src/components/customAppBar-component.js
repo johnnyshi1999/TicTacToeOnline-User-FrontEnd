@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import { useAuth } from "../../contexts/auth";
+import { useAuth } from "../context/auth";
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { IconButton } from "@material-ui/core";
@@ -39,10 +39,10 @@ export default function DefaultAppBar() {
         setAnchorEl(null);
     };
 
-  const handleLogOut = () => {
-    setAuthTokens(null);
-    setAnchorEl(null);
-  };
+    const handleLogOut = () => {
+        setAnchorEl(null);
+        setAuthTokens(null);
+    };
 
     const handleProfile = () => {
         console.log(authTokens);
@@ -52,7 +52,7 @@ export default function DefaultAppBar() {
         <AppBar position="relative">
             <Toolbar>
                 <Typography className={classes.title} variant="h6" color="inherit" noWrap component={Link} to='/' >
-                    Caro Online
+                    RetroCool
                 </Typography>
                 <div>
                     {authTokens ?
