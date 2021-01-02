@@ -118,9 +118,10 @@ export default function Index() {
                     });
 
                     const {message, data} = newRoom.data;
-                    
+
                   } catch (e) {
                     setOpenBackdrop(false);
+                    setDisableForm(false);
                     setCreateRoomError('Có lỗi xảy ra trong lúc đang tạo phòng');
                     return;
                   }
@@ -213,7 +214,7 @@ export default function Index() {
                       </Grid>
                     </Box>
                     {createRoomError ?
-                      <Grid container item xs={12}>
+                      <Grid container item xs={12} justify="center">
                           <Alert severity="error">
                             {createRoomError}
                           </Alert>

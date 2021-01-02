@@ -72,8 +72,6 @@ export default function RoomsGrid({loadingCallback}){
                     setRoomsLoading(true);
                     const newCurrentPage = currentPage > pagesCount ? pagesCount : currentPage;
                     const start = (currentPage - 1)*maxRoomPerPage;
-                    console.log("start:" + start);
-                    console.log("end:" + Math.min(start + maxRoomPerPage, rooms.length));
                     setRooms(rooms.slice(start, Math.min(start + maxRoomPerPage, rooms.length)));
                     if(newCurrentPage !== currentPage){
                         setCurrentPage(newCurrentPage);
