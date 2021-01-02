@@ -4,8 +4,8 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/auth.js";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
-import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
-import CustomAppBar from "./components/CustomAppBar/CustomAppBar.js";
+import PrivateRoute from "./components/PrivateRoute/PrivateRoute.js";
+import CustomAppBar from './components/CustomAppBar/CustomAppBar.js';
 import ChatBox from "./components/ChatBox/ChatBox.js";
 
 import Index from "./views/Index/Index";

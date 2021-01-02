@@ -13,33 +13,39 @@ import { useHistory } from "react-router";
 
 //import material-ui
 import { makeStyles } from "@material-ui/core/styles";
+import RoomNavigator from "../../components/Room-Navigator-ForIndex/Room-Navigator";
+import FilterSideMenu from "../../components/Filter-SideMenu-ForIndex/Filter-SideMenu";
+import RoomsGrid from '../../components/Rooms-Grid-ForIndex/Rooms-Grid';
+
+import { Grid, Container, Box } from "@material-ui/core";
+import { makeStyles } from  "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
-  icon: {
-    marginRight: theme.spacing(2),
+  root: {
+    display: 'flex',
   },
-  heroContent: {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(8, 0, 6),
-  },
-  heroButtons: {
-    marginTop: theme.spacing(4),
-  },
-  card: {
-    height: "100%",
-    display: "flex",
-    flexDirection: "column",
-  },
-  cardMedia: {
-    paddingTop: "56.25%", // 16:9
-  },
-  cardContent: {
+  content: {
     flexGrow: 1,
+    overflow: 'auto',
   },
-  // cardGrid: {
-  //   paddingTop: theme.spacing(8),
-  //   paddingBottom: theme.spacing(8),
-  // },
+  appBarSpacer: theme.mixins.toolbar,
+  container: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(4),
+    paddingLeft: theme.spacing(4),
+    paddingRight: theme.spacing(4),
+  },  
+  pageContent: {
+    justifyContent: "flex-start",
+  },
+  roomNavigationBarArea: {
+    justifyContent: "center",
+    justifyItems: "center"
+  },
+  indexContentArea: {
+    justifyContent: "space-between",
+  },
+
   boardGrid: {
     paddingTop: theme.spacing(3),
     paddingBottom: theme.spacing(8),
@@ -64,7 +70,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Index() {
-  // const history = useHistory();
+  const classes = useStyles();
+
   const handleCreateClick = async () => {
     const data = {
       maxCol: 20,
@@ -86,9 +93,23 @@ export default function Index() {
 
   };
 
-  
-  return (
-    <div>
+  return(
+    <div className={classes.root}>
+      <Container maxWidth="xl" className={classes.container}>
+        <Grid container spacing={3} className={classes.pageContent}>
+            <Grid container item xs={12} md={10} justify="center" className={classes.roomNavigationBarArea}>
+              <RoomNavigator/>
+            </Grid>  
+            <Box component={Grid} container item md={2} display={{xs: "none", md:"flex"}}>
+            </Box>
+            <Grid container item xs={12} md={10} justify="center" className={classes.indexContentArea}>
+              <FilterSideMenu/>
+              <RoomsGrid/>
+            </Grid>  
+            <Box component={Grid} container item md={2} display={{xs: "none", md:"flex"}}>
+            </Box>             
+        </Grid>
+      </Container>
       <Typography>Hello there</Typography>
       <Button onClick={handleCreateClick}>Create A Game</Button>
       <Button onClick={handleJoinClick}>Create A Game</Button>
