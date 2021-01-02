@@ -32,13 +32,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const testData = [
-    {Id: 1, Name: "Cùng chơi nào ~", IsPlaying: true},
-    {Id: 2, Name: "Bạn bắt kịp được mình không ????", isPlaying: false},
-    {Id: 3, Name: "Room những con người Emo...", isPlaying: false},
-    {Id: 4, Name: "SĐT: 09774646555. Chịch xã giao", isPlaying: false}
-];
-
 export default function RoomsGrid({loadingCallback}){
     const classes = useStyles();
 
@@ -77,9 +70,11 @@ export default function RoomsGrid({loadingCallback}){
                 setNumOfPages(pagesCount);
                 if(currentPage >= pagesCount){
                     setRoomsLoading(true);
-                    const newCurrentPage = currentPage > pagesCount ? currentPage : pagesCount;
+                    const newCurrentPage = currentPage > pagesCount ? pagesCount : currentPage;
                     const start = (currentPage - 1)*maxRoomPerPage;
-                    setRooms(rooms.slice(start, Math.min(start + maxRoomPerPage, pagesCount)));
+                    console.log("start:" + start);
+                    console.log("end:" + Math.min(start + maxRoomPerPage, rooms.length));
+                    setRooms(rooms.slice(start, Math.min(start + maxRoomPerPage, rooms.length)));
                     if(newCurrentPage !== currentPage){
                         setCurrentPage(newCurrentPage);
                     }
@@ -98,7 +93,7 @@ export default function RoomsGrid({loadingCallback}){
     }
 
     return (
-        <Grid container item xs={12} sm={9} className={classes.root}>
+        <Grid container item spacing={3} xs={12} sm={9} className={classes.root}>
             <Grid container item xs={12} className={classes.gridContainer}>
                 <Typography variant="h5" className={classes.filterBoxTitle}>
                     Phòng chơi
@@ -106,7 +101,7 @@ export default function RoomsGrid({loadingCallback}){
             </Grid>
                
             
-            <Grid container item xs={12} className={classes.gridContainer} justify="flex-start">
+            <Grid container item spacing={3} xs={12} className={classes.gridContainer} justify="flex-start">
                 {
                     error ? 
                     <Grid container item xs={12} justify="center">
@@ -118,7 +113,6 @@ export default function RoomsGrid({loadingCallback}){
                         <CircularProgress color='primary' variant='indeterminate'>
                         </CircularProgress>
                     </Grid>
-                    
                     :
                     rooms.length <= 0 ? 
                     <Grid container item xs={12} justify="center">

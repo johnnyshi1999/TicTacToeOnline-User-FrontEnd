@@ -7,8 +7,8 @@ import { makeStyles } from  "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
     parentPaper:{
+        width: "100%",
         padding: theme.spacing(1),
-        margin: 5,
         background: 'linear-gradient(180deg, #3F51B5 10%, #FFFFFF 30%)',
         transition: "transform 0.15s ease-in-out" 
     },
@@ -117,7 +117,7 @@ export default function RoomGridItem({roomItem, isPlaying}){
             onMouseOver={()=>setRaised(true)} 
             onMouseOut={()=>setRaised(false)}>
                 <Grid container item xs={12} className={classes.root}>
-                    <Grid container item xs={5}>
+                    <Grid container item xs={4}>
                         <Typography variant="subtitle2" className={classes.roomId}>
                             {(roomItem && roomItem._id)? "Mã : " + roomItem._id : "<Mã phòng>"}
                         </Typography>

@@ -8,6 +8,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import {Alert} from '@material-ui/lab';
 
 import { makeStyles } from  "@material-ui/core";
 import {Backdrop, CircularProgress} from '@material-ui/core';
@@ -58,7 +59,7 @@ export default function Index() {
   const [roomDescription, setRoomDescription] = useState(null);
   const [roomType, setRoomType] = useState(1);
   const [roomPassword, setRoomPassword] = useState(null);
-  const [isProcessingForm, setProcessingForm] = useState(false);
+  const [createRoomError, setCreateRoomError] = useState(null);
   const [openBackdrop, setOpenBackdrop] = useState(false);
 
   const handleClickOpen = () => {
@@ -107,13 +108,22 @@ export default function Index() {
                   setDisableForm(true);
                   setOpenBackdrop(true);
 
-                  // api call here
-                  const newRoom = await Axios.post(API.url + "/api/room-management/room", {
-                    room_type: roomType, 
-                    room_name: roomName, 
-                    room_description: roomDescription, 
-                    room_password: roomType === 2 ? roomPassword : undefined
-                  });
+                  try{
+                    // api call here
+                    const newRoom = await Axios.post(API.url + "/api/room-management/room", {
+                      room_type: roomType, 
+                      room_name: roomName, 
+                      room_description: roomDescription, 
+                      room_password: roomType === 2 ? roomPassword : undefined
+                    });
+
+                    const {message, data} = newRoom.data;
+                    
+                  } catch (e) {
+                    setOpenBackdrop(false);
+                    setCreateRoomError('Có lỗi xảy ra trong lúc đang tạo phòng');
+                    return;
+                  }
 
                   setOpenBackdrop(false);
                   handleClose();
@@ -202,9 +212,13 @@ export default function Index() {
                         <img src={process.env.PUBLIC_URL + 'Index/TicTacToeBoardIcon.png'} alt="CaroImage" width="100%"/>
                       </Grid>
                     </Box>
-                    <Grid container item xs={12}>
-
-                    </Grid>
+                    {createRoomError ?
+                      <Grid container item xs={12}>
+                          <Alert severity="error">
+                            {createRoomError}
+                          </Alert>
+                      </Grid> :  null
+                    }
                   </Grid>
                 </DialogContent>
                 <DialogActions>
