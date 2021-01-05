@@ -42,7 +42,29 @@ const useStyles = makeStyles((theme) => ({
   },
   indexContentArea: {
     justifyContent: "space-between",
-  }
+  },
+
+  boardGrid: {
+    paddingTop: theme.spacing(3),
+    paddingBottom: theme.spacing(8),
+  },
+
+  footer: {
+    backgroundColor: theme.palette.background.paper,
+    padding: theme.spacing(6),
+  },
+
+  mainContainer: {
+    paddingTop: theme.spacing(8),
+    paddingBottom: theme.spacing(8),
+  },
+
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    margin: "auto",
+    width: "100%",
+  },
 }));
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -84,12 +106,33 @@ export default function Index() {
     }
   }, [socket]);
 
+  const handleCreateClick = async () => {
+    const data = {
+      maxCol: 20,
+      maxRow: 20,
+      winCondition: 5,
+    }
+    try {
+      const result = await Axios.post(API.url + "/game/create", data);
+      console.log(result);
+      const gameLink = `/game/${result.data.game._id}`;
+      // history.push(gameLink);
+      window.location.href=gameLink;
+    } catch(error) {
+      console.log(error);
+    }
+  }
+
+  const handleJoinClick = async () => {
+
+  };
+
   return(
     <div className={classes.root}>
       <Container maxWidth="xl" className={classes.container}>
         <Grid container spacing={3} className={classes.pageContent}>
             <Grid container item xs={12} md={10} justify="center" className={classes.roomNavigationBarArea}>
-              <RoomNavigator onCreateRoomClick={handleClickOpen}/>
+              <RoomNavigator onCreateRoomClick={handleClickOpen} onJoinRoomClick={handleJoinClick}/>
             </Grid>  
             <Box component={Grid} container item md={2} display={{xs: "none", md:"flex"}}>
             </Box>

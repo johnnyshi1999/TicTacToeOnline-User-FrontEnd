@@ -13,8 +13,12 @@ import Index from "./views/Index/Index";
 import Login from "./views/Login/Login";
 import SignUp from "./views/SignUp/SignUp";
 import Ranking from "./views/Ranking/Ranking";
+import GameRoom from "./views/GameRoom/gameRoom-component";
+import socket from "./services/socket";
+
 
 function App() {
+  
   return (
     <SocketProvider>
       <AuthProvider>
@@ -31,18 +35,21 @@ function App() {
                 <PrivateRoute exact path="/">
                   <Index />
                 </PrivateRoute>
-                <Route path="/login">
+                <Route exact path="/login">
                   <Login />
                 </Route>
-                <Route path="/signup">
+                <Route exact path="/signup">
                   <SignUp />
                 </Route>
-                <Route path="/ranking">
+                <Route exact path="/ranking">
                   <Ranking />
+                </Route>
+                <Route exact path="/game/:id">
+                  <GameRoom />
                 </Route>
 
                 {/* Test area */}
-                <Route path="/test/chatBox">
+                <Route exact path="/test/chatBox">
                   <ChatBox />
                 </Route>
               </Switch>
