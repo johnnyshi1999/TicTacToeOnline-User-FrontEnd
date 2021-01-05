@@ -84,10 +84,36 @@ export default function RoomsGrid({loadingCallback}){
     }, [socket, currentPage]);
 
     const handleOnPaginationChange = async(event, pageNumber) => {
+        setPagesLoading(true);
         setRoomsLoading(true);
-        setCurrentPage(pageNumber);
+        try{
+            const results = await Axios.get(API.url + "/api/room-management/rooms", {
+                page_number: pageNumber,
+                item_per_page: maxRoomPerPage
+            });
+            const {message, data} = results.data;
+            setRooms(data);       
+        }catch(e){
+            if(e.response && e.response.status === 400 && e.response.data && e.response.data.data.newMaxPage){
+                (async() => {
+                    const refetch = await Axios.get(API.url + "/api/room-management/rooms", {
+                        page_number: e.response.data.data.newMaxPage,
+                        item_per_page: maxRoomPerPage
+                    });
+
+                    const {message, data} = refetch.data;
+                    setRooms(refetch.data);
+                    setNumOfPages(e.response.data.data.newMaxPage);
+
+                    setRoomsLoading(false);
+                    setPagesLoading(false);
+                })();
+                return;
+            }
+            setError('An error occured while fetching the page');
+        }
         setRoomsLoading(false);
-        console.log(pageNumber);
+        setPagesLoading(false);
     }
 
     return (

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import API from "../../services/api";
 import { Button } from '@material-ui/core';
 import './index.css';
@@ -7,6 +7,7 @@ import Axios from 'axios';
 import { GameContext, useGame } from '../../contexts/game';
 import socket from '../../services/socket';
 import Game from "../../components/Room/game-component";
+import {useAuth} from '../../contexts/auth';
 
 export default function GameRoom() {
   const params = useParams();
@@ -16,19 +17,19 @@ export default function GameRoom() {
   const [playerNumber, setPlayerNumber] = useState(0);
   const [isLoading, setLoading] = useState(true);
 
-  // const {game, setGame} = useGame();
+  const {authTokens} = useAuth();
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     const result = await Axios.get(API.url + `/api/room-management/room/${params.id}`);
     setRoomInfo(result.data.data);
     setPlayerNumber(1);
     setLoading(false);
-  }
+  }, [params]);
 
   useEffect(() => {
     fetchData();
     console.log(game);
-  }, []);
+  }, [fetchData, game]);
 
   const gameActions = {};
 
@@ -43,6 +44,7 @@ export default function GameRoom() {
   }
 
   const handleCreateGameClick = async () => {
+    if(!authTokens) return;
     const data = {
       maxCol: 20,
       maxRow: 20,
