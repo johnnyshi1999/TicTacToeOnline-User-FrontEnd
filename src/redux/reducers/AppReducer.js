@@ -1,4 +1,3 @@
-import Index from '../../views/Index/Index';
 import IndexReducer from './Index/IndexReducer';
 
 const initialState = {
@@ -17,6 +16,7 @@ export default function AppReducer(state = initialState, action) {
                     ...action,
                     type: tokens[1]
                 })};
+        default:
+            return state;
     }
-    return state;
 }

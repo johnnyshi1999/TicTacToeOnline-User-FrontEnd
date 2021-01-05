@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import { AuthProvider } from "./contexts/auth.js";
-import { SocketProvider } from "./contexts/socket.js";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute.js";
@@ -14,14 +13,12 @@ import Login from "./views/Login/Login";
 import SignUp from "./views/SignUp/SignUp";
 import Ranking from "./views/Ranking/Ranking";
 import GameRoom from "./views/GameRoom/gameRoom-component";
-import socket from "./services/socket";
 
 
 function App() {
   
   return (
-    <SocketProvider>
-      <AuthProvider>
+    <AuthProvider>
         <Router>
           <React.Fragment>
             <CssBaseline />
@@ -57,7 +54,6 @@ function App() {
           </React.Fragment>
         </Router>
       </AuthProvider>
-    </SocketProvider>
   );
 }
 

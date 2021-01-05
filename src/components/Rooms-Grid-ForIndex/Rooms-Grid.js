@@ -9,7 +9,7 @@ import { makeStyles } from  "@material-ui/core";
 import { Pagination, Alert } from '@material-ui/lab';
 import { CircularProgress } from '@material-ui/core';
 
-import { useSocket} from '../../contexts/socket';
+import socket from '../../services/socket';
 
 import API from "../../services/api";
 
@@ -43,8 +43,6 @@ export default function RoomsGrid({loadingCallback}){
     const [isPagesLoading, setPagesLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const {socket} = useSocket();
-
     useEffect(() => {
         (async() => {
             try{
@@ -52,7 +50,7 @@ export default function RoomsGrid({loadingCallback}){
                     page_number: currentPage,
                     item_per_page: maxRoomPerPage
                 });
-                const {message, data} = results.data;
+                const {data} = results.data;
                 setRooms(data);
                 setPagesLoading(false);
             }catch(e){
@@ -81,7 +79,7 @@ export default function RoomsGrid({loadingCallback}){
                 setPagesLoading(false);
             });
         }
-    }, [socket, currentPage]);
+    }, [currentPage]);
 
     const handleOnPaginationChange = async(event, pageNumber) => {
         if(pageNumber === currentPage) return;
@@ -92,7 +90,7 @@ export default function RoomsGrid({loadingCallback}){
                 page_number: pageNumber,
                 item_per_page: maxRoomPerPage
             });
-            const {message, data} = results.data;
+            const {data} = results.data;
             setRooms(data);       
         }catch(e){
             if(e.response && e.response.status === 400 && e.response.data && e.response.data.data.newMaxPage){
@@ -103,7 +101,7 @@ export default function RoomsGrid({loadingCallback}){
                             item_per_page: maxRoomPerPage
                         });
 
-                        const {message, data} = refetch.data;
+                        const {data} = refetch.data;
                         setRooms(data);
                         setNumOfPages(e.response.data.data.newMaxPage);
                     }catch(e){

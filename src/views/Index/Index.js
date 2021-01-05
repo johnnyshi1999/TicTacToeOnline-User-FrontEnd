@@ -12,7 +12,7 @@ import {Alert} from '@material-ui/lab';
 import { makeStyles } from  "@material-ui/core";
 import {Backdrop, CircularProgress} from '@material-ui/core';
 
-import { useSocket} from '../../contexts/socket';
+import socket from '../../services/socket';
 import Axios from "axios";
 
 import API from '../../services/api';
@@ -107,13 +107,11 @@ export default function Index() {
     CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator(null));
   }
 
-  const {socket} = useSocket();
-
   useEffect(() => {
     if(socket){
       socket.emit('page-status', 'index-page');
     }
-  }, [socket]);
+  }, []);
 
   useEffect(() => {
     CaroOnlineStore.subscribe(() => {
@@ -155,7 +153,7 @@ export default function Index() {
                       room_password: roomType === 2 ? roomPassword : undefined
                     });
 
-                    const {message, data} = newRoom.data;
+                    const {data} = newRoom.data;
 
                     const roomLink = `/room/${data[0]._id}`;
                     window.location.href=roomLink;

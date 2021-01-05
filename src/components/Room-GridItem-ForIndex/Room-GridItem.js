@@ -124,7 +124,7 @@ export default function RoomGridItem({roomItem}){
         (async () => {
             try{
                 const result = await Axios.get(API.url + `/api/room-management/room/${roomItem._id}`);
-                const {message, data} = result.data;
+                const {data} = result.data;
                 const roomLink = `/room/${data._id}`;
                 window.location.href=roomLink;
             } catch (e) {

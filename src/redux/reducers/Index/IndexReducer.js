@@ -9,6 +9,7 @@ export default function IndexReducer(state, action) {
             return {...state,
                 pageWideError: action.payload
             }
+        default:
+            return state;
     }
-    return state;
 }

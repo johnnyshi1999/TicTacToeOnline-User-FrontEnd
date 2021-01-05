@@ -56,7 +56,7 @@ export default function RoomNavigator({onCreateRoomClick, onFastPlayClick}){
       (async () => {
           try{
               const result = await Axios.get(API.url + `/api/room-management/room/${roomId}`);
-              const {message, data} = result.data;
+              const {data} = result.data;
               const roomLink = `/room/${data._id}`;
               window.location.href=roomLink;
           } catch (e) {
