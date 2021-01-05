@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import RoomNavigator from "../../components/Room-Navigator-ForIndex/Room-Navigator";
-import FilterSideMenu from "../../components/Filter-SideMenu-ForIndex/Filter-SideMenu";
 import RoomsGrid from '../../components/Rooms-Grid-ForIndex/Rooms-Grid';
 
 import { Grid, Container, Box, Dialog, Button, Slide, TextField, Select, MenuItem, FormControl, InputLabel, Typography} from "@material-ui/core";
@@ -17,6 +16,9 @@ import { useSocket} from '../../contexts/socket';
 import Axios from "axios";
 
 import API from '../../services/api';
+
+import CaroOnlineStore from '../../redux/store';
+import IndexPage_ErrorPopUp_ActionCreator from '../../redux/actionCreators/Index/IndexPage_ErrorPopUp_ActionCreator';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -84,12 +86,15 @@ export default function Index() {
   const [createRoomError, setCreateRoomError] = useState(null);
   const [openBackdrop, setOpenBackdrop] = useState(false);
 
+  //State for error dialog
+  const [indexError, setIndexError] = useState(null);
+
   const handleClickOpen = () => {
     setDisableForm(false);
     setOpenCreateRoomDialog(true);
   };
 
-  const handleClose = () => {
+  const handleCloseCreateRoom = () => {
     setOpenCreateRoomDialog(false);
     setRoomName(null);
     setRoomDescription(null);
@@ -97,6 +102,10 @@ export default function Index() {
     setRoomType(1);
     setDisableForm(false);
   };
+
+  const handleCloseErrorDialog = () => {
+    CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator(null));
+  }
 
   const {socket} = useSocket();
 
@@ -106,27 +115,30 @@ export default function Index() {
     }
   }, [socket]);
 
-  const handleJoinClick = async () => {
-
-  };
+  useEffect(() => {
+    CaroOnlineStore.subscribe(() => {
+      const appState = CaroOnlineStore.getState();
+      setOpenBackdrop(appState.IndexPage.isLoading);
+      setIndexError(appState.IndexPage.pageWideError);
+    });
+  });
 
   return(
     <div className={classes.root}>
       <Container maxWidth="xl" className={classes.container}>
         <Grid container spacing={3} className={classes.pageContent}>
-            <Grid container item xs={12} md={10} justify="center" className={classes.roomNavigationBarArea}>
-              <RoomNavigator onCreateRoomClick={handleClickOpen} onJoinRoomClick={handleJoinClick}/>
+            <Grid container item xs={12} lg={10} justify="center" className={classes.roomNavigationBarArea}>
+              <RoomNavigator onCreateRoomClick={handleClickOpen}/>
             </Grid>  
-            <Box component={Grid} container item md={2} display={{xs: "none", md:"flex"}}>
+            <Box component={Grid} container item lg={2} display={{xs: "none", lg:"flex"}}>
             </Box>
-            <Grid container item xs={12} md={10} justify="center" className={classes.indexContentArea}>
-              <FilterSideMenu/>
+            <Grid container item xs={12} lg={10} justify="center" className={classes.indexContentArea}>
               <RoomsGrid/>
             </Grid>  
-            <Box component={Grid} container item md={2} display={{xs: "none", md:"flex"}}>
+            <Box component={Grid} container item lg={2} display={{xs: "none", lg:"flex"}}>
             </Box>
-            <Grid container item xs={12} md={10}>
-              <Dialog fullScreen open={openCreateRoomDialog} onClose={handleClose} TransitionComponent={Transition}
+            {/* Create room dialog */}
+            <Dialog fullScreen open={openCreateRoomDialog} TransitionComponent={Transition}
               disableBackdropClick={disableForm}>
                 <DialogTitle id="form-dialog-title">Tạo phòng</DialogTitle>
                 <form onSubmit={async (e) => {
@@ -145,6 +157,8 @@ export default function Index() {
 
                     const {message, data} = newRoom.data;
 
+                    const roomLink = `/room/${data[0]._id}`;
+                    window.location.href=roomLink;
                   } catch (e) {
                     setOpenBackdrop(false);
                     setDisableForm(false);
@@ -153,7 +167,7 @@ export default function Index() {
                   }
 
                   setOpenBackdrop(false);
-                  handleClose();
+                  handleCloseCreateRoom();
                 }}>
                 <DialogContent>
                   <DialogContentText>
@@ -249,7 +263,7 @@ export default function Index() {
                   </Grid>
                 </DialogContent>
                 <DialogActions>
-                  <Button onClick={handleClose} color="secondary">
+                  <Button onClick={handleCloseCreateRoom} color="secondary">
                     Đóng
                   </Button>
                   <Button type="submit" color="primary" disabled={disableForm || (roomType === 1 ?  false : (!roomPassword || roomPassword.length < 6) ? true : false)}>
@@ -257,13 +271,46 @@ export default function Index() {
                   </Button>
                 </DialogActions>
                 </form>
+                {/* Loading backdrop */}
+                <Backdrop open={openBackdrop} style={{color: "#fff" , zIndex: 100}}>
+                  <CircularProgress color="inherit" />
+                </Backdrop>
+              </Dialog>  
+              {/* Error dialog */}
+              <Dialog
+                fullWidth
+                maxWidth="sm"
+                open={indexError ? true : false}
+                TransitionComponent={Transition}
+                keepMounted
+                onClose={handleCloseErrorDialog}
+                aria-labelledby="alert-dialog-slide-title"
+                aria-describedby="alert-dialog-slide-description">
+                <DialogTitle>
+                  <Typography color="secondary">
+                    {"Đã xảy ra lỗi..."}
+                  </Typography>
+                </DialogTitle>
+                <DialogContent>
+                  <DialogContentText id="alert-dialog-slide-description">
+                    {indexError}
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleCloseErrorDialog} color="secondary">
+                    Đóng
+                  </Button>
+                </DialogActions>
               </Dialog>   
-            </Grid>          
         </Grid>
       </Container>
+
+      {/* Loading backdrop */}
       <Backdrop open={openBackdrop} style={{color: "#fff" , zIndex: 100}}>
         <CircularProgress color="inherit" />
       </Backdrop>
+
+      
     </div>
   );
 }

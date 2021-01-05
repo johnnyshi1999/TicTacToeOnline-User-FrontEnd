@@ -1,9 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { Grid, TextField, Button, Paper} from "@material-ui/core";
 import { makeStyles } from  "@material-ui/core";
 
 import { useAuth } from '../../contexts/auth';
+
+import IndexPage_LoadingBackdrop_ActionCreator from '../../redux/actionCreators/Index/IndexPage_LoadingBackdrop_ActionCreator';
+import IndexPage_ErrorPopUp_ActionCreator from '../../redux/actionCreators/Index/IndexPage_ErrorPopUp_ActionCreator';
+
+import CaroOnlineStore from '../../redux/store';
+
+import Axios from 'axios';
+import API from "../../services/api";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,10 +43,29 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function RoomNavigator({onCreateRoomClick, onFastPlayClick, onJoinRoomClick}){
+export default function RoomNavigator({onCreateRoomClick, onFastPlayClick}){
     const classes = useStyles();
 
     const {authTokens} = useAuth();
+
+    const [roomId, setRoomId] = useState(null);
+
+    const handleJoinRoomClick = () => {
+      if(!roomId || roomId.length <= 0) return;
+      CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(true));
+      (async () => {
+          try{
+              const result = await Axios.get(API.url + `/api/room-management/room/${roomId}`);
+              const {message, data} = result.data;
+              const roomLink = `/room/${data._id}`;
+              window.location.href=roomLink;
+          } catch (e) {
+              CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator('Không thể tìm thấy phòng chơi có mã này'));
+              console.log(e);
+          }
+          CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
+      })();
+    }
 
     return (
         <Grid container item xs={12} className={classes.root}>
@@ -48,9 +75,14 @@ export default function RoomNavigator({onCreateRoomClick, onFastPlayClick, onJoi
                         <TextField placeholder="Nhập mã phòng vào đây"
                             multiline
                             variant="outlined"
-                            className={classes.typeInRoomIdTextField}>
+                            className={classes.typeInRoomIdTextField}
+                            value={roomId ? roomId : ''}
+                            onChange={(e) => {
+                              e.target.value = e.target.value.slice(0,Math.min(100, e.target.value.length));
+                              setRoomId(e.target.value);
+                            }}>
                         </TextField>
-                        <Button variant="contained" color="primary" className={classes.button}>
+                        <Button variant="contained" color="primary" className={classes.button} onClick={handleJoinRoomClick}>
                             GO
                         </Button>
                     </Grid>

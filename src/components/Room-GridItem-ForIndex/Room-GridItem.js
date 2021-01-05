@@ -5,6 +5,14 @@ import { Grid, Typography, Button} from "@material-ui/core";
 import { Paper} from "@material-ui/core";
 import { makeStyles } from  "@material-ui/core";
 
+import IndexPage_LoadingBackdrop_ActionCreator from '../../redux/actionCreators/Index/IndexPage_LoadingBackdrop_ActionCreator';
+import IndexPage_ErrorPopUp_ActionCreator from '../../redux/actionCreators/Index/IndexPage_ErrorPopUp_ActionCreator';
+
+import CaroOnlineStore from '../../redux/store';
+
+import Axios from 'axios';
+import API from "../../services/api";
+
 const useStyles = makeStyles((theme) => ({
     parentPaper:{
         width: "100%",
@@ -104,7 +112,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function RoomGridItem({roomItem, isPlaying}){
+export default function RoomGridItem({roomItem}){
     const classes = useStyles();
 
     const [isRaised, setRaised] = useState(false);
@@ -112,8 +120,19 @@ export default function RoomGridItem({roomItem, isPlaying}){
 
     const handleJoinRoomClick = () => {
         if(!roomItem || !roomItem._id) return;
-        const roomLink = `/room/${roomItem._id}`;
-        window.location.href=roomLink;
+        CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(true));
+        (async () => {
+            try{
+                const result = await Axios.get(API.url + `/api/room-management/room/${roomItem._id}`);
+                const {message, data} = result.data;
+                const roomLink = `/room/${data._id}`;
+                window.location.href=roomLink;
+            } catch (e) {
+                CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator('Không thể tìm thấy phòng chơi này, bạn nên thử tải lại trang'));
+                console.log(e);
+            }
+            CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
+        })();
     }
 
     return (
@@ -143,29 +162,18 @@ export default function RoomGridItem({roomItem, isPlaying}){
                                 className={classes.roomIcon} alt="RoomImage"/>
                             </Grid>
                         </Paper>
-                        <div className={!showRoomButtons ? classes.roomImageOverlayFadeIn : classes.roomImageOverlayFadeOut}>
+                        <Paper className={!showRoomButtons ? classes.roomImageOverlayFadeIn : classes.roomImageOverlayFadeOut}>
                             <Grid container item xs={12} className={classes.roomActions}>
                                 <Button variant="contained" color="primary" className={classes.goInRoomButton} onClick={handleJoinRoomClick}>
                                     Vào phòng
                                 </Button>
                             </Grid>
-                        </div>
+                        </Paper>
                     </Grid>
                     <Grid container item xs={12} className={classes.playingStatusArea}>
                         <Typography variant="body1" className={(roomItem && roomItem.isPlaying)? classes.isPlayingStatus : classes.isNotPlayingStatus}>
                             {roomItem && roomItem.IsPlaying? "Đang chơi" : "Phòng chờ"}
                         </Typography>
-                    </Grid>
-                    <Grid container item xs={12} className={classes.roomRankArea}>
-                        <Grid item xs={3}>
-                            <img src={process.env.PUBLIC_URL + 'Index/RankIcon.png'}
-                                className={classes.roomIcon} alt="RankIcon"/>
-                        </Grid>
-                        <Grid item xs={8}>
-                            <Typography variant="subtitle2" align="center">
-                                Rank Veteran
-                            </Typography>
-                        </Grid>
                     </Grid>
                     <Grid container item xs={12} className={classes.roomRankArea}>
                         <Typography variant="body1" style={{fontStyle: 'italic'}}>

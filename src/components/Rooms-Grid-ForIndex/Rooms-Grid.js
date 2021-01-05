@@ -84,6 +84,7 @@ export default function RoomsGrid({loadingCallback}){
     }, [socket, currentPage]);
 
     const handleOnPaginationChange = async(event, pageNumber) => {
+        if(pageNumber === currentPage) return;
         setPagesLoading(true);
         setRoomsLoading(true);
         try{
@@ -96,15 +97,18 @@ export default function RoomsGrid({loadingCallback}){
         }catch(e){
             if(e.response && e.response.status === 400 && e.response.data && e.response.data.data.newMaxPage){
                 (async() => {
-                    const refetch = await Axios.get(API.url + "/api/room-management/rooms", {
-                        page_number: e.response.data.data.newMaxPage,
-                        item_per_page: maxRoomPerPage
-                    });
+                    try{
+                        const refetch = await Axios.get(API.url + "/api/room-management/rooms", {
+                            page_number: e.response.data.data.newMaxPage,
+                            item_per_page: maxRoomPerPage
+                        });
 
-                    const {message, data} = refetch.data;
-                    setRooms(refetch.data);
-                    setNumOfPages(e.response.data.data.newMaxPage);
-
+                        const {message, data} = refetch.data;
+                        setRooms(data);
+                        setNumOfPages(e.response.data.data.newMaxPage);
+                    }catch(e){
+                        setError('An error occured while fetching the page');
+                    }
                     setRoomsLoading(false);
                     setPagesLoading(false);
                 })();
@@ -117,7 +121,7 @@ export default function RoomsGrid({loadingCallback}){
     }
 
     return (
-        <Grid container item spacing={3} xs={12} sm={9} className={classes.root}>
+        <Grid container item spacing={3} xs={12} className={classes.root}>
             <Grid container item xs={12} className={classes.gridContainer}>
                 <Typography variant="h5" className={classes.filterBoxTitle}>
                     Phòng chơi
@@ -143,7 +147,7 @@ export default function RoomsGrid({loadingCallback}){
                         <Alert severity="info">Hiện chưa có phòng chơi nào đang được mở, hãy thử tạo phòng mới nào!!</Alert>
                     </Grid>
                     : rooms.map((item, idx) => 
-                        <Grid key={"gridRoom"+idx} container item xs={6} md={4}>
+                        <Grid key={"gridRoom"+idx} container item xs={6} sm={4} md={3}>
                             <RoomGridItem roomItem={item}/>
                         </Grid>
                     )
