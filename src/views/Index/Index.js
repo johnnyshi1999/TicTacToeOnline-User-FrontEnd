@@ -106,23 +106,6 @@ export default function Index() {
     }
   }, [socket]);
 
-  const handleCreateClick = async () => {
-    const data = {
-      maxCol: 20,
-      maxRow: 20,
-      winCondition: 5,
-    }
-    try {
-      const result = await Axios.post(API.url + "/game/create", data);
-      console.log(result);
-      const gameLink = `/game/${result.data.game._id}`;
-      // history.push(gameLink);
-      window.location.href=gameLink;
-    } catch(error) {
-      console.log(error);
-    }
-  }
-
   const handleJoinClick = async () => {
 
   };
@@ -274,13 +257,13 @@ export default function Index() {
                   </Button>
                 </DialogActions>
                 </form>
-                <Backdrop open={openBackdrop} style={{color: "#fff" , zIndex: 100}}>
-                  <CircularProgress color="inherit" />
-                </Backdrop>
               </Dialog>   
             </Grid>          
         </Grid>
       </Container>
+      <Backdrop open={openBackdrop} style={{color: "#fff" , zIndex: 100}}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 }

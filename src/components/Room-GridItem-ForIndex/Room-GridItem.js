@@ -110,6 +110,12 @@ export default function RoomGridItem({roomItem, isPlaying}){
     const [isRaised, setRaised] = useState(false);
     const [showRoomButtons, setShowRoomButtons] = useState(false);
 
+    const handleJoinRoomClick = () => {
+        if(!roomItem || !roomItem._id) return;
+        const roomLink = `/room/${roomItem._id}`;
+        window.location.href=roomLink;
+    }
+
     return (
         <Grid container item xs={12}>
             <Paper variant="elevation" elevation={3} className={classes.parentPaper}
@@ -139,7 +145,7 @@ export default function RoomGridItem({roomItem, isPlaying}){
                         </Paper>
                         <div className={!showRoomButtons ? classes.roomImageOverlayFadeIn : classes.roomImageOverlayFadeOut}>
                             <Grid container item xs={12} className={classes.roomActions}>
-                                <Button variant="contained" color="primary" className={classes.goInRoomButton}>
+                                <Button variant="contained" color="primary" className={classes.goInRoomButton} onClick={handleJoinRoomClick}>
                                     Vào phòng
                                 </Button>
                             </Grid>

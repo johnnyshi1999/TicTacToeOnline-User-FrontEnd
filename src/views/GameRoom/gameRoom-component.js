@@ -9,20 +9,20 @@ import socket from '../../services/socket';
 import Game from "../../components/Room/game-component";
 
 export default function GameRoom() {
-
-
-
   const params = useParams();
 
+  const [roomInfo, setRoomInfo] = useState(null);
   const [game, setGame] = useState(null);
   const [playerNumber, setPlayerNumber] = useState(0);
+  const [isLoading, setLoading] = useState(true);
 
   // const {game, setGame} = useGame();
 
   const fetchData = async () => {
-    const result = await Axios.get(API.url + `/game/${params.id}`);
-    setGame(result.data);
+    const result = await Axios.get(API.url + `/api/room-management/room/${params.id}`);
+    setRoomInfo(result.data.data);
     setPlayerNumber(1);
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -42,6 +42,23 @@ export default function GameRoom() {
     gameActions: gameActions,
   }
 
+  const handleCreateGameClick = async () => {
+    const data = {
+      maxCol: 20,
+      maxRow: 20,
+      winCondition: 5,
+    }
+    try {
+      setLoading(true);
+      const result = await Axios.post(API.url + "/game/create", data);
+      
+      setGame(result.data);
+      setLoading(false);
+    } catch(error) {
+      console.log(error);
+      setLoading(false);
+    }
+  }
 
   return (
     // <GameContext.Provider value = {value}>
@@ -49,22 +66,18 @@ export default function GameRoom() {
     // </GameContext>
 
     <li>
-      {game ? <Game game={game}></Game> : <div>Loading</div>}
+
+      {isLoading? 
+      <div>Loading</div> 
+      : 
+      game ? 
+      <Game game={game}></Game> : 
+      <Button onClick={handleCreateGameClick}>Create Game</Button>
+      }
 
     </li>
 
 
   );
-
-  // if (game) {
-
-  // }
-  // else {
-  //   return (
-  //     <div>
-  //       Loading
-  //     </div>
-  //   );
-  // }
 
 }

@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function RoomNavigator({onCreateRoomClick, onFastPlayClick}){
+export default function RoomNavigator({onCreateRoomClick, onFastPlayClick, onJoinRoomClick}){
     const classes = useStyles();
 
     const {authTokens} = useAuth();

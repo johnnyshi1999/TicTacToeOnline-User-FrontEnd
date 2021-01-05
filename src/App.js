@@ -44,7 +44,7 @@ function App() {
                 <Route exact path="/ranking">
                   <Ranking />
                 </Route>
-                <Route exact path="/game/:id">
+                <Route exact path="/room/:id">
                   <GameRoom />
                 </Route>
 
