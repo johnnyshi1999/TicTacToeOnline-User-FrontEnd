@@ -22,12 +22,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function FilterSideMenu(props){
+export default function FilterSideMenu(){
     const classes = useStyles();
 
     const [rankFilter, setRankFilter] = useState(null);
 
     const handleRankFilterChange = (event) => {
+        
         setRankFilter(event.target.value === -1 ? null : event.target.value);
     };
 

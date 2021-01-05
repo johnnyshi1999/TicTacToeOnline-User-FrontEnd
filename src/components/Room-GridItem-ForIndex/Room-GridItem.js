@@ -5,10 +5,18 @@ import { Grid, Typography, Button} from "@material-ui/core";
 import { Paper} from "@material-ui/core";
 import { makeStyles } from  "@material-ui/core";
 
+import IndexPage_LoadingBackdrop_ActionCreator from '../../redux/actionCreators/Index/IndexPage_LoadingBackdrop_ActionCreator';
+import IndexPage_ErrorPopUp_ActionCreator from '../../redux/actionCreators/Index/IndexPage_ErrorPopUp_ActionCreator';
+
+import CaroOnlineStore from '../../redux/store';
+
+import Axios from 'axios';
+import API from "../../services/api";
+
 const useStyles = makeStyles((theme) => ({
     parentPaper:{
+        width: "100%",
         padding: theme.spacing(1),
-        margin: 5,
         background: 'linear-gradient(180deg, #3F51B5 10%, #FFFFFF 30%)',
         transition: "transform 0.15s ease-in-out" 
     },
@@ -28,13 +36,15 @@ const useStyles = makeStyles((theme) => ({
         overflowWrap: 'break-word',
         textAlign: 'justify',
         color: 'white',
+        maxWidth: '100%',
     },
     roomId: {
         paddingBottom: theme.spacing(1),
         fontWeight: 'bold',
         overflowWrap: 'break-word',
         textAlign: 'left',
-        color: 'white'
+        color: 'white',
+        maxWidth: '100%',
     },
     gridItemImageBlock: {
         padding: theme.spacing(1),
@@ -102,11 +112,28 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function RoomGridItem({roomItem, isPlaying}){
+export default function RoomGridItem({roomItem}){
     const classes = useStyles();
 
     const [isRaised, setRaised] = useState(false);
     const [showRoomButtons, setShowRoomButtons] = useState(false);
+
+    const handleJoinRoomClick = () => {
+        if(!roomItem || !roomItem._id) return;
+        CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(true));
+        (async () => {
+            try{
+                const result = await Axios.get(API.url + `/api/room-management/room/${roomItem._id}`);
+                const {data} = result.data;
+                const roomLink = `/room/${data._id}`;
+                window.location.href=roomLink;
+            } catch (e) {
+                CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator('Không thể tìm thấy phòng chơi này, bạn nên thử tải lại trang'));
+                console.log(e);
+            }
+            CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
+        })();
+    }
 
     return (
         <Grid container item xs={12}>
@@ -115,14 +142,14 @@ export default function RoomGridItem({roomItem, isPlaying}){
             onMouseOver={()=>setRaised(true)} 
             onMouseOut={()=>setRaised(false)}>
                 <Grid container item xs={12} className={classes.root}>
-                    <Grid container item xs={3}>
+                    <Grid container item xs={4}>
                         <Typography variant="subtitle2" className={classes.roomId}>
-                            {(roomItem && roomItem.Id)? "Mã : " + roomItem.Id : "Mã phòng"}
+                            {(roomItem && roomItem._id)? "Mã : " + roomItem._id : "<Mã phòng>"}
                         </Typography>
                     </Grid>
-                    <Grid container item xs={8}>
+                    <Grid container item xs={7}>
                         <Typography variant="subtitle2" className={classes.roomTitle}>
-                            {(roomItem && roomItem.Name)? roomItem.Name : "Đây là một tên phòng rất dài để thể hiện rằng phần này xuống dòng được"}
+                            {(roomItem && roomItem.Name)? roomItem.Name : "<Tên phòng>"}
                         </Typography>
                     </Grid>
                     <Grid container item xs={12} className={classes.roomImageAndOverlayArea}
@@ -135,29 +162,23 @@ export default function RoomGridItem({roomItem, isPlaying}){
                                 className={classes.roomIcon} alt="RoomImage"/>
                             </Grid>
                         </Paper>
-                        <div className={!showRoomButtons ? classes.roomImageOverlayFadeIn : classes.roomImageOverlayFadeOut}>
+                        <Paper className={!showRoomButtons ? classes.roomImageOverlayFadeIn : classes.roomImageOverlayFadeOut}>
                             <Grid container item xs={12} className={classes.roomActions}>
-                                <Button variant="contained" color="primary" className={classes.goInRoomButton}>
+                                <Button variant="contained" color="primary" className={classes.goInRoomButton} onClick={handleJoinRoomClick}>
                                     Vào phòng
                                 </Button>
                             </Grid>
-                        </div>
+                        </Paper>
                     </Grid>
                     <Grid container item xs={12} className={classes.playingStatusArea}>
                         <Typography variant="body1" className={(roomItem && roomItem.isPlaying)? classes.isPlayingStatus : classes.isNotPlayingStatus}>
-                            {roomItem && roomItem.isPlaying? "Đang chơi" : "Phòng chờ"}
+                            {roomItem && roomItem.IsPlaying? "Đang chơi" : "Phòng chờ"}
                         </Typography>
                     </Grid>
                     <Grid container item xs={12} className={classes.roomRankArea}>
-                        <Grid item xs={3}>
-                            <img src={process.env.PUBLIC_URL + 'Index/RankIcon.png'}
-                                className={classes.roomIcon} alt="RankIcon"/>
-                        </Grid>
-                        <Grid item xs={8}>
-                            <Typography variant="subtitle2" align="center">
-                                Rank Veteran
-                            </Typography>
-                        </Grid>
+                        <Typography variant="body1" style={{fontStyle: 'italic'}}>
+                            {roomItem && roomItem.Description? roomItem.Description : "Không có mô tả phòng"}
+                        </Typography>
                     </Grid>
                 </Grid>
             </Paper>

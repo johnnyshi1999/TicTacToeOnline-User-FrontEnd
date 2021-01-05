@@ -13,50 +13,47 @@ import Login from "./views/Login/Login";
 import SignUp from "./views/SignUp/SignUp";
 import Ranking from "./views/Ranking/Ranking";
 import GameRoom from "./views/GameRoom/gameRoom-component";
-import socket from "./services/socket";
 
 
 function App() {
   
   return (
     <AuthProvider>
-      <Router>
-        <React.Fragment>
-          <CssBaseline />
-          <CustomAppBar></CustomAppBar>
-          <main>
-            <Switch>
-              {/* <PrivateRoute exact path="/" component={Index} /> */}
-              {/* <Route path="/login" component={Login} />
-              <Route path="/signup" component={SignUp} /> */}
+        <Router>
+          <React.Fragment>
+            <CssBaseline />
+            <CustomAppBar></CustomAppBar>
+            <main>
+              <Switch>
+                {/* <PrivateRoute exact path="/" component={Index} /> */}
+                {/* <Route path="/login" component={Login} />
+                <Route path="/signup" component={SignUp} /> */}
 
-              <PrivateRoute exact path="/">
-                <Index />
-              </PrivateRoute>
-              <Route exact path="/login">
-                <Login />
-              </Route>
-              <Route exact path="/signup">
-                <SignUp />
-              </Route>
+                <PrivateRoute exact path="/">
+                  <Index />
+                </PrivateRoute>
+                <Route exact path="/login">
+                  <Login />
+                </Route>
+                <Route exact path="/signup">
+                  <SignUp />
+                </Route>
+                <Route exact path="/ranking">
+                  <Ranking />
+                </Route>
+                <Route exact path="/room/:id">
+                  <GameRoom />
+                </Route>
 
-              <Route exact path="/game/:id">
-                <GameRoom />
-              </Route>
-              <Route exact path="/ranking">
-                <Ranking />
-              </Route>
-
-              {/* Test area */}
-              <Route exact path="/test/chatBox">
-                <ChatBox />
-              </Route>
-              
-            </Switch>
-          </main>
-        </React.Fragment>
-      </Router>
-    </AuthProvider>
+                {/* Test area */}
+                <Route exact path="/test/chatBox">
+                  <ChatBox />
+                </Route>
+              </Switch>
+            </main>
+          </React.Fragment>
+        </Router>
+      </AuthProvider>
   );
 }
 
