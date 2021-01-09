@@ -23,6 +23,8 @@ export default function GameRoom() {
     const result = await Axios.get(API.url + `/api/room-management/room/${params.id}`);
     setRoomInfo(result.data.data);
 
+    
+
     //get join result
     const joinResult = await Axios.get(API.url + `/api/room-management/room/join/${params.id}`);
     setPlayerNumber(joinResult.data.playerNumber);
@@ -36,21 +38,26 @@ export default function GameRoom() {
 
   useEffect(() => {
     fetchData();
-    console.log(game);
-    console.log(playerNumber);
-    
+
+    socket.on("update-board", (game) => {
+      console.log("on update-board");
+      setGame(game);
+    });
+
+    socket.on("winner-found", (game) => {
+      setGame(game);
+    });
   }, []);
 
   useEffect(() => {
-    socket.on("update-board", (game) => {
-      setGame(game);
-    });
   }, [game])
 
   const gameActions = {};
 
   gameActions.makeMove = async (position) => {
-    await socket.emit("make-move", { gameId: game._id, player: playerNumber, position: position });
+    if (game.playerMoveNext === playerNumber) {
+      await socket.emit("make-move", { gameId: game._id, player: playerNumber, position: position });
+    }
   }
 
   const handleCreateGameClick = async () => {
@@ -81,7 +88,7 @@ export default function GameRoom() {
 
   return (
     <GameContext.Provider value={value}>
-      <li>
+      <div>
         {isLoading ?
           <div>Loading</div>
           :
@@ -90,7 +97,7 @@ export default function GameRoom() {
             <Button onClick={handleCreateGameClick}>Create Game</Button>
         }
 
-      </li>
+      </div>
     </GameContext.Provider>
 
 
