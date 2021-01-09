@@ -37,7 +37,15 @@ export default function GameRoom() {
   useEffect(() => {
     fetchData();
     console.log(game);
+    console.log(playerNumber);
+    
   }, []);
+
+  useEffect(() => {
+    socket.on("update-board", (game) => {
+      setGame(game);
+    });
+  }, [game])
 
   const gameActions = {};
 
