@@ -7,11 +7,13 @@ import { makeStyles } from  "@material-ui/core";
 
 import IndexPage_LoadingBackdrop_ActionCreator from '../../redux/actionCreators/Index/IndexPage_LoadingBackdrop_ActionCreator';
 import IndexPage_ErrorPopUp_ActionCreator from '../../redux/actionCreators/Index/IndexPage_ErrorPopUp_ActionCreator';
+import IndexPage_RoomPasswordPrompt_ActionCreator from '../../redux/actionCreators/Index/IndexPage_RoomPasswordPrompt_ActionCreator';
 
 import CaroOnlineStore from '../../redux/store';
 
 import Axios from 'axios';
 import API from "../../services/api";
+import {useAuth} from '../../contexts/auth';
 
 const useStyles = makeStyles((theme) => ({
     parentPaper:{
@@ -34,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
         paddingBottom: theme.spacing(1),
         fontStyle: 'italic',
         overflowWrap: 'break-word',
-        textAlign: 'justify',
+        textAlign: 'center',
         color: 'white',
         maxWidth: '100%',
     },
@@ -50,6 +52,14 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(1),
         transition: "transform 0.15s ease-in-out" 
     },
+    gridItemLockOverImageBlock: {
+        position: 'absolute',
+        padding: theme.spacing(1),
+        backgroundColor: "#ffffffCC",
+        transition: "transform 0.15s ease-in-out",
+        width: "100%",
+        height: "100%"
+    },
     roomIcon: {
         maxWidth: '100%',
     },
@@ -64,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
     },
     roomImageOverlayFadeIn: {
         position: 'absolute',
-        zIndex: 1,
+        zIndex: 2,
         opacity: 0,
         backgroundColor: "#00000080",
         transition: 'opacity 0.15s',
@@ -73,7 +83,7 @@ const useStyles = makeStyles((theme) => ({
     },
     roomImageOverlayFadeOut: {
         position: 'absolute',
-        zIndex: 1,
+        zIndex: 2,
         opacity: 1,
         backgroundColor: "#00000080",
         transition: 'opacity 0.15s 0.15s',
@@ -118,6 +128,8 @@ export default function RoomGridItem({roomItem}){
     const [isRaised, setRaised] = useState(false);
     const [showRoomButtons, setShowRoomButtons] = useState(false);
 
+    const {authTokens} = useAuth();
+
     const handleJoinRoomClick = () => {
         if(!roomItem || !roomItem._id) return;
         CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(true));
@@ -125,13 +137,22 @@ export default function RoomGridItem({roomItem}){
             try{
                 const result = await Axios.get(API.url + `/api/room-management/room/${roomItem._id}`);
                 const {data} = result.data;
+                if(data.RoomType.NumberId === 2) {
+                    if(!authTokens){
+                        CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator("Bạn cần đăng ký để tham gia vào các phòng chơi có mật khẩu"));
+                        return;
+                    }
+                    CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
+                    CaroOnlineStore.dispatch(IndexPage_RoomPasswordPrompt_ActionCreator(data));
+                    return;
+                }
+
                 const roomLink = `/room/${data._id}`;
                 window.location.href=roomLink;
             } catch (e) {
                 CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator('Không thể tìm thấy phòng chơi này, bạn nên thử tải lại trang'));
                 console.log(e);
             }
-            CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
         })();
     }
 
@@ -147,7 +168,7 @@ export default function RoomGridItem({roomItem}){
                             {(roomItem && roomItem._id)? "Mã : " + roomItem._id : "<Mã phòng>"}
                         </Typography>
                     </Grid>
-                    <Grid container item xs={7}>
+                    <Grid container item xs={7} justify="center">
                         <Typography variant="subtitle2" className={classes.roomTitle}>
                             {(roomItem && roomItem.Name)? roomItem.Name : "<Tên phòng>"}
                         </Typography>
@@ -162,6 +183,15 @@ export default function RoomGridItem({roomItem}){
                                 className={classes.roomIcon} alt="RoomImage"/>
                             </Grid>
                         </Paper>
+                        {
+                            roomItem.RoomType.NumberId === 2?
+                            <Paper className={classes.gridItemLockOverImageBlock}>
+                                <Grid container item xs={12}>
+                                    <img src={process.env.PUBLIC_URL + 'Index/LockIcon.png'}
+                                    className={classes.roomIcon} alt="LockIcon"/>
+                                </Grid>
+                            </Paper> : null
+                        }
                         <Paper className={!showRoomButtons ? classes.roomImageOverlayFadeIn : classes.roomImageOverlayFadeOut}>
                             <Grid container item xs={12} className={classes.roomActions}>
                                 <Button variant="contained" color="primary" className={classes.goInRoomButton} onClick={handleJoinRoomClick}>
@@ -176,7 +206,7 @@ export default function RoomGridItem({roomItem}){
                         </Typography>
                     </Grid>
                     <Grid container item xs={12} className={classes.roomRankArea}>
-                        <Typography variant="body1" style={{fontStyle: 'italic'}}>
+                        <Typography variant="body2">
                             {roomItem && roomItem.Description? roomItem.Description : "Không có mô tả phòng"}
                         </Typography>
                     </Grid>

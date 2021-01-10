@@ -3,7 +3,8 @@ import IndexReducer from './Index/IndexReducer';
 const initialState = {
     IndexPage: {
         isLoading: false,
-        pageWideError: null
+        pageWideError: null,
+        roomToTypePassword: null
     }
 }
 

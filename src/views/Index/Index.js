@@ -19,6 +19,8 @@ import API from '../../services/api';
 
 import CaroOnlineStore from '../../redux/store';
 import IndexPage_ErrorPopUp_ActionCreator from '../../redux/actionCreators/Index/IndexPage_ErrorPopUp_ActionCreator';
+import IndexPage_RoomPasswordPrompt_ActionCreator from '../../redux/actionCreators/Index/IndexPage_RoomPasswordPrompt_ActionCreator';
+import IndexPage_LoadingBackdrop_ActionCreator from '../../redux/actionCreators/Index/IndexPage_LoadingBackdrop_ActionCreator'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -86,6 +88,11 @@ export default function Index() {
   const [createRoomError, setCreateRoomError] = useState(null);
   const [openBackdrop, setOpenBackdrop] = useState(false);
 
+  // State for room password typein dialog
+  const [roomToTypePassword, setRoomToTypePassword] = useState(null);
+  const [verifyPassword, setVerifyPassword] = useState(null);
+  const [verifyPasswordError, setVerifyPasswordError] = useState(null);
+
   //State for error dialog
   const [indexError, setIndexError] = useState(null);
 
@@ -104,7 +111,13 @@ export default function Index() {
   };
 
   const handleCloseErrorDialog = () => {
+    CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
     CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator(null));
+  }
+
+  const handleClosePasswordPromptDialog = () => {
+    CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
+    CaroOnlineStore.dispatch(IndexPage_RoomPasswordPrompt_ActionCreator(null));
   }
 
   useEffect(() => {
@@ -116,8 +129,15 @@ export default function Index() {
   useEffect(() => {
     CaroOnlineStore.subscribe(() => {
       const appState = CaroOnlineStore.getState();
-      setOpenBackdrop(appState.IndexPage.isLoading);
-      setIndexError(appState.IndexPage.pageWideError);
+      if(appState.IndexPage.isLoading !== openBackdrop){
+        setOpenBackdrop(appState.IndexPage.isLoading);
+      }
+      if(appState.IndexPage.pageWideError !== indexError){
+        setIndexError(appState.IndexPage.pageWideError);
+      }
+      if(appState.IndexPage.roomToTypePassword !== roomToTypePassword){
+        setRoomToTypePassword(appState.IndexPage.roomToTypePassword);
+      }
     });
   });
 
@@ -160,12 +180,9 @@ export default function Index() {
                   } catch (e) {
                     setOpenBackdrop(false);
                     setDisableForm(false);
-                    setCreateRoomError('Có lỗi xảy ra trong lúc đang tạo phòng');
+                    setCreateRoomError('Có lỗi xảy ra trong lúc đang tạo phòng, vui lòng kiểm tra lại thông tin đã nhập hoặc thử lại');
                     return;
                   }
-
-                  setOpenBackdrop(false);
-                  handleCloseCreateRoom();
                 }}>
                 <DialogContent>
                   <DialogContentText>
@@ -274,6 +291,86 @@ export default function Index() {
                   <CircularProgress color="inherit" />
                 </Backdrop>
               </Dialog>  
+
+              {/* Password type in dialog */}
+              <Dialog
+                fullWidth
+                maxWidth="sm"
+                open={roomToTypePassword ? true : false}
+                TransitionComponent={Transition}
+                keepMounted
+                onClose={handleClosePasswordPromptDialog}
+                aria-labelledby="alert-dialog-slide-title"
+                aria-describedby="alert-dialog-slide-description">
+                 <form onSubmit={async (e) => {
+                  e.preventDefault();
+                  setDisableForm(true);
+                  setOpenBackdrop(true);
+
+                  try{
+                    // api call here
+                    await Axios.post(API.url + `/api/room-management/room/check-can-join/${roomToTypePassword._id}`, {
+                      room_password: verifyPassword
+                    });
+
+                    const roomLink = `/room/${roomToTypePassword._id}`;
+                    window.location.href=roomLink;
+                  } catch (e) {
+                    setOpenBackdrop(false);
+                    setDisableForm(false);
+                    setVerifyPasswordError('Có lỗi xảy ra khi tham gia vào phòng chơi, vui lòng kiểm tra lại mật khẩu đã nhập hoặc refresh');
+                    return;
+                  }
+                }}>
+                   <DialogTitle>
+                  <Typography color="primary">
+                    {"Nhập mật khẩu"}
+                  </Typography>
+                </DialogTitle>
+                <DialogContent>
+                  <DialogContentText id="alert-dialog-slide-description">
+                    Vui lòng nhập mật khẩu để tham gia vào phòng
+                  </DialogContentText>
+                  <TextField
+                    variant="outlined"
+                    required
+                    autoFocus
+                    id="passwordVerifyField"
+                    label="Mật khẩu phòng"
+                    fullWidth
+                    type="password"
+                    placeholder="Nhập mật khẩu dài từ 6 ký tự trở lên"
+                    disabled={disableForm}
+                    value={verifyPassword ? verifyPassword : ''}
+                    onChange={(e) => {
+                      e.target.value = e.target.value.slice(0,Math.min(256, e.target.value.length));
+                      setVerifyPassword(e.target.value);
+                    }}
+                    margin="normal"
+                  />
+                  {verifyPasswordError ?
+                    <Grid container item xs={12} justify="center">
+                        <Alert severity="error">
+                          {verifyPasswordError}
+                        </Alert>
+                    </Grid> :  null
+                  }
+                </DialogContent>
+                <DialogActions>
+                <Button onClick={handleClosePasswordPromptDialog} color="secondary">
+                    Đóng
+                  </Button>
+                  <Button type="submit" color="primary" disabled={disableForm || !verifyPassword || verifyPassword.length < 6}>
+                    Vào
+                  </Button>
+                </DialogActions>
+                </form>
+                {/* Loading backdrop */}
+                <Backdrop open={openBackdrop} style={{color: "#fff" , zIndex: 100}}>
+                  <CircularProgress color="inherit" />
+                </Backdrop>
+              </Dialog>   
+
               {/* Error dialog */}
               <Dialog
                 fullWidth

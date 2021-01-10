@@ -23,7 +23,11 @@ export default function GameRoom() {
     const result = await Axios.get(API.url + `/api/room-management/room/${params.id}`);
     setRoomInfo(result.data.data);
 
-    
+    // Redirect to index if not logged in user tries to enter a private room
+    if(!authTokens && result.data.data.RoomType.NumberId === 2){
+      const roomLink = `/`;
+      window.location.href=roomLink;
+    }
 
     //get join result
     const joinResult = await Axios.get(API.url + `/api/room-management/room/join/${params.id}`);
@@ -34,7 +38,7 @@ export default function GameRoom() {
       setGame(joinResult.data.currentGame);
     }
     setLoading(false);
-  }, [params]);
+  }, [params, authTokens]);
 
   useEffect(() => {
     fetchData();
@@ -47,7 +51,7 @@ export default function GameRoom() {
     socket.on("winner-found", (game) => {
       setGame(game);
     });
-  }, []);
+  }, [fetchData]);
 
   useEffect(() => {
   }, [game])
