@@ -1,7 +1,7 @@
 import React from "react";
 import {useState} from 'react';
 
-import { Grid, Typography, Button} from "@material-ui/core";
+import { Grid, Typography, Button, Box} from "@material-ui/core";
 import { Paper} from "@material-ui/core";
 import { makeStyles } from  "@material-ui/core";
 
@@ -50,13 +50,13 @@ const useStyles = makeStyles((theme) => ({
     },
     gridItemImageBlock: {
         padding: theme.spacing(1),
-        transition: "transform 0.15s ease-in-out" 
+        //transition: "transform 0.15s ease-in-out" 
     },
     gridItemLockOverImageBlock: {
         position: 'absolute',
         padding: theme.spacing(1),
         backgroundColor: "#ffffffCC",
-        transition: "transform 0.15s ease-in-out",
+        //transition: "transform 0.15s ease-in-out",
         width: "100%",
         height: "100%"
     },
@@ -119,6 +119,18 @@ const useStyles = makeStyles((theme) => ({
     isNotPlayingStatus: {
         color: 'green',
         fontStyle: 'italic',
+    },
+    roomFullStatus: {
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2)
+    },
+    isFullStatus: {
+        backgroundColor: '#fcba03',
+        padding: 3
+    },
+    isNotFullStatus: {
+        backgroundColor: '#039dfc',
+        padding: 3
     }
 }));
 
@@ -172,6 +184,15 @@ export default function RoomGridItem({roomItem}){
                         <Typography variant="subtitle2" className={classes.roomTitle}>
                             {(roomItem && roomItem.Name)? roomItem.Name : "<Tên phòng>"}
                         </Typography>
+                    </Grid>
+                    <Grid container item xs={12} justify="center" className={classes.roomFullStatus}>
+                        <Box style={{width: "80%", border: "2px solid black", borderRadius: 15, justifyContent: "center"}} className={!roomItem.Player1 || !roomItem.Player2? classes.isNotFullStatus : classes.isFullStatus}>
+                            <Typography variant="body1" style={{color: 'white', fontWeight: 'bold', textAlign: "center"}}>
+                            {
+                                !roomItem.Player1 || !roomItem.Player2? "Còn trống" : "Đã đầy"
+                            }
+                            </Typography>
+                        </Box>
                     </Grid>
                     <Grid container item xs={12} className={classes.roomImageAndOverlayArea}
                     classes={{root: showRoomButtons ? classes.imageHovered : ""}}

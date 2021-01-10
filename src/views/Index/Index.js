@@ -180,13 +180,15 @@ export default function Index() {
                   } catch (e) {
                     setOpenBackdrop(false);
                     setDisableForm(false);
-                    setCreateRoomError('Có lỗi xảy ra trong lúc đang tạo phòng, vui lòng kiểm tra lại thông tin đã nhập hoặc thử lại');
+                    setCreateRoomError('Có lỗi xảy ra trong lúc đang tạo phòng, vui lòng kiểm tra lại thông tin đã nhập, kiểm tra xem phòng đã đầy hoặc thử lại');
                     return;
                   }
                 }}>
                 <DialogContent>
                   <DialogContentText>
-                    Nhập các thông tin dưới đây để tạo phòng chơi
+                    Nhập các thông tin dưới đây để tạo phòng chơi. Có 2 loại phòng:<br/>
+                    - PUBLIC: Mọi người đều có thể vào chơi và xem <br/>
+                    - PRIVATE: Chỉ có thể vào chơi nếu nhập mật khẩu và không cho phép dự thính
                   </DialogContentText>
                   <Grid container item xs={12} style={{
                     display: "flex",
@@ -237,7 +239,7 @@ export default function Index() {
                             </MenuItem>
                             <MenuItem value={2}>
                               <Typography variant="body1" style={{overflowWrap: 'break-word'}}>
-                                Riêng tư
+                                Private
                               </Typography>
                             </MenuItem>
                         </Select>
