@@ -6,33 +6,53 @@ import socket from '../../services/socket';
 import { useGame } from '../../contexts/game.js';
 import Axios from 'axios';
 import API from '../../services/api.js';
+import { Container } from '@material-ui/core';
 
 
 function Game() {
 
-  const { game } = useGame();
+  const { room, game } = useGame();
 
-  const [winnerMessage, setWinnerMessage] = useState("");
+  let winnerMessage;
 
-  const [playerNameTurn, setPlayerNameTurn] = useState("");
 
   // const fetchData = useCallback(async () => {
   //   if (game.winner !== 0) {
-  //     const result = await Axios.get(API.url + `/api/game/${game._id}/getWinner`);
-
-  //     if (result.data.announcement) {
-  //       setWinnerMessage(result.data.announcement);
-  //     }
+  //     if (game)
   //   }
 
   //   const username = await Axios.get(API.url + `/api/game/`)
   // }, []);
 
-  // useEffect(() => {
-  //   fetchData();
-  // }, [fetchData])
+  // // useEffect(() => {
+  // //   fetchData();
+  // // }, [fetchData])
 
-  const userTurnMessage = `It's turn of: ${playerNameTurn}`;
+  switch (game.winner) {
+    case 1:
+      winnerMessage = `${room.Player1.username} has won`;
+      break;
+
+    case 2:
+      winnerMessage = `${room.Player2.username} has won`;
+      break;
+  
+    case 3:
+      winnerMessage = "Tie, both have won";
+      break;
+    
+    default:
+      break;
+  }
+
+  let nextTurnUser = "";
+  if (game.playerMoveNext === 1) {
+    nextTurnUser = room.Player1.username;
+  }
+  else {
+    nextTurnUser = room.Player2.username;
+  }
+  let userTurnMessage = `It's turn of: ${nextTurnUser}`;
 
 
   // const [socket, setSocket] = useState();
@@ -49,11 +69,14 @@ function Game() {
   return (
 
     <div className="game">
-      <h1>{winnerMessage}</h1>
-      <div>{userTurnMessage}</div>
-      <div className="game-board">
-        <Board />
-      </div>
+      <Container>
+        <h1>{winnerMessage}</h1>
+        <div>{userTurnMessage}</div>
+        <div className="game-board">
+          <Board />
+        </div>
+      </Container>
+
     </div>
   );
 }
