@@ -19,24 +19,25 @@ export default function GameRoom() {
 
   const { authTokens } = useAuth();
 
-  const fetchData = useCallback(async () => {
-    const result = await Axios.get(API.url + `/api/room-management/room/${params.id}`);
-    setRoomInfo(result.data.data);
-
-    // Redirect to index if not logged in user tries to enter a private room
-    if(!authTokens && result.data.data.RoomType.NumberId === 2){
+  const fetchData = useCallback(async () => { 
+    //get join result
+    const joinResult = await Axios.get(API.url + `/api/room-management/room/join/${params.id}`);
+    console.log(joinResult.data.playerNumber);
+     // Redirect to index if not logged in user tries to enter a private room
+     if(!authTokens && joinResult.data.room.RoomType.NumberId === 2){
       const roomLink = `/`;
       window.location.href=roomLink;
     }
 
-    //get join result
-    const joinResult = await Axios.get(API.url + `/api/room-management/room/join/${params.id}`);
+    setRoomInfo(joinResult.data.room);
     setPlayerNumber(joinResult.data.playerNumber);
 
     if (joinResult.data.currentGame) {
       console.log(joinResult.data.currentGame);
       setGame(joinResult.data.currentGame);
     }
+
+    socket.emit("join-room", {roomId: joinResult.data.room._id});
     setLoading(false);
   }, [params, authTokens]);
 
@@ -51,15 +52,28 @@ export default function GameRoom() {
     socket.on("winner-found", (game) => {
       setGame(game);
     });
+
+    socket.on("update-room", (room) => {
+      setRoomInfo(room);
+    })
   }, [fetchData]);
 
-  useEffect(() => {
-  }, [game])
+  useEffect(()=> {
+    console.log("room: " + roomInfo);
+    console.log("game: " + game);
+    console.log("player number: " + playerNumber);
+  }, [roomInfo, game, playerNumber]);
+
+  // useEffect(() => {
+  //   if (game.winner != 0) {
+
+  //   }  
+  // }, [game])
 
   const gameActions = {};
 
   gameActions.makeMove = async (position) => {
-    if (game.playerMoveNext === playerNumber) {
+    if (game.playerMoveNext === playerNumber && game.winner === 0) {
       await socket.emit("make-move", { gameId: game._id, player: playerNumber, position: position });
     }
   }
@@ -85,10 +99,13 @@ export default function GameRoom() {
   }
 
   const value = {
+    room: roomInfo,
     game: game,
     playerNumber: playerNumber,
     gameActions: gameActions,
   }
+
+  console.log(roomInfo);
 
   return (
     <GameContext.Provider value={value}>
