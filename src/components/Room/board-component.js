@@ -1,36 +1,48 @@
 import React from 'react';
+import { useGame } from '../../contexts/game.js';
 import Square from './square-component.js'
 
-function Board(props) {
-    const maxRow = props.maxRow;
-    const maxCol = props.maxCol;
-    const board = [];
-    const renderSquare = (i) => {
-        return <Square 
-              key = {i}
-              value = {props.squares[i]}
-              highlight = {props.winnerHighLight.includes(i)} 
-              onClick = {() => props.onClick(i)}/>;
+function Board() {
+  const { game, gameActions } = useGame();
+
+  const maxRow = game.maxRow;
+  const maxCol = game.maxCol;
+
+  
+  const board = [];
+  const renderSquare = (i) => {
+    let value = "";
+
+    if (game.board[i] === 1) {
+      value = "X";
+    }
+    if (game.board[i] === 2) {
+      value = "O";
     }
 
-      for (let i = 0; i < maxRow; i++) {
-        const cols = [];
-        
-        for (let j = 0; j < maxCol; j++) {
-          cols.push(renderSquare(i * maxRow + j));
-        }
+    return <Square key={i} value={value} squareIndex = {i}/>;
+  }
 
-        board.push(
-        <div className="board-row">
-          {cols}
-        </div>);
-      }
+  for (let i = 0; i < maxRow; i++) {
+    const cols = [];
 
-      return (
-        <div>
-          {board}
-        </div>
-      );
+    for (let j = 0; j < maxCol; j++) {
+      cols.push(renderSquare(i * maxRow + j));
+    }
+
+    board.push(
+      <div className="board-row">
+        {cols}
+      </div>);
+  }
+
+  console.log(board);
+
+  return (
+    <div>
+      {board}
+    </div>
+  );
 }
 
 export default Board;
