@@ -74,6 +74,10 @@ export default function GameRoom() {
 
       setTimer(timerString);
     })
+
+    socket.on("timeout", (game) => {
+      setGame(game);
+    })
   }, []);
 
   useEffect(()=> {
