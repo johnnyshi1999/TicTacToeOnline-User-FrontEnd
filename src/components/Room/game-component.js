@@ -94,28 +94,6 @@ function Game(props) {
           <div className="game-board">
             <Board />
           </div>
-          <div style={{display: 'flex', flexDirection: 'column'}}>
-            <h3>History</h3>
-            {game.history.map((element) => {
-              let username ="";
-              if (element.player === 1) {
-                username = room.Player1.username;
-              }
-              else {
-                username = room.Player2.username;
-              }
-
-              const positionX = Math.floor(element.position / game.maxRow);
-              const positionY = element.position % game.maxCol;
-
-              const message = `${username} made move on position of (${positionX} , ${positionY})`;
-              return(
-              <p>
-                {message}
-              </p>);
-
-            })}
-          </div>
         </div>
 
       </Container>

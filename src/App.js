@@ -14,6 +14,8 @@ import SignUp from "./views/SignUp/SignUp";
 import Ranking from "./views/Ranking/Ranking";
 import GameRoom from "./views/GameRoom/gameRoom-component";
 
+import PlayerCard from "./components/PlayerCard/playerCard-component";
+
 
 function App() {
   
@@ -48,6 +50,9 @@ function App() {
                 {/* Test area */}
                 <Route exact path="/test/chatBox">
                   <ChatBox />
+                </Route>
+                <Route exact path="/test/characterCard">
+                  <PlayerCard></PlayerCard>
                 </Route>
               </Switch>
             </main>

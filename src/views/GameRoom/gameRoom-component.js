@@ -13,6 +13,7 @@ export default function GameRoom() {
   const params = useParams();
 
   const [roomInfo, setRoomInfo] = useState(null);
+
   const [game, setGame] = useState(null);
   const [playerNumber, setPlayerNumber] = useState(0);
   const [timer, setTimer] = useState(3 * 60);
@@ -25,11 +26,12 @@ export default function GameRoom() {
 
   }
   const fetchData = useCallback(async () => {
-    
+
     //get join result
     const joinResult = await Axios.get(API.url + `/api/room-management/room/join/${params.id}`);
     console.log(joinResult.data.playerNumber);
     setRoomInfo(joinResult.data.room);
+
     setPlayerNumber(joinResult.data.playerNumber);
 
     if (joinResult.data.currentGame) {
@@ -37,7 +39,7 @@ export default function GameRoom() {
       setGame(joinResult.data.currentGame);
     }
 
-    socket.emit("join-room", {roomId: joinResult.data.room._id});
+    socket.emit("join-room", { roomId: joinResult.data.room._id });
 
     // if (!joinResult.data.room.Player2 || !joinResult.data.room.Player1) {
     //   setWaiting(true);
@@ -70,7 +72,7 @@ export default function GameRoom() {
     })
 
     socket.on("countdown", (countdown) => {
-      const timerString = `${Math.floor(countdown/ 60)} : ${countdown % 60}`;
+      const timerString = `${Math.floor(countdown / 60)} : ${countdown % 60}`;
 
       setTimer(timerString);
     })
@@ -81,7 +83,7 @@ export default function GameRoom() {
     })
   }, []);
 
-  useEffect(()=> {
+  useEffect(() => {
     console.log("room: " + roomInfo);
     console.log("game: " + game);
     console.log("player number: " + playerNumber);
@@ -116,7 +118,7 @@ export default function GameRoom() {
     }
   }
 
-  gameActions.createGame = async() => {
+  gameActions.createGame = async () => {
     if (!authTokens) return;
 
     if (isWaiting) {
@@ -134,7 +136,7 @@ export default function GameRoom() {
       const result = await Axios.post(API.url + "/game/create", data);
 
       setGame(result.data);
-      socket.emit("new-game", {gameId: result.data._id});
+      socket.emit("new-game", { gameId: result.data._id });
       setLoading(false);
 
     } catch (error) {
@@ -163,8 +165,36 @@ export default function GameRoom() {
           <div>Loading</div>
           :
           game ?
-            <Game timer = {timer}></Game> :
-            <Button onClick={handleCreateGameClick}>{isWaiting? "Waiting for player" : "Create Game"}</Button>
+            <div style={{ display: 'flex' }}>
+              <Game timer={timer}></Game>
+              <div style={{display: 'flex', flexDirection: 'column'}}>
+                                
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <h3>History</h3>
+                {game.history.map((element) => {
+                  let username = "";
+                  if (element.player === 1) {
+                    username = roomInfo.Player1.username;
+                  }
+                  else {
+                    username = roomInfo.Player2.username;
+                  }
+
+                  const positionX = Math.floor(element.position / game.maxRow);
+                  const positionY = element.position % game.maxCol;
+
+                  const message = `${username} made move on position of (${positionX} , ${positionY})`;
+                  return (
+                    <p>
+                      {message}
+                    </p>);
+
+                })}
+              </div>
+            </div>
+            :
+            <Button onClick={handleCreateGameClick}>{isWaiting ? "Waiting for player" : "Create Game"}</Button>
         }
 
       </div>
