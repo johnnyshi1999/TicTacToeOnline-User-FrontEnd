@@ -143,8 +143,8 @@ export default function Index() {
 
     const roomID = localStorage.getItem("isPlayingInRoomId");
     if(roomID){
-      CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator('Đang điều hướng tới phòng chơi...'));
-      window.location.href = `/room/${roomID}`;
+      // CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator('Đang điều hướng tới phòng chơi...'));
+      // window.location.href = `/room/${roomID}`;
     }
 
     return () => {
