@@ -27,11 +27,18 @@ export default function GameRoom() {
   const [isLoadingPrompt, setLoadingPrompt] = useState("Đang tải phòng chơi, vui lòng chờ");
 
   const [errorDialogText, setErrorDialogText] = useState(null);
+  const [timer, setTimer] = useState(3 * 60);
+  const [isWaiting, setWaiting] = useState(true);
 
   const { authTokens } = useAuth();
   const history = useHistory();
 
-  const fetchData = useCallback(async () => { 
+  const startTimer = () => {
+
+  }
+
+  const fetchData = useCallback(async () => {
+    
     //get join result
     try{
       const joinResult = await Axios.get(API.url + `/api/room-management/room/join/${params.id}`);
@@ -112,10 +119,37 @@ export default function GameRoom() {
       //   return;
       // }
       setRoomInfo(room);
-    });
+    })
 
-    
-  }, [fetchData]);
+    socket.on("update-new-game", (game) => {
+      console.log("on update-new-game");
+      setGame(game);
+    })
+
+    socket.on("countdown", (countdown) => {
+      const timerString = `${Math.floor(countdown/ 60)} : ${countdown % 60}`;
+
+      setTimer(timerString);
+    })
+
+    socket.on("timeout", (game) => {
+      setGame(game);
+      console.log(game);
+    })
+  }, []);
+
+  useEffect(()=> {
+    console.log("room: " + roomInfo);
+    console.log("game: " + game);
+    console.log("player number: " + playerNumber);
+
+    if (!roomInfo || !roomInfo.Player1 || !roomInfo.Player2) {
+      setWaiting(true);
+    }
+    else {
+      setWaiting(false);
+    }
+  }, [roomInfo, game, playerNumber]);
 
   useEffect(() => {
     return () => {
@@ -163,13 +197,24 @@ export default function GameRoom() {
   const gameActions = {};
 
   gameActions.makeMove = async (position) => {
+
+    //already marked
+    if (game.board[position] !== 0) {
+      return;
+    }
     if (game.playerMoveNext === playerNumber && game.winner === 0) {
+      console.log(playerNumber);
       await socket.emit("make-move", { gameId: game._id, player: playerNumber, position: position });
     }
   }
 
-  const handleCreateGameClick = async () => {
+  gameActions.createGame = async() => {
     if (!authTokens) return;
+
+    if (isWaiting) {
+      return;
+    }
+
     const data = {
       roomId: roomInfo._id,
       maxCol: 20,
@@ -181,11 +226,17 @@ export default function GameRoom() {
       const result = await Axios.post(API.url + "/game/create", data);
 
       setGame(result.data);
+      
+      socket.emit("new-game", {gameId: result.data._id});
       setLoadingPrompt(null);
     } catch (error) {
       console.log(error);
       setLoadingPrompt(null);
     }
+  }
+
+  const handleCreateGameClick = async () => {
+    await gameActions.createGame();
   }
 
   const value = {
@@ -198,9 +249,10 @@ export default function GameRoom() {
   return (
     <GameContext.Provider value={value}>
       <div>
-        {   game ?
-            <Game></Game> :
-            <Button onClick={handleCreateGameClick}>Create Game</Button>
+        {   
+        game ?
+            <Game timer = {timer}></Game> :
+            <Button onClick={handleCreateGameClick}>{isWaiting? "Waiting for player" : "Create Game"}</Button>
         }
         {/* Error dialog */}
         <Dialog
