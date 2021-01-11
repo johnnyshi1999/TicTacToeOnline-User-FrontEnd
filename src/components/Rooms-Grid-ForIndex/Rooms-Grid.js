@@ -59,23 +59,32 @@ export default function RoomsGrid({loadingCallback}){
     }, [currentPage]);
 
     useEffect(() => {
+        const updateGridStatus = (rooms) => {
+            setPagesLoading(true);
+            const pagesCount = parseInt(Math.ceil(rooms.length/maxRoomPerPage));
+            setNumOfPages(pagesCount);
+            if(currentPage >= pagesCount){
+                setRoomsLoading(true);
+                const newCurrentPage = currentPage > pagesCount ? pagesCount : currentPage;
+                const start = (currentPage - 1)*maxRoomPerPage;
+                setRooms(rooms.slice(start, Math.min(start + maxRoomPerPage, rooms.length)));
+                if(newCurrentPage !== currentPage){
+                    setCurrentPage(newCurrentPage);
+                }
+                setRoomsLoading(false);
+            }         
+            setPagesLoading(false);
+        }
         if(socket){
             socket.on('new-room-created', ({rooms}) => {
-                setPagesLoading(true);
-                const pagesCount = parseInt(Math.ceil(rooms.length/maxRoomPerPage));
-                setNumOfPages(pagesCount);
-                if(currentPage >= pagesCount){
-                    setRoomsLoading(true);
-                    const newCurrentPage = currentPage > pagesCount ? pagesCount : currentPage;
-                    const start = (currentPage - 1)*maxRoomPerPage;
-                    setRooms(rooms.slice(start, Math.min(start + maxRoomPerPage, rooms.length)));
-                    if(newCurrentPage !== currentPage){
-                        setCurrentPage(newCurrentPage);
-                    }
-                    setRoomsLoading(false);
-                }         
-                setPagesLoading(false);
+                updateGridStatus(rooms);
             });
+            socket.on('one-room-got-deleted', ({rooms}) => {
+                updateGridStatus(rooms);
+            });
+            socket.on('one-room-got-updated', ({rooms}) => {
+                updateGridStatus(rooms);
+            })
         }
     }, [currentPage]);
 
