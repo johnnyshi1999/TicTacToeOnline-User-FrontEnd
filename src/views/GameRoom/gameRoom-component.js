@@ -15,11 +15,15 @@ export default function GameRoom() {
   const [roomInfo, setRoomInfo] = useState(null);
   const [game, setGame] = useState(null);
   const [playerNumber, setPlayerNumber] = useState(0);
+  const [timer, setTimer] = useState(3 * 60);
   const [isLoading, setLoading] = useState(true);
   const [isWaiting, setWaiting] = useState(true);
 
   const { authTokens } = useAuth();
 
+  const startTimer = () => {
+
+  }
   const fetchData = useCallback(async () => {
     
     //get join result
@@ -63,6 +67,12 @@ export default function GameRoom() {
     socket.on("update-new-game", (game) => {
       console.log("on update-new-game");
       setGame(game);
+    })
+
+    socket.on("countdown", (countdown) => {
+      const timerString = `${Math.floor(countdown/ 60)} : ${countdown % 60}`;
+
+      setTimer(timerString);
     })
   }, []);
 
@@ -121,6 +131,7 @@ export default function GameRoom() {
       setGame(result.data);
       socket.emit("new-game", {gameId: result.data._id});
       setLoading(false);
+
     } catch (error) {
       console.log(error);
       setLoading(false);
@@ -147,7 +158,7 @@ export default function GameRoom() {
           <div>Loading</div>
           :
           game ?
-            <Game></Game> :
+            <Game timer = {timer}></Game> :
             <Button onClick={handleCreateGameClick}>{isWaiting? "Waiting for player" : "Create Game"}</Button>
         }
 

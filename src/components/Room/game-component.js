@@ -9,7 +9,7 @@ import API from '../../services/api.js';
 import { Button, Container } from '@material-ui/core';
 
 
-function Game() {
+function Game(props) {
 
   const { room, game, gameActions} = useGame();
 
@@ -58,6 +58,11 @@ function Game() {
     await gameActions.createGame();
   }
 
+  useEffect(() => {
+    if(socket) {
+    }
+  }, [])
+
 
   // const [socket, setSocket] = useState();
 
@@ -83,6 +88,7 @@ function Game() {
         </div>
 
         <div>{userTurnMessage}</div>
+        <div>{"Time remaining: " + props.timer}</div>
         <div className="game-board">
           <Board />
         </div>
