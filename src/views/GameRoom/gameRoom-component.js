@@ -77,6 +77,7 @@ export default function GameRoom() {
 
     socket.on("timeout", (game) => {
       setGame(game);
+      console.log(game);
     })
   }, []);
 
