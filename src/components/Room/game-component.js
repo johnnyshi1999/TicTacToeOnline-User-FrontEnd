@@ -105,11 +105,15 @@ function Game(props) {
                 username = room.Player2.username;
               }
 
-              const message = `${username} made move on position of ${element.position}`;
+              const positionX = Math.floor(element.position / game.maxRow);
+              const positionY = element.position % game.maxCol;
+
+              const message = `${username} made move on position of (${positionX} , ${positionY})`;
               return(
-              <ButtonBase>
+              <p>
                 {message}
-              </ButtonBase>);
+              </p>);
+
             })}
           </div>
         </div>
