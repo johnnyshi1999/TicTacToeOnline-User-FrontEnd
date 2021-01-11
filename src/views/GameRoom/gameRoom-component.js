@@ -51,6 +51,7 @@ export default function GameRoom() {
 
       setRoomInfo(joinResult.data.room);
       setPlayerNumber(joinResult.data.playerNumber);
+      console.log(joinResult.data.playerNumber);
 
       if (joinResult.data.currentGame) {
         setGame(joinResult.data.currentGame);
@@ -68,6 +69,7 @@ export default function GameRoom() {
       socket.emit("join-room", {roomId: joinResult.data.room._id});
 
       setLoadingPrompt(null);
+      
     } catch(e) {
       console.log(e);
       localStorage.removeItem("isPlayingInRoomId");
@@ -135,8 +137,12 @@ export default function GameRoom() {
     socket.on("timeout", (game) => {
       setGame(game);
       console.log(game);
-    })
-  }, []);
+    });
+
+    socket.on("disconnect", () => {
+      
+    });
+  }, [fetchData]);
 
   useEffect(()=> {
     console.log("room: " + roomInfo);

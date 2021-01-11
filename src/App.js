@@ -17,7 +17,6 @@ import GameRoom from "./views/GameRoom/gameRoom-component";
 import {Backdrop, Grid, Typography, CircularProgress} from '@material-ui/core';
 
 import CaroOnlineStore from './redux/store';
-import socket from "./services/socket.js";
 
 function App() {
   const [isLoadingPrompt, setLoadingPrompt] = useState(null);
