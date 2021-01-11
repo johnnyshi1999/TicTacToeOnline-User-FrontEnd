@@ -6,12 +6,12 @@ import socket from '../../services/socket';
 import { useGame } from '../../contexts/game.js';
 import Axios from 'axios';
 import API from '../../services/api.js';
-import { Container } from '@material-ui/core';
+import { Button, Container } from '@material-ui/core';
 
 
 function Game() {
 
-  const { room, game } = useGame();
+  const { room, game, gameActions} = useGame();
 
   let winnerMessage;
 
@@ -36,11 +36,11 @@ function Game() {
     case 2:
       winnerMessage = `${room.Player2.username} has won`;
       break;
-  
+
     case 3:
       winnerMessage = "Tie, both have won";
       break;
-    
+
     default:
       break;
   }
@@ -53,6 +53,10 @@ function Game() {
     nextTurnUser = room.Player2.username;
   }
   let userTurnMessage = `It's turn of: ${nextTurnUser}`;
+
+  const createGameClickHandle = async() => {
+    await gameActions.createGame();
+  }
 
 
   // const [socket, setSocket] = useState();
@@ -70,7 +74,14 @@ function Game() {
 
     <div className="game">
       <Container>
-        <h1>{winnerMessage}</h1>
+        <div>
+          <h1>{winnerMessage}</h1>
+          {game.winner === 0 ?
+            <div></div> :
+            <Button onClick = {createGameClickHandle}>Create another game</Button>
+          }
+        </div>
+
         <div>{userTurnMessage}</div>
         <div className="game-board">
           <Board />

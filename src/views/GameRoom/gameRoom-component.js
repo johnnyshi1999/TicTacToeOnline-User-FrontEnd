@@ -16,6 +16,7 @@ export default function GameRoom() {
   const [game, setGame] = useState(null);
   const [playerNumber, setPlayerNumber] = useState(0);
   const [isLoading, setLoading] = useState(true);
+  const [isWaiting, setWaiting] = useState(true);
 
   const { authTokens } = useAuth();
 
@@ -33,6 +34,13 @@ export default function GameRoom() {
     }
 
     socket.emit("join-room", {roomId: joinResult.data.room._id});
+
+    // if (!joinResult.data.room.Player2 || !joinResult.data.room.Player1) {
+    //   setWaiting(true);
+    // }
+    // else {
+    //   setWaiting(false);
+    // }
     setLoading(false);
   }, [params]);
 
@@ -51,12 +59,24 @@ export default function GameRoom() {
     socket.on("update-room", (room) => {
       setRoomInfo(room);
     })
+
+    socket.on("update-new-game", (game) => {
+      console.log("on update-new-game");
+      setGame(game);
+    })
   }, []);
 
   useEffect(()=> {
     console.log("room: " + roomInfo);
     console.log("game: " + game);
     console.log("player number: " + playerNumber);
+
+    if (!roomInfo || !roomInfo.Player1 || !roomInfo.Player2) {
+      setWaiting(true);
+    }
+    else {
+      setWaiting(false);
+    }
   }, [roomInfo, game, playerNumber]);
 
   // useEffect(() => {
@@ -65,16 +85,29 @@ export default function GameRoom() {
   //   }  
   // }, [game])
 
+
+
   const gameActions = {};
 
   gameActions.makeMove = async (position) => {
+
+    //already marked
+    if (game.board[position] !== 0) {
+      return;
+    }
     if (game.playerMoveNext === playerNumber && game.winner === 0) {
+      console.log(playerNumber);
       await socket.emit("make-move", { gameId: game._id, player: playerNumber, position: position });
     }
   }
 
-  const handleCreateGameClick = async () => {
+  gameActions.createGame = async() => {
     if (!authTokens) return;
+
+    if (isWaiting) {
+      return;
+    }
+
     const data = {
       roomId: roomInfo._id,
       maxCol: 20,
@@ -86,11 +119,16 @@ export default function GameRoom() {
       const result = await Axios.post(API.url + "/game/create", data);
 
       setGame(result.data);
+      socket.emit("new-game", {gameId: result.data._id});
       setLoading(false);
     } catch (error) {
       console.log(error);
       setLoading(false);
     }
+  }
+
+  const handleCreateGameClick = async () => {
+    await gameActions.createGame();
   }
 
   const value = {
@@ -110,7 +148,7 @@ export default function GameRoom() {
           :
           game ?
             <Game></Game> :
-            <Button onClick={handleCreateGameClick}>Create Game</Button>
+            <Button onClick={handleCreateGameClick}>{isWaiting? "Waiting for player" : "Create Game"}</Button>
         }
 
       </div>
