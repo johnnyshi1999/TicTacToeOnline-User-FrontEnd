@@ -1,49 +1,68 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import API from "../../services/api";
-import { Button, Typography, Dialog, Slide, Backdrop, Grid, CircularProgress, DialogActions, DialogTitle, DialogContent, DialogContentText} from '@material-ui/core';
+import { Button, Typography, Dialog, Slide, Backdrop, Grid, CircularProgress, DialogActions, DialogTitle, DialogContent, DialogContentText, makeStyles } from '@material-ui/core';
 import './index.css';
 import { useParams } from 'react-router';
-import {useHistory} from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import Axios from 'axios';
 import { GameContext } from '../../contexts/game';
 import socket from '../../services/socket';
 import Game from "../../components/Room/game-component";
 import { useAuth } from '../../contexts/auth';
+import PlayerCard from '../../components/PlayerCard/playerCard-component';
 
 import CaroOnlineStore from '../../redux/store';
 import Global_IsAwaitingServerResponse_ActionCreator from '../../redux/actionCreators/Global_IsAwaitingServerResponse_ActionCreator';
 import IndexPage_ErrorPopUp_ActionCreator from '../../redux/actionCreators/Index/IndexPage_ErrorPopUp_ActionCreator';
+import RoomTab from '../../components/Room/RoomTab-component';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
+const useStyles = makeStyles((theme) => ({
+  roomTab: {
+    marginTop: theme.spacing(3),
+  },
+
+})); 
+
+
 export default function GameRoom() {
+  const classes = useStyles();
   const params = useParams();
 
   const [roomInfo, setRoomInfo] = useState(null);
+  const [chat, setChat] = useState(null);
+
   const [game, setGame] = useState(null);
   const [playerNumber, setPlayerNumber] = useState(0);
   const [isLoadingPrompt, setLoadingPrompt] = useState("Đang tải phòng chơi, vui lòng chờ");
 
   const [errorDialogText, setErrorDialogText] = useState(null);
-  const [timer, setTimer] = useState(3 * 60);
+  const [timer, setTimer] = useState("");
   const [isWaiting, setWaiting] = useState(true);
+
+  const [username, setUsername] = useState("");
 
   const { authTokens } = useAuth();
   const history = useHistory();
 
-  const startTimer = () => {
-
-  }
-
   const fetchData = useCallback(async () => {
+
     //get join result
-    try{
+    try {
       const joinResult = await Axios.get(API.url + `/api/room-management/room/join/${params.id}`);
+      // Redirect to index if not logged in user tries to enter a private room
+      if (!authTokens && joinResult.data.room.RoomType.NumberId === 2) {
+        const roomLink = `/`;
+        window.location.href = roomLink;
+        return;
+      }
 
       setRoomInfo(joinResult.data.room);
       setPlayerNumber(joinResult.data.playerNumber);
+      setUsername(joinResult.data.username);
 
       if (joinResult.data.currentGame) {
         setGame(joinResult.data.currentGame);
@@ -51,9 +70,9 @@ export default function GameRoom() {
 
       // Check user is logged in, if he is, check currentRoomId if not have and user is a player in this room
       // if he is player 1 or 2 in the room
-      if(authTokens){
+      if (authTokens) {
         const currentRoom_Id = localStorage.getItem("isPlayingInRoomId");
-        if(!currentRoom_Id && joinResult.data.playerNumber !== 0){
+        if (!currentRoom_Id && joinResult.data.playerNumber !== 0) {
           localStorage.setItem("isPlayingInRoomId", params.id);
         }
       }
@@ -75,8 +94,8 @@ export default function GameRoom() {
       socket.emit("join-room", joinRoomPayload);
 
       setLoadingPrompt(null);
-      
-    } catch(e) {
+
+    } catch (e) {
       console.log(e);
       localStorage.removeItem("isPlayingInRoomId");
       setLoadingPrompt(null);
@@ -114,7 +133,7 @@ export default function GameRoom() {
     })
 
     socket.on("countdown", (countdown) => {
-      const timerString = `${Math.floor(countdown/ 60)} : ${countdown % 60}`;
+      const timerString = `${Math.floor(countdown / 60)} : ${countdown % 60}`;
 
       setTimer(timerString);
     })
@@ -122,6 +141,10 @@ export default function GameRoom() {
     socket.on("timeout", (game) => {
       setGame(game);
       console.log(game);
+    });
+
+    socket.on("update-chat", (chat) => {
+      setChat(chat);
     });
 
     socket.on('room-processing-error', (error) => {
@@ -140,7 +163,7 @@ export default function GameRoom() {
     });
   }, [history, socket, playerNumber]);
 
-  useEffect(()=> {
+  useEffect(() => {
     console.log("room: " + roomInfo);
     console.log("game: " + game);
     console.log("player number: " + playerNumber);
@@ -218,7 +241,7 @@ export default function GameRoom() {
     }
   }
 
-  gameActions.createGame = async() => {
+  gameActions.createGame = async () => {
     if (!authTokens) return;
 
     if (isWaiting) {
@@ -236,8 +259,8 @@ export default function GameRoom() {
       const result = await Axios.post(API.url + "/game/create", data);
 
       setGame(result.data);
-      
-      socket.emit("new-game", {gameId: result.data._id});
+
+      socket.emit("new-game", { gameId: result.data._id });
       setLoadingPrompt(null);
     } catch (error) {
       console.log(error);
@@ -252,6 +275,8 @@ export default function GameRoom() {
   const value = {
     room: roomInfo,
     game: game,
+    chat: chat,
+    username: username,
     playerNumber: playerNumber,
     gameActions: gameActions,
   }
@@ -259,42 +284,54 @@ export default function GameRoom() {
   return (
     <GameContext.Provider value={value}>
       <div>
-        {   
-        game ?
-            <Game timer = {timer}></Game> :
-            <Button onClick={handleCreateGameClick}>{isWaiting? "Waiting for player" : "Create Game"}</Button>
+        {
+          game ?
+            <div style={{ display: 'flex' }}>
+              <Game timer={timer}></Game>
+
+              <div className={classes.roomTab}>
+                <RoomTab>
+                </RoomTab>
+              </div>
+
+
+            </div>
+            :
+            <Button onClick={handleCreateGameClick}>{isWaiting ? "Waiting for player" : "Create Game"}</Button>
         }
-        {/* Error dialog */}
+
+
+
         <Dialog
-        fullWidth
-        maxWidth="sm"
-        open={errorDialogText ? true : false}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleErrorDialogClose}
-        aria-labelledby="alert-dialog-slide-title"
-        aria-describedby="alert-dialog-slide-description">
-        <DialogTitle>
-          <Typography color="secondary">
-            {"Đã xảy ra lỗi..."}
-          </Typography>
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-slide-description">
-            {errorDialogText}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleErrorDialogClose} color="secondary">
-            Đóng
+          fullWidth
+          maxWidth="sm"
+          open={errorDialogText ? true : false}
+          TransitionComponent={Transition}
+          keepMounted
+          onClose={handleErrorDialogClose}
+          aria-labelledby="alert-dialog-slide-title"
+          aria-describedby="alert-dialog-slide-description">
+          <DialogTitle>
+            <Typography color="secondary">
+              {"Đã xảy ra lỗi..."}
+            </Typography>
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-slide-description">
+              {errorDialogText}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleErrorDialogClose} color="secondary">
+              Đóng
           </Button>
-        </DialogActions>
+          </DialogActions>
         </Dialog>
-        <Backdrop open={isLoadingPrompt !== null} style={{color: "#fff" , zIndex: 100, justifyContent: "center"}}>
+        <Backdrop open={isLoadingPrompt !== null} style={{ color: "#fff", zIndex: 100, justifyContent: "center" }}>
           <Grid container item justify="center">
-            <Grid item xs={12}><CircularProgress color="inherit" /></Grid>     
+            <Grid item xs={12}><CircularProgress color="inherit" /></Grid>
             <Grid item xs={12}>
-              <Typography variant="body1" style={{color: 'white'}}>
+              <Typography variant="body1" style={{ color: 'white' }}>
                 {isLoadingPrompt}
               </Typography>
             </Grid>
