@@ -69,7 +69,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function RankingTable() {
+export default function RankingTable({rankData}) {
   const classes = useStyles();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);

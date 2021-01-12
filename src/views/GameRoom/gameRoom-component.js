@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import API from "../../services/api";
 import { Button, Typography, Dialog, Slide, Backdrop, Grid, CircularProgress, DialogActions, DialogTitle, DialogContent, DialogContentText, makeStyles } from '@material-ui/core';
 import './index.css';
@@ -43,7 +43,7 @@ export default function GameRoom() {
   const [timer, setTimer] = useState("");
   const [isWaiting, setWaiting] = useState(true);
 
-  let isRepeatedTab = false;
+  let isRepeatedTab = useRef(false);
   const [username, setUsername] = useState("");
 
   const { authTokens } = useAuth();
@@ -107,6 +107,8 @@ export default function GameRoom() {
   useEffect(() => {
     CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
 
+    isRepeatedTab.current = false;
+
     fetchData();
 
     socket.on("update-board", (game) => {
@@ -160,13 +162,13 @@ export default function GameRoom() {
   useEffect(() => {
     socket.on('disconnect-other-tabs', ({player, roomId}) => {
       if(playerNumber === player){
-        isRepeatedTab = true;
         CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator("Vui lòng kết nối lại nếu muốn chơi tiếp..."));
         CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
         history.push('/');
+        return;
       }
     });
-  }, [history, socket, playerNumber]);
+  }, [history, playerNumber]);
 
   useEffect(() => {
     console.log("room: " + roomInfo);
@@ -213,11 +215,7 @@ export default function GameRoom() {
 
   useEffect(() => {
     window.onbeforeunload = () => {
-      if(!isRepeatedTab){
-        callBackToServerOnQuit(); 
-      }else{
-        CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
-      }
+      callBackToServerOnQuit();
     }
     return () => {
       window.onbeforeunload = () => {
@@ -226,6 +224,7 @@ export default function GameRoom() {
       if(!isRepeatedTab){
         callBackToServerOnQuit(); 
       }else{
+        isRepeatedTab.current = false;
         CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
       }
     }
@@ -342,7 +341,7 @@ export default function GameRoom() {
           </DialogActions>
         </Dialog>
         <Backdrop open={isLoadingPrompt !== null} style={{ color: "#fff", zIndex: 100, justifyContent: "center" }}>
-          <Grid container item justify="center">
+          <Grid container item justify="center" width="100%">
             <Grid item xs={12}><CircularProgress color="inherit" /></Grid>
             <Grid item xs={12}>
               <Typography variant="body1" style={{ color: 'white' }}>
