@@ -14,7 +14,6 @@ import PlayerCard from '../../components/PlayerCard/playerCard-component';
 import CaroOnlineStore from '../../redux/store';
 import Global_IsAwaitingServerResponse_ActionCreator from '../../redux/actionCreators/Global_IsAwaitingServerResponse_ActionCreator';
 import IndexPage_ErrorPopUp_ActionCreator from '../../redux/actionCreators/Index/IndexPage_ErrorPopUp_ActionCreator';
-import History from '../../components/Room/history-component';
 import RoomTab from '../../components/Room/RoomTab-component';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -34,21 +33,20 @@ export default function GameRoom() {
   const params = useParams();
 
   const [roomInfo, setRoomInfo] = useState(null);
+  const [chat, setChat] = useState(null);
 
   const [game, setGame] = useState(null);
   const [playerNumber, setPlayerNumber] = useState(0);
   const [isLoadingPrompt, setLoadingPrompt] = useState("Đang tải phòng chơi, vui lòng chờ");
 
   const [errorDialogText, setErrorDialogText] = useState(null);
-  const [timer, setTimer] = useState(3 * 60);
+  const [timer, setTimer] = useState("");
   const [isWaiting, setWaiting] = useState(true);
+
+  const [username, setUsername] = useState("");
 
   const { authTokens } = useAuth();
   const history = useHistory();
-
-  const startTimer = () => {
-
-  }
 
   const fetchData = useCallback(async () => {
 
@@ -62,8 +60,12 @@ export default function GameRoom() {
         return;
       }
 
+      console.log("join result:");
+      console.log(joinResult.data);
+
       setRoomInfo(joinResult.data.room);
       setPlayerNumber(joinResult.data.playerNumber);
+      setUsername(joinResult.data.username);
 
       if (joinResult.data.currentGame) {
         setGame(joinResult.data.currentGame);
@@ -149,6 +151,10 @@ export default function GameRoom() {
     socket.on("timeout", (game) => {
       setGame(game);
       console.log(game);
+    });
+
+    socket.on("update-chat", (chat) => {
+      setChat(chat);
     });
 
     socket.on("disconnect", () => {
@@ -260,6 +266,8 @@ export default function GameRoom() {
   const value = {
     room: roomInfo,
     game: game,
+    chat: chat,
+    username: username,
     playerNumber: playerNumber,
     gameActions: gameActions,
   }

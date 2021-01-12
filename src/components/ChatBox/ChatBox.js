@@ -1,8 +1,10 @@
-import { IconButton, InputBase, Paper } from "@material-ui/core";
+import { IconButton, InputBase, Paper, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import React from "react";
+import React, { useRef, useState } from "react";
 import MessageItem from "./MessageItem";
 import SendIcon from "@material-ui/icons/Send";
+import { useGame } from "../../contexts/game";
+import socket from "../../services/socket";
 
 const chatData = [
   {
@@ -59,12 +61,17 @@ const useStyles = makeStyles((theme) => ({
     gridTemplateColumns: "1fr",
   },
   msgContainer: {
-    gridRow: "1/5",
     marginBottom: theme.spacing(1),
     display: "flex",
     flexFlow: "column",
     overflow: "auto",
     maxHeight: 500,
+  },
+
+  message: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1),
+    marginLeft: theme.spacing(1),
   },
   bottomBar: {
     gridRow: "5/6",
@@ -86,23 +93,67 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ChatBox() {
+  // const { username } = useGame();
+
+  // const username = "hellothere"
+
+  const { username, room, chat } = useGame();
+
+  const msgContentRef = useRef();
+
+  const handleClickSend = () => {
+
+
+
+    // if (message.length > 0) {
+    //   socket.emit("send-chat-message", { message: message, username: username });
+    // }
+
+    const msg = msgContentRef.current.value;
+
+    const trimmedMesaage = msg.trim();
+
+    if (trimmedMesaage.length > 0) {
+      socket.emit("send-chat-message", { roomId: room._id, message: trimmedMesaage, username: username });
+      msgContentRef.current.value = "";
+      return;
+    }
+  }
+
+  // const handleOnChangeMessage = (e) => {
+  //   const trimedMessage = e.target.value.trim();
+  //   setMessage(trimedMessage);
+  // }
+
   const classes = useStyles();
   return (
     <Paper className={classes.root}>
       <Paper elevation={0} className={classes.msgContainer}>
-        {chatData.map((chatInfo) => (
-          <MessageItem
-            name={chatInfo.name}
-            avatar={chatInfo.avatar}
-            msgList={chatInfo.msgList}
-            direction={chatInfo.direction}
-          />
-        ))}
+        {
+          chat ?
+            <div>
+              {chat.messages.map((e) => {
+                return (
+                  <Typography className={classes.message}>
+                    {`${e.username}: ${e.message}`}
+                  </Typography>
+                )
+              })}
+            </div>
+            :
+
+            <div></div>
+
+        }
+
       </Paper>
 
       <div className={classes.bottomBar}>
         <Paper elevation={0} className={classes.inputContainer}>
-          <InputBase className={classes.inputBase} />
+          <InputBase
+            className={classes.inputBase}
+            inputRef={msgContentRef}
+          />
         </Paper>
         {/* <Button
           className={classes.buttonSend}
@@ -110,7 +161,7 @@ export default function ChatBox() {
           color="primary"
         >
         </Button> */}
-        <IconButton className={classes.buttonSend} variant="contained">
+        <IconButton className={classes.buttonSend} variant="contained" onClick={handleClickSend}>
           <SendIcon />
         </IconButton>
       </div>
