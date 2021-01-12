@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -17,11 +17,13 @@ import FolderIcon from '@material-ui/icons/Folder';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DefaultAvatar from '../../assets/tic-tac-toe.png';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../contexts/auth';
+import socket from '../../services/socket';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1,
     maxWidth: 300,
+    height: '100vh',
   },
   demo: {
     backgroundColor: theme.palette.background.paper,
@@ -47,11 +49,11 @@ function OnlineListItem({ avatar, username }) {
     <ListItem className={classes.list}>
         <ListItemAvatar>
           <Avatar>
-            <img style={{ width: 35, height: 35 }} src={DefaultAvatar} alt='avatar' />
+            <img style={{ width: 35, height: 35 }} src={avatar? avatar: DefaultAvatar} alt='avatar' />
           </Avatar>
         </ListItemAvatar>
         <ListItemText
-          primary="Single-line item"
+          primary={username}
         />
       </ListItem>
     </Link>
@@ -62,17 +64,36 @@ function OnlineListItem({ avatar, username }) {
 export default function OnlineList() {
   const classes = useStyles();
 
-  const data = [1, 2, 3]
-  return (
-    <div className={classes.root}>
-      <List dense={true} className={classes.demo}>
-        {data.map((e) => {
-          return (
-            <OnlineListItem></OnlineListItem>
-          );
-        })}
-      </List>
-    </div>
+  const [onlineUsers, setOnlineUsers] = useState();
 
-  );
+  const {authTokens} = useAuth();
+
+  useEffect(() => {
+    console.log("online-list");
+    socket.on('update-online-list', (allOnlineUsers) => {
+      setOnlineUsers(allOnlineUsers);
+    })
+  }, [])
+
+
+  if (authTokens && onlineUsers) {
+    return (
+      <div className={classes.root}>
+        <List dense={true} className={classes.demo}>
+          {Object.keys(onlineUsers).map((key) => {
+            const userRow = onlineUsers[key];
+            return (
+              <OnlineListItem avatar={userRow.profileImage} username={userRow.username}></OnlineListItem>
+            );
+          })}
+          <div style={{flexGrow: 1}}></div>
+        </List>
+      </div>
+  
+    );
+  }
+  else {
+    return(<></>);
+  }
+  
 }

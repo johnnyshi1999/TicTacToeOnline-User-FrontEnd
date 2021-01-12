@@ -53,45 +53,6 @@ const useStyles = makeStyles({
 export default function PlayerCard({ username, trophies, won, lost }) {
   const classes = useStyles();
 
-  // return (
-  //   <Box border={2} className={classes.root} style={{marginLeft:10}}>
-
-  //     <Card className={classes.root}>
-  //       <CardContent className={classes.cardContent}>
-  //         <div className={classes.row}>
-  //           <img src={defaultAvatar} className={classes.image} alt="player1 avatar"></img>
-  //         </div>
-
-
-  //         <Typography align='center' className={classes.usernameText}>
-  //           {"username"}
-  //         </Typography>
-  //         <div className={classes.row}>
-  //           <SvgIcon>
-  //             <path d={mdiTrophy} />
-  //           </SvgIcon>
-
-  //           {/* <Icon>
-  //         <img src={mdiTrophy}></img>
-  //       </Icon> */}
-
-  //           <Typography className={classes.trophiesText}>12</Typography>
-  //         </div>
-
-  //         <Typography align='center'>
-  //           {`Won: ${10}`}
-  //         </Typography>
-
-  //         <Typography align='center'>
-  //           {`Lost: ${10}`}
-  //         </Typography>
-
-  //       </CardContent>
-  //     </Card>
-  //   </Box>
-
-  // );
-
   return (
     <Box border={2} className={classes.root} style={{ marginLeft: 10 }} borderRadius={10}>
       <Paper className={classes.paper} elevation={0}>
