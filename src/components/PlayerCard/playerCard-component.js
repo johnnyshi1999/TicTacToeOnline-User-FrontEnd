@@ -101,7 +101,7 @@ export default function PlayerCard({ username, trophies, won, lost }) {
 
 
         <Typography align='center' className={classes.usernameText}>
-          {"username"}
+          {username}
         </Typography>
         <div className={classes.row}>
           <SvgIcon>
@@ -112,15 +112,15 @@ export default function PlayerCard({ username, trophies, won, lost }) {
           <img src={mdiTrophy}></img>
         </Icon> */}
 
-          <Typography className={classes.trophiesText}>12</Typography>
+          <Typography className={classes.trophiesText}>{trophies}</Typography>
         </div>
 
         <Typography align='center'>
-          {`Won: ${10}`}
+          {`Won: ${won}`}
         </Typography>
 
         <Typography align='center'>
-          {`Lost: ${10}`}
+          {`Lost: ${lost}`}
         </Typography>
       </Paper>
 

@@ -7,6 +7,7 @@ import { useGame } from '../../contexts/game.js';
 import Axios from 'axios';
 import API from '../../services/api.js';
 import { Button, ButtonBase, Container } from '@material-ui/core';
+import PlayerCard from '../PlayerCard/playerCard-component.js';
 
 
 function Game(props) {
@@ -90,9 +91,25 @@ function Game(props) {
         <div>{userTurnMessage}</div>
         <div>{"Time remaining: " + props.timer}</div>
 
-        <div style={{display: 'flex'}}>
+        <div style={{ display: 'flex' }}>
           <div className="game-board">
             <Board />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <PlayerCard
+              username={room.Player1.username}
+              trophies={room.Player1.trophies}
+              won={room.Player1.gamesWon}
+              lost={room.Player1.gamesLost}></PlayerCard>
+            <div style={{ flexGrow: 1 }} />
+            <div>{"Time remaining: " + props.timer}</div>
+            <div style={{ flexGrow: 1 }} />
+            <PlayerCard
+              username={room.Player2.username}
+              trophies={room.Player2.trophies}
+              won={room.Player2.gamesWon}
+              lost={room.Player2.gamesLost}></PlayerCard>
           </div>
         </div>
 

@@ -8,6 +8,7 @@ import { GameContext } from '../../contexts/game';
 import socket from '../../services/socket';
 import Game from "../../components/Room/game-component";
 import { useAuth } from '../../contexts/auth';
+import PlayerCard from '../../components/PlayerCard/playerCard-component';
 
 export default function GameRoom() {
   const params = useParams();
@@ -167,9 +168,7 @@ export default function GameRoom() {
           game ?
             <div style={{ display: 'flex' }}>
               <Game timer={timer}></Game>
-              <div style={{display: 'flex', flexDirection: 'column'}}>
-                                
-              </div>
+              
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <h3>History</h3>
                 {game.history.map((element) => {
