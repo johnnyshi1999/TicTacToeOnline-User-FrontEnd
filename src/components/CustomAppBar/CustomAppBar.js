@@ -9,7 +9,10 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { IconButton } from "@material-ui/core";
 import { AccountCircle } from "@material-ui/icons";
-import { Link , useHistory} from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
+import socket from "../../services/socket";
+import Axios from "axios";
+import API from "../../services/api";
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -41,11 +44,17 @@ export default function DefaultAppBar() {
         setAnchorEl(null);
     };
 
-  const handleLogOut = () => {
-    setAuthTokens(null);
-    setAnchorEl(null);
-    history.push('/');
-  };
+    const handleLogOut = async () => {
+
+        const result = await Axios.get(API.url + '/api/auth/');
+
+        const userId = result.data._id;
+
+        socket.emit("logout");
+        setAuthTokens(null);
+        setAnchorEl(null);
+        history.push('/');
+    };
 
     const handleProfile = () => {
         console.log(authTokens);
