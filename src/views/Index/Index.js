@@ -127,7 +127,6 @@ export default function Index() {
   }
 
   useEffect(() => {
-    CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
 
     if(socket){
       socket.emit('page-status', 'index-page');

@@ -41,7 +41,7 @@ export default function GameRoom() {
     //get join result
     try{
       const joinResult = await Axios.get(API.url + `/api/room-management/room/join/${params.id}`);
-      
+
       setRoomInfo(joinResult.data.room);
       setPlayerNumber(joinResult.data.playerNumber);
 
@@ -82,7 +82,7 @@ export default function GameRoom() {
       setLoadingPrompt(null);
       setErrorDialogText('Đã xảy ra lỗi khi load phòng chơi, bạn sẽ được điều hướng về trang chủ sau đây');
     }
-  }, [params, authTokens]);
+  }, [authTokens, params.id]);
 
   useEffect(() => {
     CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
@@ -123,17 +123,22 @@ export default function GameRoom() {
       setGame(game);
       console.log(game);
     });
-  }, [history, params.id]);
+
+    socket.on('room-processing-error', (error) => {
+      console.log(error);
+      setLoadingPrompt(null);
+      setErrorDialogText('Đã xảy ra lỗi khi load phòng chơi, sẽ về lại trang chủ...');
+    })
+  }, [fetchData, history]);
 
   useEffect(() => {
     socket.on('disconnect-other-tabs', ({player}) => {
-      console.log('aaaaaaaaaaaaa');
       if(playerNumber === player){
         CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator("Đang về trang chủ..."));
         history.push('/');
       }
     });
-  }, [history, playerNumber]);
+  }, [history, socket, playerNumber]);
 
   useEffect(()=> {
     console.log("room: " + roomInfo);
@@ -167,19 +172,27 @@ export default function GameRoom() {
       }
       socket.emit('leave-room', payload);
       localStorage.removeItem("isPlayingInRoomId");
+      CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
     } catch (e) {
       if(playerNumber !== 0){
         CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator("Bạn thoát game không thành công, có thể rejoin lại từ nút ngay dưới đây"));
       }
+      CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
       history.push(`/`);         
     }
-  }, [history, roomInfo, playerNumber]);
+  }, [socket, history, playerNumber]);
 
   useEffect(() => {
     window.onbeforeunload = () => {
       callBackToServerOnQuit(); 
     }
-  });
+    return () => {
+      window.onbeforeunload = () => {
+        // do nothing
+      }
+      callBackToServerOnQuit(); 
+    }
+  }, [callBackToServerOnQuit]);
 
   // useEffect(() => {
   //   return () => callBackToServerOnQuit();
