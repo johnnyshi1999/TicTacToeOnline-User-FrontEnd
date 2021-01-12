@@ -7,6 +7,7 @@ import { useAuth } from '../../contexts/auth';
 
 import IndexPage_LoadingBackdrop_ActionCreator from '../../redux/actionCreators/Index/IndexPage_LoadingBackdrop_ActionCreator';
 import IndexPage_ErrorPopUp_ActionCreator from '../../redux/actionCreators/Index/IndexPage_ErrorPopUp_ActionCreator';
+import IndexPage_RoomPasswordPrompt_ActionCreator from '../../redux/actionCreators/Index/IndexPage_RoomPasswordPrompt_ActionCreator';
 
 import CaroOnlineStore from '../../redux/store';
 
@@ -55,15 +56,24 @@ export default function RoomNavigator({onCreateRoomClick, onFastPlayClick}){
       CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(true));
       (async () => {
           try{
-              const result = await Axios.get(API.url + `/api/room-management/room/${roomId}`);
-              const {data} = result.data;
-              const roomLink = `/room/${data._id}`;
-              window.location.href=roomLink;
+            const result = await Axios.get(API.url + `/api/room-management/room/${roomId}`);
+            const {data} = result.data;
+            if(data.RoomType.NumberId === 2) {
+              if(!authTokens){
+                CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator("Bạn cần đăng ký để tham gia vào các phòng chơi có mật khẩu"));
+                return;
+              }
+              CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
+              CaroOnlineStore.dispatch(IndexPage_RoomPasswordPrompt_ActionCreator(data));
+              return;
+            }
+
+            const roomLink = `/room/${data._id}`;
+            window.location.href=roomLink;
           } catch (e) {
               CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator('Không thể tìm thấy phòng chơi có mã này'));
               console.log(e);
           }
-          CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
       })();
     }
 
