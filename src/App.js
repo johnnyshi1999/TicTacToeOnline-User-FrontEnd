@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import { AuthProvider } from "./contexts/auth.js";
@@ -16,9 +16,22 @@ import GameRoom from "./views/GameRoom/gameRoom-component";
 
 import PlayerCard from "./components/PlayerCard/playerCard-component";
 
+import {Backdrop, Grid, Typography, CircularProgress} from '@material-ui/core';
+
+import CaroOnlineStore from './redux/store';
 
 function App() {
-  
+  const [isLoadingPrompt, setLoadingPrompt] = useState(null);
+
+  useEffect(() => {
+    const unsubcribe = CaroOnlineStore.subscribe(() => {
+      const appState = CaroOnlineStore.getState();
+      setLoadingPrompt(appState.isAwaitingServerResponse);
+    });
+
+    return () => unsubcribe();
+  }, []);
+
   return (
     <AuthProvider>
         <Router>
@@ -56,7 +69,20 @@ function App() {
                 </Route>
               </Switch>
             </main>
+
           </React.Fragment>
+          <Backdrop open={isLoadingPrompt !== null} style={{color: "#fff" , zIndex: 100}}>
+            <Grid container item justify="center">
+              <Grid item xs={12}>
+                <CircularProgress color="inherit" />
+              </Grid>     
+              <Grid item xs={12}>
+                <Typography variant="body1" style={{color: 'white'}}>
+                  {isLoadingPrompt}
+                </Typography>
+              </Grid>
+            </Grid>
+          </Backdrop>
         </Router>
       </AuthProvider>
   );

@@ -7,8 +7,13 @@ export default function IndexReducer(state, action) {
             };
         case "errorPopup":
             return {...state,
-                pageWideError: action.payload
-            }
+                pageWideError: action.payload,
+            };
+        case "passwordPrompt":
+            return {
+                ...state,
+                roomToTypePassword: action.payload,
+            };
         default:
             return state;
     }

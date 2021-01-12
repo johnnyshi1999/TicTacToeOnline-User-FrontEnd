@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 export default function RoomsGrid({loadingCallback}){
     const classes = useStyles();
 
-    const maxRoomPerPage = 9;
+    const maxRoomPerPage = 12;
     const [numOfPages, setNumOfPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
     const [rooms, setRooms] = useState([]);
@@ -46,12 +46,10 @@ export default function RoomsGrid({loadingCallback}){
     useEffect(() => {
         (async() => {
             try{
-                const results = await Axios.get(API.url + "/api/room-management/rooms", {
-                    page_number: currentPage,
-                    item_per_page: maxRoomPerPage
-                });
+                const results = await Axios.get(API.url + `/api/room-management/rooms?page_number=${currentPage}&item_per_page=${maxRoomPerPage}`);
                 const {data} = results.data;
-                setRooms(data);
+                setRooms(data.rooms);
+                setNumOfPages(data.totalPages);
                 setPagesLoading(false);
             }catch(e){
                 setError('There has been a problem with loading the rooms, please try refreshing...')
@@ -61,23 +59,32 @@ export default function RoomsGrid({loadingCallback}){
     }, [currentPage]);
 
     useEffect(() => {
+        const updateGridStatus = (rooms) => {
+            setPagesLoading(true);
+            const pagesCount = parseInt(Math.ceil(rooms.length/maxRoomPerPage));
+            setNumOfPages(pagesCount);
+            if(currentPage >= pagesCount){
+                setRoomsLoading(true);
+                const newCurrentPage = currentPage > pagesCount ? pagesCount : currentPage;
+                const start = (currentPage - 1)*maxRoomPerPage;
+                setRooms(rooms.slice(start, Math.min(start + maxRoomPerPage, rooms.length)));
+                if(newCurrentPage !== currentPage){
+                    setCurrentPage(newCurrentPage);
+                }
+                setRoomsLoading(false);
+            }         
+            setPagesLoading(false);
+        }
         if(socket){
             socket.on('new-room-created', ({rooms}) => {
-                setPagesLoading(true);
-                const pagesCount = parseInt(Math.ceil(rooms.length/maxRoomPerPage));
-                setNumOfPages(pagesCount);
-                if(currentPage >= pagesCount){
-                    setRoomsLoading(true);
-                    const newCurrentPage = currentPage > pagesCount ? pagesCount : currentPage;
-                    const start = (currentPage - 1)*maxRoomPerPage;
-                    setRooms(rooms.slice(start, Math.min(start + maxRoomPerPage, rooms.length)));
-                    if(newCurrentPage !== currentPage){
-                        setCurrentPage(newCurrentPage);
-                    }
-                    setRoomsLoading(false);
-                }         
-                setPagesLoading(false);
+                updateGridStatus(rooms);
             });
+            socket.on('one-room-got-deleted', ({rooms}) => {
+                updateGridStatus(rooms);
+            });
+            socket.on('one-room-got-updated', ({rooms}) => {
+                updateGridStatus(rooms);
+            })
         }
     }, [currentPage]);
 
@@ -86,33 +93,29 @@ export default function RoomsGrid({loadingCallback}){
         setPagesLoading(true);
         setRoomsLoading(true);
         try{
-            const results = await Axios.get(API.url + "/api/room-management/rooms", {
-                page_number: pageNumber,
-                item_per_page: maxRoomPerPage
-            });
+            const results = await Axios.get(API.url + `/api/room-management/rooms?page_number=${pageNumber}&item_per_page=${maxRoomPerPage}`);
             const {data} = results.data;
-            setRooms(data);       
+            setRooms(data.rooms);
+            setCurrentPage(pageNumber);
+            setNumOfPages(data.totalPages);       
         }catch(e){
             if(e.response && e.response.status === 400 && e.response.data && e.response.data.data.newMaxPage){
                 (async() => {
                     try{
-                        const refetch = await Axios.get(API.url + "/api/room-management/rooms", {
-                            page_number: e.response.data.data.newMaxPage,
-                            item_per_page: maxRoomPerPage
-                        });
-
+                        const refetch = Axios.get(API.url + `/api/room-management/rooms?page_number=${e.response.data.data.newMaxPage}&item_per_page=${maxRoomPerPage}`); 
                         const {data} = refetch.data;
-                        setRooms(data);
+                        setRooms(data.rooms);
+                        setCurrentPage(e.response.data.data.newMaxPage);
                         setNumOfPages(e.response.data.data.newMaxPage);
                     }catch(e){
-                        setError('An error occured while fetching the page');
+                        setError('An error occured while fetching the rooms page, try refreshing');
                     }
                     setRoomsLoading(false);
                     setPagesLoading(false);
                 })();
                 return;
             }
-            setError('An error occured while fetching the page');
+            setError('An error occured while fetching the rooms page, try refreshing');
         }
         setRoomsLoading(false);
         setPagesLoading(false);

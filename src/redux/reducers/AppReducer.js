@@ -1,9 +1,11 @@
 import IndexReducer from './Index/IndexReducer';
 
 const initialState = {
+    isAwaitingServerResponse: null,
     IndexPage: {
         isLoading: false,
-        pageWideError: null
+        pageWideError: null,
+        roomToTypePassword: null
     }
 }
 
@@ -16,6 +18,10 @@ export default function AppReducer(state = initialState, action) {
                     ...action,
                     type: tokens[1]
                 })};
+        case "isAwaitingServerResponse":
+            return {...state,
+                isAwaitingServerResponse: action.payload
+            };
         default:
             return state;
     }
