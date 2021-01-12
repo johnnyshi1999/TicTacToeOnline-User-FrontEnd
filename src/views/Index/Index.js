@@ -134,15 +134,9 @@ export default function Index() {
 
     const unsubcribe = CaroOnlineStore.subscribe(() => {
       const appState = CaroOnlineStore.getState();
-      if(appState.IndexPage.isLoading !== openBackdrop){
-        setOpenBackdrop(appState.IndexPage.isLoading);
-      }
-      if(appState.IndexPage.pageWideError !== indexError){
-        setIndexError(appState.IndexPage.pageWideError);
-      }
-      if(appState.IndexPage.roomToTypePassword !== roomToTypePassword){
-        setRoomToTypePassword(appState.IndexPage.roomToTypePassword);
-      }
+      setOpenBackdrop(appState.IndexPage.isLoading);
+      setIndexError(appState.IndexPage.pageWideError);
+      setRoomToTypePassword(appState.IndexPage.roomToTypePassword);
     });
 
     const roomID = localStorage.getItem("isPlayingInRoomId");
@@ -156,7 +150,7 @@ export default function Index() {
       };
       unsubcribe();
     }
-  }, [indexError, openBackdrop, roomToTypePassword]);
+  }, []);
 
   return(
     <div className={classes.root}>
@@ -426,7 +420,7 @@ export default function Index() {
 
       {/* Join room backdrop */}
       <Backdrop open={openRejoinRoomBackdrop ? true : false} style={{color: "#000000" , zIndex: 100}}>
-        <Button color="primary" variant="outlined" onClick={() => {
+        <Button color="primary" variant="contained" onClick={() => {
             history.push(`/room/${openRejoinRoomBackdrop.toString()}`);
         }}> 
         Vào phòng lại

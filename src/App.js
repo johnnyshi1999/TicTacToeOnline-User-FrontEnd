@@ -27,7 +27,9 @@ function App() {
       setLoadingPrompt(appState.isAwaitingServerResponse);
     });
 
-    return () => unsubcribe();
+    return () => {
+      unsubcribe();
+    }
   }, []);
 
   return (

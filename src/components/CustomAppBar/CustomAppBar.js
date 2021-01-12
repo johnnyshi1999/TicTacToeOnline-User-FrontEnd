@@ -8,8 +8,10 @@ import { useAuth } from "../../contexts/auth";
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { IconButton } from "@material-ui/core";
-import { AccountCircle } from "@material-ui/icons";
+import { AccountCircle} from "@material-ui/icons";
 import { Link , useHistory} from 'react-router-dom';
+
+import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -60,6 +62,15 @@ export default function DefaultAppBar() {
                 <div>
                     {authTokens ?
                         (<div>
+                            <IconButton
+                                aria-label="ranking"
+                                aria-controls="menu-appbar"
+                                aria-haspopup="true"
+                                color="inherit"
+                                component={Link}
+                                to='/ranking'>
+                                <FormatListNumberedIcon />
+                            </IconButton>
                             <IconButton
                                 onClick={handleMenu}
                                 aria-label="account of current user"

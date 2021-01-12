@@ -44,12 +44,10 @@ export default function RoomsGrid({loadingCallback}){
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        (async() => {
-            
+        (async() => {   
             try{
                 const results = await Axios.get(API.url + `/api/room-management/rooms?page_number=${currentPage}&item_per_page=${maxRoomPerPage}`);
                 const {data} = results.data;
-                console.log(data);
                 setRooms(data.rooms);
                 setNumOfPages(data.totalPages);
                 setPagesLoading(false);
