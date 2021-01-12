@@ -214,13 +214,7 @@ export default function GameRoom() {
   }, [socket, history, playerNumber]);
 
   useEffect(() => {
-    window.onbeforeunload = () => {
-      callBackToServerOnQuit();
-    }
-    return () => {
-      window.onbeforeunload = () => {
-        // do nothing
-      }
+   return () => {
       if(!isRepeatedTab){
         callBackToServerOnQuit(); 
       }else{
