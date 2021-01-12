@@ -23,6 +23,8 @@ import IndexPage_RoomPasswordPrompt_ActionCreator from '../../redux/actionCreato
 import IndexPage_LoadingBackdrop_ActionCreator from '../../redux/actionCreators/Index/IndexPage_LoadingBackdrop_ActionCreator'
 import Global_IsAwaitingServerResponse_ActionCreator from '../../redux/actionCreators/Global_IsAwaitingServerResponse_ActionCreator';
 
+import {useHistory} from 'react-router-dom';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
@@ -78,8 +80,10 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function Index() {
   const classes = useStyles();
+  const history = useHistory();
 
   const [openBackdrop, setOpenBackdrop] = useState(false);
+  const [openRejoinRoomBackdrop, setOpenRejoinRoomBackdrop] = useState(null);
 
   //State for create room dialog
   const [openCreateRoomDialog, setOpenCreateRoomDialog] = React.useState(false);
@@ -143,8 +147,7 @@ export default function Index() {
 
     const roomID = localStorage.getItem("isPlayingInRoomId");
     if(roomID){
-      // CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator('Đang điều hướng tới phòng chơi...'));
-      // window.location.href = `/room/${roomID}`;
+      setOpenRejoinRoomBackdrop(roomID);
     }
 
     return () => {
@@ -421,7 +424,14 @@ export default function Index() {
         <CircularProgress color="inherit" />
       </Backdrop>
 
-      
+      {/* Join room backdrop */}
+      <Backdrop open={openRejoinRoomBackdrop ? true : false} style={{color: "#000000" , zIndex: 100}}>
+        <Button color="primary" variant="outlined" onClick={() => {
+            history.push(`/room/${openRejoinRoomBackdrop.toString()}`);
+        }}> 
+        Vào phòng lại
+        </Button>
+      </Backdrop>
     </div>
   );
 }

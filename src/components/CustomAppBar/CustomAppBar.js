@@ -9,7 +9,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { IconButton } from "@material-ui/core";
 import { AccountCircle } from "@material-ui/icons";
-import { Link } from 'react-router-dom';
+import { Link , useHistory} from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -31,6 +31,8 @@ export default function DefaultAppBar() {
     const { authTokens, setAuthTokens } = useAuth();
     const open = Boolean(anchorEl);
 
+    const history = useHistory();
+
     const handleMenu = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -42,6 +44,7 @@ export default function DefaultAppBar() {
   const handleLogOut = () => {
     setAuthTokens(null);
     setAnchorEl(null);
+    history.push('/');
   };
 
     const handleProfile = () => {

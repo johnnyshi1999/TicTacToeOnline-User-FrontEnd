@@ -60,9 +60,6 @@ export default function GameRoom() {
         return;
       }
 
-      console.log("join result:");
-      console.log(joinResult.data);
-
       setRoomInfo(joinResult.data.room);
       setPlayerNumber(joinResult.data.playerNumber);
       setUsername(joinResult.data.username);
@@ -80,7 +77,21 @@ export default function GameRoom() {
         }
       }
 
-      socket.emit("join-room", { roomId: joinResult.data.room._id });
+      const joinRoomPayload = {roomId: joinResult.data.room._id};
+      if(joinResult.data.playerNumber !== 0){
+        joinRoomPayload.playerNumber = joinResult.data.playerNumber;
+        switch(parseInt(joinResult.data.playerNumber)){
+          case 1: 
+            joinRoomPayload.playerId = joinResult.data.room.Player1;
+            break;
+          case 2: 
+            joinRoomPayload.playerId = joinResult.data.room.Player2;
+            break;
+          default:
+            break;
+        }
+      }
+      socket.emit("join-room", joinRoomPayload);
 
       setLoadingPrompt(null);
 
@@ -90,19 +101,10 @@ export default function GameRoom() {
       setLoadingPrompt(null);
       setErrorDialogText('Đã xảy ra lỗi khi load phòng chơi, bạn sẽ được điều hướng về trang chủ sau đây');
     }
-  }, [params, authTokens]);
+  }, [authTokens, params.id]);
 
   useEffect(() => {
     CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
-
-    // const currentRoomId = params.id;
-    // const roomIdInStorage = localStorage.getItem("isPlayingInRoomId");
-    // if(roomIdInStorage && roomIdInStorage === currentRoomId){
-    //   // const roomLink = `/`;
-    //   // window.location.href=roomLink;
-    //   // return;
-    //   history.push('/');
-    // }
 
     fetchData();
 
@@ -116,24 +118,12 @@ export default function GameRoom() {
     });
 
     socket.on("update-room", (room) => {
-      // if(room.IsDeleted){
-      //   CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator("Phòng chơi đã bị giải tán, bạn sẽ được điều hướng về trang chủ..."));
-      //   if(playerNumber === 2){
-      //     // remove from localStorage the room player is in temporarily
-      //     localStorage.removeItem("isPlayingInRoomId");
-      //   }     
-      //   // Set loading
-      //   CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
-      //   window.location.href = '/';    
-      //   return;
-      // }
-      // if(playerNumber === 2 && room.Player2 === null){
-      //   CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator("Một tab khác của bạn đã thoát phòng, bạn sẽ được điều hướng về trang chủ..."));
-      //   localStorage.removeItem("isPlayingInRoomId");
-      //   CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
-      //   window.location.href = '/';    
-      //   return;
-      // }
+      if(room.IsDeleted){
+        CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator("Phòng chơi đã bị giải tán, bạn sẽ được điều hướng về trang chủ..."));
+        localStorage.removeItem("isPlayingInRoomId");
+        history.push(`/`);  
+        return;
+      }
       setRoomInfo(room);
     })
 
@@ -157,10 +147,21 @@ export default function GameRoom() {
       setChat(chat);
     });
 
-    socket.on("disconnect", () => {
+    socket.on('room-processing-error', (error) => {
+      console.log(error);
+      setLoadingPrompt(null);
+      setErrorDialogText('Đã xảy ra lỗi khi load phòng chơi, sẽ về lại trang chủ...');
+    })
+  }, [fetchData, history]);
 
+  useEffect(() => {
+    socket.on('disconnect-other-tabs', ({player}) => {
+      if(playerNumber === player){
+        CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator("Đang về trang chủ..."));
+        history.push('/');
+      }
     });
-  }, [fetchData]);
+  }, [history, socket, playerNumber]);
 
   useEffect(() => {
     console.log("room: " + roomInfo);
@@ -175,47 +176,55 @@ export default function GameRoom() {
     }
   }, [roomInfo, game, playerNumber]);
 
-  useEffect(() => {
-    return () => {
-      // if is player, 
-      if (playerNumber !== 0) {
-        // remove from localStorage the room player is in temporarily
-        const temp = localStorage.getItem("isPlayingInRoomId");
-        localStorage.removeItem("isPlayingInRoomId");
-        // Block the transition by removing the value
-        const prompt = "Đang xử lý yêu cầu thoát game của bạn và đang điều hướng về trang chủ...";
-        CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(prompt));
-        // Set loading
-        (async () => {
-          try {
-            if (playerNumber === 2) {
-              await Axios.put(API.url + `/api/room-management/room/${params.id}`, {
-                Player2: null,
-              });
-            } else if (playerNumber === 1) {
-              await Axios.delete(API.url + `/api/room-management/room/${params.id}`);
-            }
-            CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
-          } catch (e) {
-            localStorage.setItem("isPlayingInRoomId", temp);
-            CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
-            CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator('Đã xảy ra lỗi khi thực hiện thoát phòng, lần sau vào trang chủ bạn sẽ luôn được điều hướng tới phòng chưa thoát'));
-            return;
-          }
-        })();
+  const callBackToServerOnQuit = useCallback(() => {
+    if(!roomInfo) return;
+    const prompt = "Đang xử lý yêu cầu thoát game của bạn và đang điều hướng...";
+    CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(prompt));
+    try{
+      const payload = {roomId: roomInfo._id, playerNumber};
+      if(playerNumber === 2){
+        payload.player = roomInfo.Player2;
+        if(!roomInfo.Player1){
+          payload.deleteRoom = true;
+        }
+      }else if(playerNumber === 1) {
+        payload.player = roomInfo.Player1;
+        if(!roomInfo.Player2){
+          payload.deleteRoom = true;
+        }
       }
-    };
-  }, [params.id, playerNumber]);
-  // useEffect(() => {
-  //   if (game.winner != 0) {
+      socket.emit('leave-room', payload);
+      localStorage.removeItem("isPlayingInRoomId");
+      CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
+    } catch (e) {
+      if(playerNumber !== 0){
+        CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator("Bạn thoát game không thành công, có thể rejoin lại từ nút ngay dưới đây"));
+      }
+      CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
+      history.push(`/`);         
+    }
+  }, [socket, history, playerNumber]);
 
-  //   }  
-  // }, [game])
+  useEffect(() => {
+    window.onbeforeunload = () => {
+      callBackToServerOnQuit(); 
+    }
+    return () => {
+      window.onbeforeunload = () => {
+        // do nothing
+      }
+      callBackToServerOnQuit(); 
+    }
+  }, [callBackToServerOnQuit]);
+
+  // useEffect(() => {
+  //   return () => callBackToServerOnQuit();
+  // });
 
   const handleErrorDialogClose = () => {
     setErrorDialogText(null);
     setLoadingPrompt('Đang điều hướng về trang chủ...');
-    window.location.href = '/';
+    history.push('/');
   };
 
   const gameActions = {};
