@@ -19,6 +19,8 @@ import PlayerCard from "./components/PlayerCard/playerCard-component";
 import {Backdrop, Grid, Typography, CircularProgress} from '@material-ui/core';
 
 import CaroOnlineStore from './redux/store';
+import History from "./components/Room/history-component.js";
+import RoomTab from "./components/Room/RoomTab-component.js";
 
 function App() {
   const [isLoadingPrompt, setLoadingPrompt] = useState(null);
@@ -66,6 +68,14 @@ function App() {
                 </Route>
                 <Route exact path="/test/characterCard">
                   <PlayerCard></PlayerCard>
+                </Route>
+
+                <Route exact path="/test/history">
+                  <History></History>
+                </Route>
+
+                <Route exact path="/test/RoomTab">
+                  <RoomTab></RoomTab>
                 </Route>
               </Switch>
             </main>

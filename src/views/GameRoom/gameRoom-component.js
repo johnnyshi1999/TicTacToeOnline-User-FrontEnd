@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import API from "../../services/api";
-import { Button, Typography, Dialog, Slide, Backdrop, Grid, CircularProgress, DialogActions, DialogTitle, DialogContent, DialogContentText } from '@material-ui/core';
+import { Button, Typography, Dialog, Slide, Backdrop, Grid, CircularProgress, DialogActions, DialogTitle, DialogContent, DialogContentText, makeStyles } from '@material-ui/core';
 import './index.css';
 import { useParams } from 'react-router';
 import { useHistory } from 'react-router-dom';
@@ -14,12 +14,23 @@ import PlayerCard from '../../components/PlayerCard/playerCard-component';
 import CaroOnlineStore from '../../redux/store';
 import Global_IsAwaitingServerResponse_ActionCreator from '../../redux/actionCreators/Global_IsAwaitingServerResponse_ActionCreator';
 import IndexPage_ErrorPopUp_ActionCreator from '../../redux/actionCreators/Index/IndexPage_ErrorPopUp_ActionCreator';
+import History from '../../components/Room/history-component';
+import RoomTab from '../../components/Room/RoomTab-component';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
+const useStyles = makeStyles((theme) => ({
+  roomTab: {
+    marginTop: theme.spacing(3),
+  },
+
+})); 
+
+
 export default function GameRoom() {
+  const classes = useStyles();
   const params = useParams();
 
   const [roomInfo, setRoomInfo] = useState(null);
@@ -261,28 +272,12 @@ export default function GameRoom() {
             <div style={{ display: 'flex' }}>
               <Game timer={timer}></Game>
 
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <h3>History</h3>
-                {game.history.map((element) => {
-                  let username = "";
-                  if (element.player === 1) {
-                    username = roomInfo.Player1.username;
-                  }
-                  else {
-                    username = roomInfo.Player2.username;
-                  }
-
-                  const positionX = Math.floor(element.position / game.maxRow);
-                  const positionY = element.position % game.maxCol;
-
-                  const message = `${username} made move on position of (${positionX} , ${positionY})`;
-                  return (
-                    <p>
-                      {message}
-                    </p>);
-
-                })}
+              <div className={classes.roomTab}>
+                <RoomTab>
+                </RoomTab>
               </div>
+
+
             </div>
             :
             <Button onClick={handleCreateGameClick}>{isWaiting ? "Waiting for player" : "Create Game"}</Button>
