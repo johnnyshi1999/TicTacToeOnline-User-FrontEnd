@@ -26,6 +26,9 @@ import socket from './services/socket';
 import RewatchRoom from "./views/RewatchRoom/rewatchRoom-component.js";
 import ClientUserProfile from "./views/UserProfile/ClientUserProfile.js";
 
+import Global_IsAwaitingServerResponse_ActionCreator from "./redux/actionCreators/Global_IsAwaitingServerResponse_ActionCreator";
+
+
 function App() {
   const [isLoadingPrompt, setLoadingPrompt] = useState(null);
 
@@ -35,6 +38,26 @@ function App() {
       setLoadingPrompt(appState.isAwaitingServerResponse);
     });
 
+    socket.on('is-matchmaking', ({state}) => {
+      setLoadingPrompt(state ? 'Đang chờ đợi nối cặp từ phía server...' : null);
+    });
+
+    socket.on('is-waiting-create-room', ({state}) => {
+      setLoadingPrompt(state ? 'Tìm được người thích hợp, đang tạo phòng...' : null);
+    });
+
+    socket.on('matchmake-success', ({yourUserId}) => {
+      CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator('Tìm được người thích hợp, đang tạo phòng...'));
+      socket.emit('accept matchmake', {myUserId : yourUserId});
+    });
+
+    socket.on('room-create-success', ({yourRoom}) => {
+      const roomId = yourRoom._id.toString();
+      const roomLink = `/room/${roomId}`;
+      window.location.href=roomLink; 
+      return;
+    });
+    
     return () => {
       unsubcribe();
     }

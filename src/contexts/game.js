@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useRef} from 'react';
 import { io } from 'socket.io-client';
 import API from '../services/api';
 import socket from "../services/socket";
@@ -29,13 +29,13 @@ export function GameProvider(props) {
 
   const [game, setGame]=useState(props.game);
   
-  const [playerNumber, setPlayerNumber] = useState(0);
+  const playerNumber = useRef(0);
 
   const gameActions = {};
 
   gameActions.setInitialGameState = (fetchedGame, fetchedPlayerNumber) => {
     setGame(fetchedGame);
-    setPlayerNumber(fetchedPlayerNumber);
+    playerNumber.current = fetchedPlayerNumber;
   }
 
   gameActions.makeMove = async (position) => {
@@ -44,7 +44,7 @@ export function GameProvider(props) {
 
   const value = {
     game: game,
-    playerNumber: playerNumber,
+    playerNumber: playerNumber.current,
     gameActions: gameActions,
   }
 
