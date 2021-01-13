@@ -114,7 +114,7 @@ export default function ChatBox() {
     const trimmedMesaage = msg.trim();
 
     if (trimmedMesaage.length > 0) {
-      socket.emit("send-chat-message", { roomId: room._id, message: trimmedMesaage, username: username });
+      socket.emit("send-chat-message", { roomId: room._id, gameId: room.CurrentGame, message: trimmedMesaage, username: username });
       msgContentRef.current.value = "";
       return;
     }
