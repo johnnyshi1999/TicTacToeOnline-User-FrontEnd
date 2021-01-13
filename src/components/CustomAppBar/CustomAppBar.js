@@ -14,6 +14,8 @@ import socket from "../../services/socket";
 import Axios from "axios";
 import API from "../../services/api";
 
+import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
+
 const useStyles = makeStyles((theme) => ({
     title: {
         flexGrow: 1,
@@ -58,6 +60,7 @@ export default function DefaultAppBar() {
 
     const handleProfile = () => {
         console.log(authTokens);
+        history.push('/profile');
     }
 
     return (
@@ -69,6 +72,16 @@ export default function DefaultAppBar() {
                 <div>
                     {authTokens ?
                         (<div>
+                            <IconButton
+                                aria-label="ranking"
+                                aria-controls="menu-appbar"
+                                aria-haspopup="true"
+                                color="inherit"
+                                onClick={() => {
+                                    history.push('/ranking');
+                                }}>
+                                <FormatListNumberedIcon />
+                            </IconButton>
                             <IconButton
                                 onClick={handleMenu}
                                 aria-label="account of current user"
@@ -92,7 +105,7 @@ export default function DefaultAppBar() {
                                 open={open}
                                 onClose={handleClose}
                             >
-                                <MenuItem onClick={handleProfile} component={Link} to='/profile'>Profile</MenuItem>
+                                <MenuItem onClick={handleProfile}>Profile</MenuItem>
                                 <MenuItem onClick={handleLogOut}>Log Out</MenuItem>
                             </Menu>
                         </div>

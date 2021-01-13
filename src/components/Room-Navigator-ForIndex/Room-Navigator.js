@@ -56,24 +56,34 @@ export default function RoomNavigator({onCreateRoomClick, onFastPlayClick}){
       CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(true));
       (async () => {
           try{
+            const getIsInRoom = await Axios.post(API.url + '/api/room-management/room/check-is-in-room');
+            const isInData = getIsInRoom.data;
+            if(isInData.data){
+              if(isInData.data.RoomType.NumberId !== 2){
+                  const roomLink = `/room/${isInData.data._id.toString()}`;
+                  window.location.href=roomLink;
+              }else {
+                  CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
+                  CaroOnlineStore.dispatch(IndexPage_RoomPasswordPrompt_ActionCreator(isInData.data));
+              }   
+              return;            
+            }
+
             const result = await Axios.get(API.url + `/api/room-management/room/${roomId}`);
             const {data} = result.data;
             if(data.RoomType.NumberId === 2) {
-              if(!authTokens){
-                CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator("Bạn cần đăng ký để tham gia vào các phòng chơi có mật khẩu"));
-                return;
-              }
               CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
               CaroOnlineStore.dispatch(IndexPage_RoomPasswordPrompt_ActionCreator(data));
               return;
-            }
-
-            const roomLink = `/room/${data._id}`;
+            }       
+            
+            const roomLink = `/room/${roomId._id}`;
             window.location.href=roomLink;
           } catch (e) {
-              CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator('Không thể tìm thấy phòng chơi có mã này'));
-              console.log(e);
+            CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator('Không thể tham gia phòng chơi, bạn có thể thử tải lại trang hoặc liên hệ phía hỗ trợ'));
+            console.log(e);
           }
+          CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
       })();
     }
 
@@ -101,7 +111,28 @@ export default function RoomNavigator({onCreateRoomClick, onFastPlayClick}){
             
             <Grid container item xs={12} sm={2} className={classes.gridItem}>
                 <Button variant="contained" color="secondary" className={classes.button} disabled={authTokens ? false : true}
-                onClick={onCreateRoomClick}>
+                onClick={async () => {
+                  CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(true));
+                  try{
+                    const getIsInRoom = await Axios.post(API.url + `/api/room-management/room/check-is-in-room`);
+                    const isInData = getIsInRoom.data;
+                    if(isInData.data){
+                      if(isInData.data.RoomType.NumberId !== 2){
+                          const roomLink = `/room/${isInData.data._id.toString()}`;
+                          window.location.href=roomLink;
+                      }else {
+                          CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
+                          CaroOnlineStore.dispatch(IndexPage_RoomPasswordPrompt_ActionCreator(isInData.data));
+                      }   
+                      return;            
+                    }
+                    onCreateRoomClick();
+                  } catch (e) {
+                    CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator('Không thể tạo phòng chơi, tài khoản bạn đang trong phòng chơi, vui lòng liên hệ hỗ trợ.'));
+                    console.log(e);
+                  }
+                  CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
+                }}>
                     Tạo phòng
                 </Button>
             </Grid>

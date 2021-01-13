@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import API from "../../services/api";
 import { Button, Typography, Dialog, Slide, Backdrop, Grid, CircularProgress, DialogActions, DialogTitle, DialogContent, DialogContentText, makeStyles } from '@material-ui/core';
 import './index.css';
@@ -37,12 +37,14 @@ export default function GameRoom() {
 
   const [game, setGame] = useState(null);
   const [playerNumber, setPlayerNumber] = useState(0);
+  const playerInfo = useRef(null);
   const [isLoadingPrompt, setLoadingPrompt] = useState("Đang tải phòng chơi, vui lòng chờ");
 
   const [errorDialogText, setErrorDialogText] = useState(null);
   const [timer, setTimer] = useState("");
   const [isWaiting, setWaiting] = useState(true);
 
+  let isRepeatedTab = useRef(false);
   const [username, setUsername] = useState("");
 
   const { authTokens } = useAuth();
@@ -72,7 +74,7 @@ export default function GameRoom() {
       // if he is player 1 or 2 in the room
       if (authTokens) {
         const currentRoom_Id = localStorage.getItem("isPlayingInRoomId");
-        if (!currentRoom_Id && joinResult.data.playerNumber !== 0) {
+        if(!currentRoom_Id && joinResult.data.playerNumber !== 0){
           localStorage.setItem("isPlayingInRoomId", params.id);
         }
       }
@@ -82,10 +84,12 @@ export default function GameRoom() {
         joinRoomPayload.playerNumber = joinResult.data.playerNumber;
         switch(parseInt(joinResult.data.playerNumber)){
           case 1: 
-            joinRoomPayload.playerId = joinResult.data.room.Player1;
+            joinRoomPayload.playerId = joinResult.data.room.Player1._id;
+            playerInfo.current = joinResult.data.room.Player1;
             break;
           case 2: 
-            joinRoomPayload.playerId = joinResult.data.room.Player2;
+            joinRoomPayload.playerId = joinResult.data.room.Player2._id;
+            playerInfo.current = joinResult.data.room.Player2;
             break;
           default:
             break;
@@ -104,10 +108,7 @@ export default function GameRoom() {
   }, [authTokens, params.id]);
 
   useEffect(() => {
-    CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
-
     fetchData();
-
     socket.on("update-board", (game) => {
       console.log("on update-board");
       setGame(game);
@@ -119,8 +120,9 @@ export default function GameRoom() {
 
     socket.on("update-room", (room) => {
       if(room.IsDeleted){
-        CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator("Phòng chơi đã bị giải tán, bạn sẽ được điều hướng về trang chủ..."));
-        localStorage.removeItem("isPlayingInRoomId");
+        CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator("Phòng chơi đã bị giải tán, mọi người sẽ về trang chủ..."));
+        CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
+        
         history.push(`/`);  
         return;
       }
@@ -149,24 +151,31 @@ export default function GameRoom() {
 
     socket.on('room-processing-error', (error) => {
       console.log(error);
-      setLoadingPrompt(null);
-      setErrorDialogText('Đã xảy ra lỗi khi load phòng chơi, sẽ về lại trang chủ...');
     })
-  }, [fetchData, history]);
+  }, [history]);
 
   useEffect(() => {
-    socket.on('disconnect-other-tabs', ({player}) => {
+    CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
+
+    isRepeatedTab.current = false;
+  }, []);
+
+  useEffect(() => {
+    socket.on('disconnect-other-tabs', ({player, roomId, socketIdNot}) => {
       if(playerNumber === player){
-        CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator("Đang về trang chủ..."));
+        isRepeatedTab.current = true;
+        CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator("Vui lòng kết nối lại nếu muốn chơi tiếp..."));
+        CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
         history.push('/');
+        return;
       }
     });
-  }, [history, socket, playerNumber]);
+  }, [history, playerNumber]);
 
   useEffect(() => {
-    console.log("room: " + roomInfo);
-    console.log("game: " + game);
-    console.log("player number: " + playerNumber);
+    // console.log("room: " + roomInfo);
+    // console.log("game: " + game);
+    // console.log("player number: " + playerNumber);
 
     if (!roomInfo || !roomInfo.Player1 || !roomInfo.Player2) {
       setWaiting(true);
@@ -177,22 +186,13 @@ export default function GameRoom() {
   }, [roomInfo, game, playerNumber]);
 
   const callBackToServerOnQuit = useCallback(() => {
-    if(!roomInfo) return;
+    if(playerNumber === 0) return;
     const prompt = "Đang xử lý yêu cầu thoát game của bạn và đang điều hướng...";
     CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(prompt));
+    
     try{
-      const payload = {roomId: roomInfo._id, playerNumber};
-      if(playerNumber === 2){
-        payload.player = roomInfo.Player2;
-        if(!roomInfo.Player1){
-          payload.deleteRoom = true;
-        }
-      }else if(playerNumber === 1) {
-        payload.player = roomInfo.Player1;
-        if(!roomInfo.Player2){
-          payload.deleteRoom = true;
-        }
-      }
+      const payload = {roomId: params.id, playerNumber};
+      payload.player = playerInfo.current;
       socket.emit('leave-room', payload);
       localStorage.removeItem("isPlayingInRoomId");
       CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
@@ -203,17 +203,20 @@ export default function GameRoom() {
       CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
       history.push(`/`);         
     }
-  }, [socket, history, playerNumber]);
+  }, [history, playerNumber, playerInfo, params.id]);
 
   useEffect(() => {
-    window.onbeforeunload = () => {
-      callBackToServerOnQuit(); 
-    }
-    return () => {
-      window.onbeforeunload = () => {
-        // do nothing
+    window.unload = () => {
+      callBackToServerOnQuit();
+      window.unload = () => {
+
       }
-      callBackToServerOnQuit(); 
+    }
+    
+    return () => {
+      if(!isRepeatedTab.current){
+        callBackToServerOnQuit(); 
+      }
     }
   }, [callBackToServerOnQuit]);
 
@@ -328,7 +331,7 @@ export default function GameRoom() {
           </DialogActions>
         </Dialog>
         <Backdrop open={isLoadingPrompt !== null} style={{ color: "#fff", zIndex: 100, justifyContent: "center" }}>
-          <Grid container item justify="center">
+          <Grid container item justify="center" width="100%">
             <Grid item xs={12}><CircularProgress color="inherit" /></Grid>
             <Grid item xs={12}>
               <Typography variant="body1" style={{ color: 'white' }}>
