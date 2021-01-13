@@ -148,7 +148,7 @@ export default function RoomsGrid({loadingCallback}){
                         <Alert severity="info">Hiện chưa có phòng chơi nào đang được mở, hãy thử tạo phòng mới nào!!</Alert>
                     </Grid>
                     : rooms.map((item, idx) => 
-                        <Grid key={"gridRoom"+idx} container item xs={6} sm={4} md={3}>
+                        <Grid key={"gridRoom"+idx} container item xs={4} sm={3} md={2}>
                             <RoomGridItem roomItem={item}/>
                         </Grid>
                     )

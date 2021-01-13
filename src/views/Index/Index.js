@@ -156,16 +156,13 @@ export default function Index() {
     <div className={classes.root}>
       <Container maxWidth="xl" className={classes.container}>
         <Grid container spacing={3} className={classes.pageContent}>
-            <Grid container item xs={12} lg={10} justify="center" className={classes.roomNavigationBarArea}>
+            <Grid container item xs={12} justify="center" className={classes.roomNavigationBarArea}>
               <RoomNavigator onCreateRoomClick={handleClickOpen}/>
             </Grid>  
-            <Box component={Grid} container item lg={2} display={{xs: "none", lg:"flex"}}>
-            </Box>
-            <Grid container item xs={12} lg={10} justify="center" className={classes.indexContentArea}>
+            
+            <Grid container item xs={12} justify="center" className={classes.indexContentArea}>
               <RoomsGrid/>
-            </Grid>  
-            <Box component={Grid} container item lg={2} display={{xs: "none", lg:"flex"}}>
-            </Box>
+            </Grid> 
             {/* Create room dialog */}
             <Dialog fullScreen open={openCreateRoomDialog} TransitionComponent={Transition}
               disableBackdropClick={disableForm}>
