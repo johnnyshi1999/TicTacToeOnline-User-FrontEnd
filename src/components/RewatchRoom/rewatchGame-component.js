@@ -46,20 +46,6 @@ function RewatchGame() {
       break;
   }
 
-  let nextTurnUser = "";
-  if (game.playerMoveNext === 1) {
-    nextTurnUser = game.player1.username;
-  }
-  else {
-    nextTurnUser = game.player2.username;
-  }
-
-  useEffect(() => {
-    if (socket) {
-    }
-  }, [])
-
-
   // const [socket, setSocket] = useState();
 
   // useEffect(() => {
