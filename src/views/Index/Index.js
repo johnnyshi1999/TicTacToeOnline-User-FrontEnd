@@ -144,10 +144,10 @@ export default function Index() {
     }
 
     return () => {
+      unsubcribe();
       if(socket){
         socket.emit('page-status', null);
-      };
-      unsubcribe();
+      };     
     }
   }, []);
 
