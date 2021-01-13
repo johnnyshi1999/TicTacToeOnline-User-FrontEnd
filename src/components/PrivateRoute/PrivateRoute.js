@@ -17,7 +17,7 @@ import { useAuth } from '../../contexts/auth';
 // }
 
 function PrivateRoute({ children, ...rest }) {
-  const {authTokens} = useAuth();
+  const {authTokens, activationToken} = useAuth();
 
   return (
     // <Route 
@@ -28,7 +28,7 @@ function PrivateRoute({ children, ...rest }) {
     //     (<Redirect to='/login' />)
     //   }/>
 
-      <Route {...rest}>{authTokens ? children : <Redirect to="/login" />}</Route>
+      <Route {...rest}>{(authTokens && activationToken) ? children : <Redirect to="/login" />}</Route>
 
   );
 }

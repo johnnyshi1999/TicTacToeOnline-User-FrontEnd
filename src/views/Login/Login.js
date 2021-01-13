@@ -47,7 +47,7 @@ export default function Login({onLogin}) {
   const [passwordValue, setPasswordValue] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginMessage, setLoginMessage] = useState("");
-  const {setAuthTokens} = useAuth();
+  const {setAuthTokens, setActivationToken} = useAuth();
 
   const handleChange = (e, setValue) => {
     setValue(e.target.value);
@@ -68,6 +68,7 @@ export default function Login({onLogin}) {
         const token = responseData.token;
         console.log(token);
         setAuthTokens(responseData.token);
+        setActivationToken(responseData.user.activationToken);
         setIsLoggedIn(true);
       }
       else {
