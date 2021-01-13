@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function History() {
+export default function RewatchHistory() {
 
   const classes = useStyles();
 
@@ -30,17 +30,16 @@ export default function History() {
 
   const {game} = useGame();
 
-
   return (
     <Paper className={classes.root}>
       <div className={classes.historyContainer}>
         {game.history.map((element) => {
           let username = "";
           if (element.player === 1) {
-            username = "room.Player1.username";
+            username = game.player1.username;
           }
           else {
-            username = "room.Player2.username";
+            username = game.player2.username;
           }
 
           const positionX = Math.floor(element.position / game.maxRow);
