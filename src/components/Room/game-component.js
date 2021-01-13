@@ -1,21 +1,82 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Board from './board-component.js';
-import ServiceGame from '../../services/serviceGame';
-import io from "socket.io-client";
 import socket from '../../services/socket';
 import { useGame } from '../../contexts/game.js';
-import Axios from 'axios';
-import API from '../../services/api.js';
-import { Button, ButtonBase, Container } from '@material-ui/core';
+import { Button, Container, Typography, Box, Paper } from '@material-ui/core';
 import PlayerCard from '../PlayerCard/playerCard-component.js';
 
+import { makeStyles } from '@material-ui/core/styles';
+
+import defaultAvatar from "../../assets/tic-tac-toe.png";
+
+const useStyles = makeStyles({
+  root: {
+    maxWidth: 150,
+  },
+
+  paper: {
+    maxWidth: 150,
+    marginTop: 10,
+    marginBottom: 10
+  },
+  image: {
+    height: 100,
+    width: 100,
+    alignContent: 'center',
+    marginRight: 10,
+    marginLeft: 10,
+  },
+
+  usernameText: {
+    marginBottom: 10,
+  },
+
+  row: {
+    display: 'flex',
+    justifyContent: 'center',
+  },
+});
 
 function Game(props) {
+  const classes = useStyles();
 
   const { room, game, gameActions } = useGame();
 
   let winnerMessage;
 
+  const [havePlayer1Info, setHavePlayer1Info] = useState(false);
+  const player1Username = useRef(null);
+  const player1Trophies = useRef(null);
+  const player1GamesWon = useRef(null);
+  const player1GamesLost = useRef(null);
+
+  const [havePlayer2Info, setHavePlayer2Info] = useState(false);
+  const player2Username = useRef(null);
+  const player2Trophies = useRef(null);
+  const player2GamesWon = useRef(null);
+  const player2GamesLost = useRef(null);
+
+  useEffect(() => {
+    if(room.Player1){
+      player1Username.current = room.Player1.username;
+      player1Trophies.current = room.Player1.trophies;
+      player1GamesWon.current = room.Player1.gamesWon;
+      player1GamesLost.current = room.Player1.gamesLost;
+      setHavePlayer1Info(true);
+    }else{
+      setHavePlayer1Info(false);
+    }
+
+    if(room.Player2){
+      player2Username.current = room.Player2.username;
+      player2Trophies.current = room.Player2.trophies;
+      player2GamesWon.current = room.Player2.gamesWon;
+      player2GamesLost.current = room.Player2.gamesLost;
+      setHavePlayer2Info(true);
+    }else{
+      setHavePlayer2Info(false);
+    }
+  }, [room]);
 
   // const fetchData = useCallback(async () => {
   //   if (game.winner !== 0) {
@@ -48,10 +109,10 @@ function Game(props) {
 
   let nextTurnUser = "";
   if (game.playerMoveNext === 1) {
-    nextTurnUser = room.Player1.username;
+    nextTurnUser = player1Username.current;
   }
   else {
-    nextTurnUser = room.Player2.username;
+    nextTurnUser = player2Username.current;
   }
   let userTurnMessage = `It's turn of: ${nextTurnUser}`;
 
@@ -97,19 +158,46 @@ function Game(props) {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <PlayerCard
-              username={room.Player1.username}
-              trophies={room.Player1.trophies}
-              won={room.Player1.gamesWon}
-              lost={room.Player1.gamesLost}></PlayerCard>
+            {havePlayer1Info?
+              <PlayerCard
+                username={player1Username.current}
+                trophies={player1Trophies.current}
+                won={player1GamesWon.current}
+                lost={player1GamesLost.current}></PlayerCard>
+            : 
+              <Box border={2} className={classes.root} style={{ marginLeft: 10 }} borderRadius={10}>
+                <Paper className={classes.paper} elevation={0}>
+                  <div className={classes.row}>
+                    <img src={defaultAvatar} className={classes.image} alt="player1 avatar"></img>
+                  </div>
+                  <Typography align='center' className={classes.usernameText}>
+                    Người dùng đã thoát phòng
+                  </Typography>
+                </Paper>
+              </Box>
+            }
             <div style={{ flexGrow: 1 }} />
             <div>{"Time remaining: " + props.timer}</div>
             <div style={{ flexGrow: 1 }} />
-            <PlayerCard
-              username={room.Player2.username}
-              trophies={room.Player2.trophies}
-              won={room.Player2.gamesWon}
-              lost={room.Player2.gamesLost}></PlayerCard>
+            {
+              havePlayer2Info ? 
+                <PlayerCard
+                username={player2Username.current}
+                trophies={player2Trophies.current}
+                won={player2GamesWon.current}
+                lost={player2GamesLost.current}></PlayerCard>
+              :
+              <Box border={2} className={classes.root} style={{ marginLeft: 10 }} borderRadius={10}>
+                <Paper className={classes.paper} elevation={0}>
+                  <div className={classes.row}>
+                    <img src={defaultAvatar} className={classes.image} alt="player1 avatar"></img>
+                  </div>
+                  <Typography align='center' className={classes.usernameText}>
+                    Người dùng đã thoát phòng
+                  </Typography>
+                </Paper>
+              </Box>
+            }
           </div>
         </div>
 
