@@ -61,7 +61,7 @@ export default function ChatHistory() {
     <Paper className={classes.root}>
       <Paper elevation={0} className={classes.msgContainer}>
         {
-          chat.messages ?
+          chat ?
             <div>
               {chat.messages.map((e) => {
                 return (
