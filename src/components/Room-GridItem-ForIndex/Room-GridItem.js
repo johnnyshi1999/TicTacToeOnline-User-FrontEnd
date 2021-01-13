@@ -161,6 +161,8 @@ export default function RoomGridItem({roomItem}){
                     return;
                 }
                 
+                const roomLink = `/room/${roomItem._id}`;
+                window.location.href=roomLink;
             } catch (e) {
                 CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator('Không thể tham gia phòng chơi, bạn có thể thử tải lại trang hoặc liên hệ phía hỗ trợ'));
                 console.log(e);

@@ -43,14 +43,15 @@ export default function DefaultAppBar() {
         setAnchorEl(null);
     };
 
-  const handleLogOut = () => {
-    setAuthTokens(null);
-    setAnchorEl(null);
-    history.push('/');
-  };
+    const handleLogOut = () => {
+        setAuthTokens(null);
+        setAnchorEl(null);
+        history.push('/login');
+    };
 
     const handleProfile = () => {
         console.log(authTokens);
+        history.push('/profile');
     }
 
     return (
@@ -67,8 +68,9 @@ export default function DefaultAppBar() {
                                 aria-controls="menu-appbar"
                                 aria-haspopup="true"
                                 color="inherit"
-                                component={Link}
-                                to='/ranking'>
+                                onClick={() => {
+                                    history.push('/ranking');
+                                }}>
                                 <FormatListNumberedIcon />
                             </IconButton>
                             <IconButton
@@ -94,7 +96,7 @@ export default function DefaultAppBar() {
                                 open={open}
                                 onClose={handleClose}
                             >
-                                <MenuItem onClick={handleProfile} component={Link} to='/profile'>Profile</MenuItem>
+                                <MenuItem onClick={handleProfile}>Profile</MenuItem>
                                 <MenuItem onClick={handleLogOut}>Log Out</MenuItem>
                             </Menu>
                         </div>

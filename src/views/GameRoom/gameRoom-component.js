@@ -105,10 +105,7 @@ export default function GameRoom() {
   }, [authTokens, params.id]);
 
   useEffect(() => {
-    
-
     fetchData();
-
     socket.on("update-board", (game) => {
       console.log("on update-board");
       setGame(game);
@@ -152,7 +149,7 @@ export default function GameRoom() {
     socket.on('room-processing-error', (error) => {
       console.log(error);
     })
-  }, [fetchData, history]);
+  }, [history]);
 
   useEffect(() => {
     CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
@@ -162,7 +159,7 @@ export default function GameRoom() {
 
   useEffect(() => {
     socket.on('disconnect-other-tabs', ({player, roomId, socketIdNot}) => {
-      if(playerNumber === player && socket.id !== socketIdNot){
+      if(playerNumber === player){
         isRepeatedTab.current = true;
         CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator("Vui lòng kết nối lại nếu muốn chơi tiếp..."));
         CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
@@ -187,8 +184,7 @@ export default function GameRoom() {
 
   const callBackToServerOnQuit = useCallback(() => {
     if(!roomInfo) return;
-
-    
+   
     const prompt = "Đang xử lý yêu cầu thoát game của bạn và đang điều hướng...";
     CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(prompt));
     
@@ -212,6 +208,13 @@ export default function GameRoom() {
   }, [socket, history, playerNumber]);
 
   useEffect(() => {
+    window.unload = () => {
+      callBackToServerOnQuit();
+      window.unload = () => {
+
+      }
+    }
+    
     return () => {
       if(!isRepeatedTab.current){
         callBackToServerOnQuit(); 

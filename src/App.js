@@ -58,12 +58,12 @@ function App() {
                 <Route exact path="/signup">
                   <SignUp />
                 </Route>
-                <Route exact path="/ranking">
+                <PrivateRoute exact path="/ranking">
                   <Ranking />
-                </Route>
-                <Route exact path="/room/:id">
+                </PrivateRoute>
+                <PrivateRoute exact path="/room/:id">
                   <GameRoom />
-                </Route>
+                </PrivateRoute>
 
                 {/* Test area */}
                 <Route exact path="/test/chatBox">

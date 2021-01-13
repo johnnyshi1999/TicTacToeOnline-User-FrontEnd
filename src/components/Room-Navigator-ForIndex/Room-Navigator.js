@@ -70,7 +70,10 @@ export default function RoomNavigator({onCreateRoomClick, onFastPlayClick}){
               CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
               CaroOnlineStore.dispatch(IndexPage_RoomPasswordPrompt_ActionCreator(data));
               return;
-            }            
+            }       
+            
+            const roomLink = `/room/${roomItem._id}`;
+            window.location.href=roomLink;
           } catch (e) {
             CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator('Không thể tham gia phòng chơi, bạn có thể thử tải lại trang hoặc liên hệ phía hỗ trợ'));
             console.log(e);
