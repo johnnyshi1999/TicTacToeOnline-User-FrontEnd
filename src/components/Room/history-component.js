@@ -28,76 +28,7 @@ export default function History() {
 
   // const { game, room } = useGame();
 
-  const game = {};
-  game.maxRow = 20;
-  game.maxCol = 20;
-  game.history = [
-    {
-      player: 1,
-      position: 1,
-    },
-
-    {
-      player: 2,
-      position: 2,
-    },
-
-    {
-      player: 1,
-      position: 3,
-    },
-
-    {
-      player: 1,
-      position: 3,
-    },
-
-    {
-      player: 1,
-      position: 3,
-    },
-
-    {
-      player: 1,
-      position: 3,
-    },
-
-    {
-      player: 1,
-      position: 3,
-    },
-
-
-    {
-      player: 1,
-      position: 3,
-    },
-
-    {
-      player: 1,
-      position: 3,
-    },
-
-    {
-      player: 1,
-      position: 3,
-    },
-
-    {
-      player: 1,
-      position: 3,
-    },
-
-    {
-      player: 1,
-      position: 3,
-    },
-
-    {
-      player: 1,
-      position: 3,
-    },
-  ];
+  const {game} = useGame();
 
 
   return (
