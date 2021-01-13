@@ -24,6 +24,7 @@ import RoomTab from "./components/Room/RoomTab-component.js";
 import OnlineList from "./components/OnlineList/onlineList-component.js";
 import socket from './services/socket';
 import RewatchRoom from "./views/RewatchRoom/rewatchRoom-component.js";
+import ClientUserProfile from "./views/UserProfile/ClientUserProfile.js";
 
 function App() {
   const [isLoadingPrompt, setLoadingPrompt] = useState(null);
@@ -66,6 +67,14 @@ function App() {
                 <PrivateRoute exact path="/room/:id">
                   <GameRoom />
                 </PrivateRoute>
+
+                <PrivateRoute exact path="/profile">
+                  <ClientUserProfile></ClientUserProfile>
+                </PrivateRoute>
+
+                <Route exact path ='/game-records/:id'>
+                  <RewatchRoom></RewatchRoom>
+                </Route>
 
                 {/* Test area */}
                 <Route exact path="/test/chatBox">
