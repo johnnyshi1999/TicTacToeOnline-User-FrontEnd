@@ -36,7 +36,7 @@ export default function GameRoom() {
   const [chat, setChat] = useState(null);
 
   const [game, setGame] = useState(null);
-  const [playerNumber, setPlayerNumber] = useState(0);
+  const playerNumber = useRef(0);
   const playerInfo = useRef(null);
   const [isLoadingPrompt, setLoadingPrompt] = useState("Đang tải phòng chơi, vui lòng chờ");
 
@@ -63,7 +63,7 @@ export default function GameRoom() {
       }
 
       setRoomInfo(joinResult.data.room);
-      setPlayerNumber(joinResult.data.playerNumber);
+      playerNumber.current = joinResult.data.playerNumber;
       setUsername(joinResult.data.username);
 
       if (joinResult.data.currentGame) {
@@ -162,7 +162,7 @@ export default function GameRoom() {
 
   useEffect(() => {
     socket.on('disconnect-other-tabs', ({player, roomId, socketIdNot}) => {
-      if(playerNumber === player){
+      if(playerNumber.current === player){
         isRepeatedTab.current = true;
         CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator("Vui lòng kết nối lại nếu muốn chơi tiếp..."));
         CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
@@ -170,7 +170,7 @@ export default function GameRoom() {
         return;
       }
     });
-  }, [history, playerNumber]);
+  }, [history]);
 
   useEffect(() => {
     // console.log("room: " + roomInfo);
@@ -183,32 +183,33 @@ export default function GameRoom() {
     else {
       setWaiting(false);
     }
-  }, [roomInfo, game, playerNumber]);
+  }, [roomInfo, game]);
 
-  const callBackToServerOnQuit = useCallback(() => {
-    if(playerNumber === 0) return;
+  const callBackToServerOnQuit = () => {
+    if(playerNumber.current === 0) return;
+    console.log('aaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbb');
     const prompt = "Đang xử lý yêu cầu thoát game của bạn và đang điều hướng...";
     CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(prompt));
     
     try{
-      const payload = {roomId: params.id, playerNumber};
+      const payload = {roomId: params.id, playerNumber: playerNumber.current};
       payload.player = playerInfo.current;
       socket.emit('leave-room', payload);
       localStorage.removeItem("isPlayingInRoomId");
       CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
     } catch (e) {
-      if(playerNumber !== 0){
+      if(playerNumber.current !== 0){
         CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator("Bạn thoát game không thành công, có thể rejoin lại từ nút ngay dưới đây"));
       }
       CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
       history.push(`/`);         
     }
-  }, [history, playerNumber, playerInfo, params.id]);
+  };
 
   useEffect(() => {
-    window.unload = () => {
+    window.onbeforeunload = () => {
       callBackToServerOnQuit();
-      window.unload = () => {
+      window.onbeforeunload = () => {
 
       }
     }
@@ -218,11 +219,7 @@ export default function GameRoom() {
         callBackToServerOnQuit(); 
       }
     }
-  }, [callBackToServerOnQuit]);
-
-  // useEffect(() => {
-  //   return () => callBackToServerOnQuit();
-  // });
+  }, [history, playerInfo, params.id]);
 
   const handleErrorDialogClose = () => {
     setErrorDialogText(null);
@@ -238,9 +235,9 @@ export default function GameRoom() {
     if (game.board[position] !== 0) {
       return;
     }
-    if (game.playerMoveNext === playerNumber && game.winner === 0) {
-      console.log(playerNumber);
-      await socket.emit("make-move", { gameId: game._id, player: playerNumber, position: position });
+    if (game.playerMoveNext === playerNumber.current && game.winner === 0) {
+      console.log(playerNumber.current);
+      await socket.emit("make-move", { gameId: game._id, player: playerNumber.current, position: position });
     }
   }
 
@@ -280,7 +277,7 @@ export default function GameRoom() {
     game: game,
     chat: chat,
     username: username,
-    playerNumber: playerNumber,
+    playerNumber: playerNumber.current,
     gameActions: gameActions,
   }
 
