@@ -1,5 +1,7 @@
 import Axios from 'axios';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+import API from '../services/api';
+import socket from '../services/socket';
 
 export const AuthContext = createContext();
 
@@ -46,6 +48,20 @@ export function AuthProvider({children}) {
       throw error;
     }
   )
+
+  const emitLogin = async () => {
+    const result = await Axios.get(API.url + '/api/auth/');
+
+    const userId = result.data.user._id;
+
+    socket.emit("login", userId);
+  }
+
+  useEffect(() => {
+    if (authTokens) {
+      emitLogin();
+    }
+  }, [authTokens])
 
   const value = { authTokens: authTokens, setAuthTokens: setTokens};
 

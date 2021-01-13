@@ -8,8 +8,11 @@ import { useAuth } from "../../contexts/auth";
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { IconButton } from "@material-ui/core";
-import { AccountCircle} from "@material-ui/icons";
-import { Link , useHistory} from 'react-router-dom';
+import { AccountCircle } from "@material-ui/icons";
+import { Link, useHistory } from 'react-router-dom';
+import socket from "../../services/socket";
+import Axios from "axios";
+import API from "../../services/api";
 
 import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
 
@@ -43,10 +46,16 @@ export default function DefaultAppBar() {
         setAnchorEl(null);
     };
 
-    const handleLogOut = () => {
+    const handleLogOut = async () => {
+
+        const result = await Axios.get(API.url + '/api/auth/');
+
+        const userId = result.data._id;
+
+        socket.emit("logout");
         setAuthTokens(null);
         setAnchorEl(null);
-        history.push('/login');
+        history.push('/');
     };
 
     const handleProfile = () => {

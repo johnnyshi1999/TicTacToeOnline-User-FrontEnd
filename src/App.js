@@ -22,6 +22,7 @@ import CaroOnlineStore from './redux/store';
 import History from "./components/Room/history-component.js";
 import RoomTab from "./components/Room/RoomTab-component.js";
 import OnlineList from "./components/OnlineList/onlineList-component.js";
+import socket from './services/socket';
 
 function App() {
   const [isLoadingPrompt, setLoadingPrompt] = useState(null);
@@ -86,7 +87,7 @@ function App() {
                 </Route>
               </Switch>
             </main>
-
+          <OnlineList></OnlineList>
           </React.Fragment>
           <Backdrop open={isLoadingPrompt !== null} style={{color: "#fff" , zIndex: 100}}>
             <Grid container item justify="center">
