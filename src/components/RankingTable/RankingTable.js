@@ -101,7 +101,7 @@ export default function RankingTable({rankData}) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows
+            {rankData
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => {
                 return (
@@ -112,7 +112,22 @@ export default function RankingTable({rankData}) {
                     key={row.username}
                   >
                     {columns.map((column) => {
-                      const value = row[column.id];
+                      const totalGames = parseInt(row["gamesWon"]) + parseInt(row["gamesLost"]);
+                      let value;
+                      switch(column.id){
+                        case "rank":
+                          const realRank = rankInfo.find((entry) => entry.minTrophies <= row.trophies);
+                          value = realRank.name;
+                          break;
+                        case "totalGames":
+                          value = totalGames
+                          break;
+                        case "winRate":
+                          value = totalGames !== 0 ? parseInt(row["gamesWon"]) * 100 / totalGames : 0;
+                          break;
+                        default:
+                          value = row[column.id]; break;
+                      }
                       return (
                         <TableCell key={column.id} align={column.align}>
                           {column.format && typeof value === "number"
@@ -136,7 +151,7 @@ export default function RankingTable({rankData}) {
           //   { label: "All", value: -1 }
         ]}
         component="div"
-        count={rows.length}
+        count={rankData.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onChangePage={handleChangePage}
@@ -147,41 +162,41 @@ export default function RankingTable({rankData}) {
   );
 }
 
-// const rankInfo = [
-//   {
-//     name: "Challenger",
-//     minTrophies: 1200,
-//   },
-//   {
-//     name: "Grand master",
-//     minTrophies: 1000,
-//   },
-//   {
-//     name: "Master",
-//     minTrophies: 800,
-//   },
-//   {
-//     name: "Diamond",
-//     minTrophies: 600,
-//   },
-//   {
-//     name: "Platinum",
-//     minTrophies: 400,
-//   },
-//   {
-//     name: "Gold",
-//     minTrophies: 300,
-//   },
-//   {
-//     name: "Silver",
-//     minTrophies: 200,
-//   },
-//   {
-//     name: "Bronze",
-//     minTrophies: 100,
-//   },
-//   {
-//     name: "Iron",
-//     minTrophies: 0,
-//   },
-// ];
+const rankInfo = [
+  {
+    name: "Challenger",
+    minTrophies: 1200,
+  },
+  {
+    name: "Grand master",
+    minTrophies: 1000,
+  },
+  {
+    name: "Master",
+    minTrophies: 800,
+  },
+  {
+    name: "Diamond",
+    minTrophies: 600,
+  },
+  {
+    name: "Platinum",
+    minTrophies: 400,
+  },
+  {
+    name: "Gold",
+    minTrophies: 300,
+  },
+  {
+    name: "Silver",
+    minTrophies: 200,
+  },
+  {
+    name: "Bronze",
+    minTrophies: 100,
+  },
+  {
+    name: "Iron",
+    minTrophies: 0,
+  },
+];

@@ -196,7 +196,6 @@ export default function GameRoom() {
         payload.player = roomInfo.Player1;
       }
       socket.emit('leave-room', payload);
-      localStorage.removeItem("isPlayingInRoomId");
       CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
     } catch (e) {
       if(playerNumber !== 0){
@@ -217,6 +216,7 @@ export default function GameRoom() {
     
     return () => {
       if(!isRepeatedTab.current){
+        localStorage.removeItem("isPlayingInRoomId");
         callBackToServerOnQuit(); 
       }
     }

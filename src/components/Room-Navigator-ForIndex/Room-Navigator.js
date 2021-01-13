@@ -59,9 +59,14 @@ export default function RoomNavigator({onCreateRoomClick, onFastPlayClick}){
             const getIsInRoom = await Axios.post(API.url + '/api/room-management/room/check-is-in-room');
             const isInData = getIsInRoom.data;
             if(isInData.data){
-              const roomLink = `/room/${isInData.data}`;
-              window.location.href=roomLink;
-              return;
+              if(isInData.data.RoomType.NumberId !== 2){
+                  const roomLink = `/room/${isInData.data._id.toString()}`;
+                  window.location.href=roomLink;
+              }else {
+                  CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
+                  CaroOnlineStore.dispatch(IndexPage_RoomPasswordPrompt_ActionCreator(isInData.data));
+              }   
+              return;            
             }
 
             const result = await Axios.get(API.url + `/api/room-management/room/${roomId}`);
@@ -72,7 +77,7 @@ export default function RoomNavigator({onCreateRoomClick, onFastPlayClick}){
               return;
             }       
             
-            const roomLink = `/room/${roomItem._id}`;
+            const roomLink = `/room/${roomId._id}`;
             window.location.href=roomLink;
           } catch (e) {
             CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator('Không thể tham gia phòng chơi, bạn có thể thử tải lại trang hoặc liên hệ phía hỗ trợ'));
@@ -112,9 +117,14 @@ export default function RoomNavigator({onCreateRoomClick, onFastPlayClick}){
                     const getIsInRoom = await Axios.post(API.url + `/api/room-management/room/check-is-in-room`);
                     const isInData = getIsInRoom.data;
                     if(isInData.data){
-                        const roomLink = `/room/${isInData.data}`;
-                        window.location.href=roomLink;
-                        return;
+                      if(isInData.data.RoomType.NumberId !== 2){
+                          const roomLink = `/room/${isInData.data._id.toString()}`;
+                          window.location.href=roomLink;
+                      }else {
+                          CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
+                          CaroOnlineStore.dispatch(IndexPage_RoomPasswordPrompt_ActionCreator(isInData.data));
+                      }   
+                      return;            
                     }
                     onCreateRoomClick();
                   } catch (e) {

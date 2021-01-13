@@ -23,6 +23,7 @@ import IndexPage_RoomPasswordPrompt_ActionCreator from '../../redux/actionCreato
 import IndexPage_LoadingBackdrop_ActionCreator from '../../redux/actionCreators/Index/IndexPage_LoadingBackdrop_ActionCreator'
 
 import {useHistory} from 'react-router-dom';
+import Global_IsAwaitingServerResponse_ActionCreator from "../../redux/actionCreators/Global_IsAwaitingServerResponse_ActionCreator";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -419,8 +420,24 @@ export default function Index() {
 
       {/* Join room backdrop */}
       <Backdrop open={openRejoinRoomBackdrop ? true : false} style={{color: "#000000" , zIndex: 100}}>
-        <Button color="primary" variant="contained" onClick={() => {
-            history.push(`/room/${openRejoinRoomBackdrop.toString()}`);
+        <Button color="primary" variant="contained" onClick={async() => {
+            CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(true));
+            const getIsInRoom = await Axios.post(API.url + '/api/room-management/room/check-is-in-room');
+            const isInData = getIsInRoom.data;
+            if(isInData.data){
+              if(isInData.data.RoomType.NumberId !== 2){
+                  const roomLink = `/room/${isInData.data._id.toString()}`;
+                  window.location.href=roomLink;
+              }else {
+                CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
+                CaroOnlineStore.dispatch(IndexPage_RoomPasswordPrompt_ActionCreator(isInData.data));
+              }   
+              return;            
+            }else{
+              localStorage.removeItem("isPlayingInRoomId");
+              CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
+              setOpenRejoinRoomBackdrop(null);
+            }      
         }}> 
         Vào phòng lại
         </Button>

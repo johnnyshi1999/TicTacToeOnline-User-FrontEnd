@@ -13,7 +13,6 @@ import CaroOnlineStore from '../../redux/store';
 
 import Axios from 'axios';
 import API from "../../services/api";
-import {useAuth} from '../../contexts/auth';
 
 const useStyles = makeStyles((theme) => ({
     parentPaper:{
@@ -148,13 +147,18 @@ export default function RoomGridItem({roomItem}){
                 const getIsInRoom = await Axios.post(API.url + `/api/room-management/room/check-is-in-room`);
                 const isInData = getIsInRoom.data;
                 if(isInData.data){
-                    const roomLink = `/room/${isInData.data}`;
-                    window.location.href=roomLink;
-                    return;
+                    if(isInData.data.RoomType.NumberId !== 2){
+                        const roomLink = `/room/${isInData.data._id.toString()}`;
+                        window.location.href=roomLink;
+                    }else {
+                        CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
+                        CaroOnlineStore.dispatch(IndexPage_RoomPasswordPrompt_ActionCreator(isInData.data));
+                    }   
+                    return;            
                 }
                 
                 const result = await Axios.get(API.url + `/api/room-management/room/${roomItem._id}`);
-                let {data} = result.data;
+                const {data} = result.data;
                 if(data.RoomType.NumberId === 2) {
                     CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
                     CaroOnlineStore.dispatch(IndexPage_RoomPasswordPrompt_ActionCreator(data));
