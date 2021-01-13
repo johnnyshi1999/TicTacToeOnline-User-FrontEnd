@@ -37,6 +37,7 @@ export default function GameRoom() {
 
   const [game, setGame] = useState(null);
   const [playerNumber, setPlayerNumber] = useState(0);
+  const playerInfo = useRef(null);
   const [isLoadingPrompt, setLoadingPrompt] = useState("Đang tải phòng chơi, vui lòng chờ");
 
   const [errorDialogText, setErrorDialogText] = useState(null);
@@ -84,9 +85,11 @@ export default function GameRoom() {
         switch(parseInt(joinResult.data.playerNumber)){
           case 1: 
             joinRoomPayload.playerId = joinResult.data.room.Player1._id;
+            playerInfo.current = joinResult.data.room.Player1;
             break;
           case 2: 
             joinRoomPayload.playerId = joinResult.data.room.Player2._id;
+            playerInfo.current = joinResult.data.room.Player2;
             break;
           default:
             break;
@@ -183,19 +186,15 @@ export default function GameRoom() {
   }, [roomInfo, game, playerNumber]);
 
   const callBackToServerOnQuit = useCallback(() => {
-    if(!roomInfo) return;
-   
+    if(playerNumber === 0) return;
     const prompt = "Đang xử lý yêu cầu thoát game của bạn và đang điều hướng...";
     CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(prompt));
     
     try{
-      const payload = {roomId: roomInfo._id, playerNumber};
-      if(playerNumber === 2){
-        payload.player = roomInfo.Player2;
-      }else if(playerNumber === 1) {
-        payload.player = roomInfo.Player1;
-      }
+      const payload = {roomId: params.id, playerNumber};
+      payload.player = playerInfo.current;
       socket.emit('leave-room', payload);
+      localStorage.removeItem("isPlayingInRoomId");
       CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
     } catch (e) {
       if(playerNumber !== 0){
@@ -204,7 +203,7 @@ export default function GameRoom() {
       CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
       history.push(`/`);         
     }
-  }, [socket, history, playerNumber]);
+  }, [history, playerNumber, playerInfo, params.id]);
 
   useEffect(() => {
     window.unload = () => {
@@ -216,11 +215,10 @@ export default function GameRoom() {
     
     return () => {
       if(!isRepeatedTab.current){
-        localStorage.removeItem("isPlayingInRoomId");
         callBackToServerOnQuit(); 
       }
     }
-  }, []);
+  }, [callBackToServerOnQuit]);
 
   // useEffect(() => {
   //   return () => callBackToServerOnQuit();
