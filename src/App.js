@@ -23,6 +23,7 @@ import History from "./components/Room/history-component.js";
 import RoomTab from "./components/Room/RoomTab-component.js";
 import OnlineList from "./components/OnlineList/onlineList-component.js";
 import socket from './services/socket';
+import RewatchRoom from "./views/RewatchRoom/rewatchRoom-component.js";
 
 function App() {
   const [isLoadingPrompt, setLoadingPrompt] = useState(null);
@@ -84,6 +85,10 @@ function App() {
 
                 <Route exact path ='/test/online'>
                   <OnlineList></OnlineList>
+                </Route>
+
+                <Route exact path ='/test/record/:id'>
+                  <RewatchRoom></RewatchRoom>
                 </Route>
               </Switch>
             </main>
