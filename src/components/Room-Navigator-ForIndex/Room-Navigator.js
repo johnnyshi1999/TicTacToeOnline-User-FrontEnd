@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { Grid, TextField, Button, Paper} from "@material-ui/core";
 import { makeStyles } from  "@material-ui/core";
@@ -8,11 +8,13 @@ import { useAuth } from '../../contexts/auth';
 import IndexPage_LoadingBackdrop_ActionCreator from '../../redux/actionCreators/Index/IndexPage_LoadingBackdrop_ActionCreator';
 import IndexPage_ErrorPopUp_ActionCreator from '../../redux/actionCreators/Index/IndexPage_ErrorPopUp_ActionCreator';
 import IndexPage_RoomPasswordPrompt_ActionCreator from '../../redux/actionCreators/Index/IndexPage_RoomPasswordPrompt_ActionCreator';
+import Global_IsAwaitingServerResponse_ActionCreator from "../../redux/actionCreators/Global_IsAwaitingServerResponse_ActionCreator";
 
 import CaroOnlineStore from '../../redux/store';
 
 import Axios from 'axios';
 import API from "../../services/api";
+import socket from '../../services/socket';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function RoomNavigator({onCreateRoomClick, onFastPlayClick}){
+export default function RoomNavigator({onCreateRoomClick}){
     const classes = useStyles();
 
     const {authTokens} = useAuth();
@@ -86,6 +88,39 @@ export default function RoomNavigator({onCreateRoomClick, onFastPlayClick}){
           CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
       })();
     }
+
+    const handleMatchMakingClick = () => {
+      CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(true));
+      (async () => {
+          try{
+            // Go inside current playing room recorded on the server
+            const getIsInRoom = await Axios.post(API.url + '/api/room-management/room/check-is-in-room');
+            const isInData = getIsInRoom.data;
+            if(isInData.data){
+              if(isInData.data.RoomType.NumberId !== 2){
+                  const roomLink = `/room/${isInData.data._id.toString()}`;
+                  window.location.href=roomLink;
+              }else {
+                  CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
+                  CaroOnlineStore.dispatch(IndexPage_RoomPasswordPrompt_ActionCreator(isInData.data));
+              }   
+              return;            
+            }
+
+            // Else, matchmake since user is not in any room, turn on awaiting server respond
+            CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator('Đang chờ đợi nối cặp từ phía server...'));
+              // emit, on server will have an array ready
+            socket.emit('enter matchmaking queue');
+          } catch (e) {
+            CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator('Không thể tham gia phòng chơi, bạn có thể thử tải lại trang hoặc liên hệ phía hỗ trợ'));
+            console.log(e);
+          }
+          CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
+      })();
+    }
+
+    useEffect(() => {
+    }, []);
 
     return (
         <Grid container item xs={12} className={classes.root}>
@@ -139,7 +174,7 @@ export default function RoomNavigator({onCreateRoomClick, onFastPlayClick}){
             
             <Grid container item xs={12} sm={2} className={classes.gridItem}>
                 <Button variant="contained" color="secondary" className={classes.button} disabled={authTokens ? false : true}
-                onClick={onFastPlayClick}>
+                onClick={handleMatchMakingClick}>
                     Chơi nhanh
                 </Button>
             </Grid>
