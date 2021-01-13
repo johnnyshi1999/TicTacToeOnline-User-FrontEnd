@@ -21,9 +21,9 @@ import CaroOnlineStore from '../../redux/store';
 import IndexPage_ErrorPopUp_ActionCreator from '../../redux/actionCreators/Index/IndexPage_ErrorPopUp_ActionCreator';
 import IndexPage_RoomPasswordPrompt_ActionCreator from '../../redux/actionCreators/Index/IndexPage_RoomPasswordPrompt_ActionCreator';
 import IndexPage_LoadingBackdrop_ActionCreator from '../../redux/actionCreators/Index/IndexPage_LoadingBackdrop_ActionCreator'
-import Global_IsAwaitingServerResponse_ActionCreator from '../../redux/actionCreators/Global_IsAwaitingServerResponse_ActionCreator';
 
 import {useHistory} from 'react-router-dom';
+import Global_IsAwaitingServerResponse_ActionCreator from "../../redux/actionCreators/Global_IsAwaitingServerResponse_ActionCreator";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -134,15 +134,9 @@ export default function Index() {
 
     const unsubcribe = CaroOnlineStore.subscribe(() => {
       const appState = CaroOnlineStore.getState();
-      if(appState.IndexPage.isLoading !== openBackdrop){
-        setOpenBackdrop(appState.IndexPage.isLoading);
-      }
-      if(appState.IndexPage.pageWideError !== indexError){
-        setIndexError(appState.IndexPage.pageWideError);
-      }
-      if(appState.IndexPage.roomToTypePassword !== roomToTypePassword){
-        setRoomToTypePassword(appState.IndexPage.roomToTypePassword);
-      }
+      setOpenBackdrop(appState.IndexPage.isLoading);
+      setIndexError(appState.IndexPage.pageWideError);
+      setRoomToTypePassword(appState.IndexPage.roomToTypePassword);
     });
 
     const roomID = localStorage.getItem("isPlayingInRoomId");
@@ -151,27 +145,24 @@ export default function Index() {
     }
 
     return () => {
+      unsubcribe();
       if(socket){
         socket.emit('page-status', null);
-      };
-      unsubcribe();
+      };     
     }
-  }, [indexError, openBackdrop, roomToTypePassword]);
+  }, []);
 
   return(
     <div className={classes.root}>
       <Container maxWidth="xl" className={classes.container}>
         <Grid container spacing={3} className={classes.pageContent}>
-            <Grid container item xs={12} lg={10} justify="center" className={classes.roomNavigationBarArea}>
+            <Grid container item xs={12} justify="center" className={classes.roomNavigationBarArea}>
               <RoomNavigator onCreateRoomClick={handleClickOpen}/>
             </Grid>  
-            <Box component={Grid} container item lg={2} display={{xs: "none", lg:"flex"}}>
-            </Box>
-            <Grid container item xs={12} lg={10} justify="center" className={classes.indexContentArea}>
+            
+            <Grid container item xs={12} justify="center" className={classes.indexContentArea}>
               <RoomsGrid/>
-            </Grid>  
-            <Box component={Grid} container item lg={2} display={{xs: "none", lg:"flex"}}>
-            </Box>
+            </Grid> 
             {/* Create room dialog */}
             <Dialog fullScreen open={openCreateRoomDialog} TransitionComponent={Transition}
               disableBackdropClick={disableForm}>
@@ -426,8 +417,24 @@ export default function Index() {
 
       {/* Join room backdrop */}
       <Backdrop open={openRejoinRoomBackdrop ? true : false} style={{color: "#000000" , zIndex: 100}}>
-        <Button color="primary" variant="outlined" onClick={() => {
-            history.push(`/room/${openRejoinRoomBackdrop.toString()}`);
+        <Button color="primary" variant="contained" onClick={async() => {
+            CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(true));
+            const getIsInRoom = await Axios.post(API.url + '/api/room-management/room/check-is-in-room');
+            const isInData = getIsInRoom.data;
+            if(isInData.data){
+              if(isInData.data.RoomType.NumberId !== 2){
+                  const roomLink = `/room/${isInData.data._id.toString()}`;
+                  window.location.href=roomLink;
+              }else {
+                CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
+                CaroOnlineStore.dispatch(IndexPage_RoomPasswordPrompt_ActionCreator(isInData.data));
+              }   
+              return;            
+            }else{
+              localStorage.removeItem("isPlayingInRoomId");
+              CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
+              setOpenRejoinRoomBackdrop(null);
+            }      
         }}> 
         Vào phòng lại
         </Button>
