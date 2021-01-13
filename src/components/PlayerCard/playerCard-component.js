@@ -50,14 +50,14 @@ const useStyles = makeStyles({
 
 });
 
-export default function PlayerCard({ username, trophies, won, lost }) {
+export default function PlayerCard({ username, profileImage, trophies, won, lost }) {
   const classes = useStyles();
 
   return (
     <Box border={2} className={classes.root} style={{ marginLeft: 10 }} borderRadius={10}>
       <Paper className={classes.paper} elevation={0}>
         <div className={classes.row}>
-          <img src={defaultAvatar} className={classes.image} alt="player1 avatar"></img>
+          <img src={profileImage? profileImage : defaultAvatar} className={classes.image} alt="player1 avatar"></img>
         </div>
 
 

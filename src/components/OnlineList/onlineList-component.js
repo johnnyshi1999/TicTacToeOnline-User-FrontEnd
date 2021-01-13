@@ -69,7 +69,6 @@ export default function OnlineList() {
   const {authTokens} = useAuth();
 
   useEffect(() => {
-    console.log("online-list");
     socket.on('update-online-list', (allOnlineUsers) => {
       setOnlineUsers(allOnlineUsers);
     })
