@@ -11,7 +11,9 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const existingTokens = localStorage.getItem("token");
+  const existingActive = localStorage.getItem("active");
   const [authTokens, setAuthTokens] = useState(existingTokens);
+  const [currentUser,setCurrentUser] = useState(existingActive);
 
   const [isActive, setActive] = useState(false);
 
@@ -25,17 +27,17 @@ export function AuthProvider({ children }) {
     setAuthTokens(data);
   };
 
-  // const setLocalActive = (data) => {
-  //   if (data) {
-  //     localStorage.setItem("active", data);
+  const setLocalActive = (data) => {
+    if (data) {
+      localStorage.setItem("active", data);
       
-  //   }
-  //   else {
-  //     localStorage.removeItem("active");
-  //   }
+    }
+    else {
+      localStorage.removeItem("active");
+    }
 
-  //   setActive(data);
-  // }
+    setActive(data);
+  }
 
   Axios.interceptors.request.use(
     config => {
@@ -79,7 +81,9 @@ export function AuthProvider({ children }) {
     authTokens: authTokens,
     setAuthTokens: setTokens,
     isActive: isActive,
-    setActive: setActive,
+    setActive: setLocalActive,
+    currentUser: currentUser,
+    setCurrentUser: setCurrentUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
