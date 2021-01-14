@@ -100,8 +100,8 @@ function App() {
             style={
               isLoadingPrompt !== null
                 ? {
-                    display: "none",
-                  }
+                  display: "none",
+                }
                 : { display: "flex" }
             }
           ></CustomAppBar>
@@ -129,6 +129,10 @@ function App() {
 
               <PrivateRoute exact path="/profile">
                 <ClientUserProfile></ClientUserProfile>
+              </PrivateRoute>
+
+              <PrivateRoute exact path="/users/:username">
+                <OtherUserProfile></OtherUserProfile>
               </PrivateRoute>
 
               <Route exact path="/game-records/:id">
