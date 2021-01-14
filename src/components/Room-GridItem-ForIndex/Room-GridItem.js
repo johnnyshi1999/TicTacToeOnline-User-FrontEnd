@@ -14,6 +14,8 @@ import CaroOnlineStore from '../../redux/store';
 import Axios from 'axios';
 import API from "../../services/api";
 
+import {useHistory} from 'react-router-dom';
+
 const useStyles = makeStyles((theme) => ({
     parentPaper:{
         width: "100%",
@@ -135,6 +137,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function RoomGridItem({roomItem}){
     const classes = useStyles();
+    const history = useHistory();
 
     const [isRaised, setRaised] = useState(false);
     const [showRoomButtons, setShowRoomButtons] = useState(false);
@@ -149,7 +152,7 @@ export default function RoomGridItem({roomItem}){
                 if(isInData.data){
                     if(isInData.data.RoomType.NumberId !== 2){
                         const roomLink = `/room/${isInData.data._id.toString()}`;
-                        window.location.href=roomLink;
+                        history.push(roomLink);
                     }else {
                         CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
                         CaroOnlineStore.dispatch(IndexPage_RoomPasswordPrompt_ActionCreator(isInData.data));
@@ -166,7 +169,7 @@ export default function RoomGridItem({roomItem}){
                 }
                 
                 const roomLink = `/room/${roomItem._id}`;
-                window.location.href=roomLink;
+                history.push(roomLink);
             } catch (e) {
                 CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator('Không thể tham gia phòng chơi, bạn có thể thử tải lại trang hoặc liên hệ phía hỗ trợ'));
                 console.log(e);

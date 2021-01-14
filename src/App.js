@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import React, {useState, useEffect} from "react";
+import { BrowserRouter as Router, Switch, Route, useHistory } from "react-router-dom";
 
 import { AuthProvider } from "./contexts/auth.js";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -33,8 +33,15 @@ import ActivateAccount from "./views/Activate/ActivateAccount.js";
 import { CustomBackdrop } from "./components/customBackdrop.js";
 import OtherUserProfile from "./views/otherUserProfile/OtherUserProfile.js";
 
+import {makeStyles} from '@material-ui/core';
+
+const useStyles = makeStyles((theme) => ({
+  toolbar: theme.mixins.toolbar,
+}));
 
 function App() {
+  const classes = useStyles();
+  const history = useHistory();
   const [isLoadingPrompt, setLoadingPrompt] = useState(null);
 
   useEffect(() => {
@@ -59,7 +66,7 @@ function App() {
     socket.on('room-create-success', ({ yourRoom }) => {
       const roomId = yourRoom._id.toString();
       const roomLink = `/room/${roomId}`;
-      window.location.href = roomLink;
+      history.push(roomLink); 
       return;
     });
 
@@ -70,95 +77,83 @@ function App() {
 
   return (
     <AuthProvider>
-      <Router>
-        <React.Fragment>
-          <CssBaseline />
-          <CustomAppBar></CustomAppBar>
-          <main>
-            <Switch>
-              {/* <PrivateRoute exact path="/" component={Index} /> */}
-              {/* <Route path="/login" component={Login} />
+        <Router>
+          <React.Fragment>
+            <CssBaseline />
+            <CustomAppBar style={isLoadingPrompt !== null? {
+              display: 'none'
+            } : {display: 'flex'}}></CustomAppBar>
+            <main>
+              <Switch>
+                {/* <PrivateRoute exact path="/" component={Index} /> */}
+                {/* <Route path="/login" component={Login} />
                 <Route path="/signup" component={SignUp} /> */}
 
-              <PrivateRoute exact path="/">
-                <Index />
-              </PrivateRoute>
-              <Route exact path="/login">
-                <Login />
-              </Route>
-              <Route exact path="/signup">
-                <SignUp />
-              </Route>
-              <Route path="/forgot-password">
-                <ForgotPassword />
-              </Route>
-              <Route path="/reset-password/:resetPasswordToken">
-                <ResetPassword />
-              </Route>
-              <Route path="/activate/:activationToken">
-                <ActivateAccount />
-              </Route>
+                <PrivateRoute exact path="/">
+                  <Index />
+                </PrivateRoute>
+                <Route exact path="/login">
+                  <Login />
+                </Route>
+                <Route exact path="/signup">
+                  <SignUp />
+                </Route>
+                <PrivateRoute exact path="/ranking">
+                  <Ranking />
+                </PrivateRoute>
+                <PrivateRoute exact path="/room/:id">
+                  <GameRoom />
+                </PrivateRoute>
 
-              <PrivateRoute exact path="/ranking">
-                <Ranking />
-              </PrivateRoute>
-              <PrivateRoute exact path="/room/:id">
-                <GameRoom />
-              </PrivateRoute>
+                <PrivateRoute exact path="/profile">
+                  <ClientUserProfile></ClientUserProfile>
+                </PrivateRoute>
 
-              <PrivateRoute exact path="/profile">
-                <ClientUserProfile></ClientUserProfile>
-              </PrivateRoute>
+                <Route exact path ='/game-records/:id'>
+                  <RewatchRoom></RewatchRoom>
+                </Route>
 
-              <PrivateRoute exact path="/users/:username">
-                <OtherUserProfile></OtherUserProfile>
-              </PrivateRoute>
+                {/* Test area */}
+                <Route exact path="/test/chatBox">
+                  <ChatBox />
+                </Route>
+                <Route exact path="/test/characterCard">
+                  <PlayerCard></PlayerCard>
+                </Route>
 
-              <Route exact path='/game-records/:id'>
-                <RewatchRoom></RewatchRoom>
-              </Route>
+                <Route exact path="/test/history">
+                  <History></History>
+                </Route>
 
-              {/* Test area */}
-              <Route exact path="/test/chatBox">
-                <ChatBox />
-              </Route>
-              <Route exact path="/test/characterCard">
-                <PlayerCard></PlayerCard>
-              </Route>
+                <Route exact path="/test/RoomTab">
+                  <RoomTab></RoomTab>
+                </Route>
 
-              <Route exact path="/test/history">
-                <History></History>
-              </Route>
+                <Route exact path ='/test/online'>
+                  <OnlineList></OnlineList>
+                </Route>
 
-              <Route exact path="/test/RoomTab">
-                <RoomTab></RoomTab>
-              </Route>
-
-              <Route exact path='/test/online'>
-                <OnlineList></OnlineList>
-              </Route>
-
-              <Route exact path='/test/backdrop'>
-                <CustomBackdrop open={true}></CustomBackdrop>
-              </Route>
-
-              <Route exact path='/test/record/:id'>
-                <RewatchRoom></RewatchRoom>
-              </Route>
-            </Switch>
-          </main>
-          <OnlineList></OnlineList>
-        </React.Fragment>
-        <Backdrop open={isLoadingPrompt !== null} style={{ color: "#fff", zIndex: 100 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-            <CircularProgress color="inherit" />
-            <Typography variant="body1" style={{ color: 'white', marginTop: 5 }}>
-              {isLoadingPrompt}
-            </Typography>
-          </div>
-        </Backdrop>
-      </Router>
-    </AuthProvider>
+                <Route exact path ='/test/record/:id'>
+                  <RewatchRoom></RewatchRoom>
+                </Route>
+              </Switch>
+            </main>
+            <OnlineList></OnlineList>
+          </React.Fragment>
+          <Backdrop open={isLoadingPrompt !== null} style={{color: "#fff" , zIndex: 100}}>
+            <Grid container item justify="center">
+              <Grid container item xs={12} justify="center">
+                <CircularProgress color="inherit" />
+              </Grid>     
+              <Grid container item xs={12} justify="center">
+                <Typography variant="body1" style={{color: 'white'}}>
+                  {isLoadingPrompt}
+                </Typography>
+              </Grid>
+            </Grid>
+          </Backdrop>
+        </Router>
+      </AuthProvider>
   );
 }
 

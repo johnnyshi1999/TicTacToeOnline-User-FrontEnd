@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import API from "../../services/api";
-import { Button, Typography, Dialog, Slide, Backdrop, Grid, CircularProgress, DialogActions, DialogTitle, DialogContent, DialogContentText, makeStyles } from '@material-ui/core';
+import { Button, Typography, Dialog, Slide, Backdrop, Grid, CircularProgress, DialogActions, DialogTitle, DialogContent, DialogContentText, makeStyles, Container } from '@material-ui/core';
+import {Box, Paper} from '@material-ui/core';
+import defaultAvatar from "../../assets/tic-tac-toe.png";
 import './index.css';
 import { useParams } from 'react-router';
 import { useHistory } from 'react-router-dom';
@@ -14,6 +16,7 @@ import PlayerCard from '../../components/PlayerCard/playerCard-component';
 import CaroOnlineStore from '../../redux/store';
 import Global_IsAwaitingServerResponse_ActionCreator from '../../redux/actionCreators/Global_IsAwaitingServerResponse_ActionCreator';
 import IndexPage_ErrorPopUp_ActionCreator from '../../redux/actionCreators/Index/IndexPage_ErrorPopUp_ActionCreator';
+import IndexPage_LoadingBackdrop_ActionCreator from '../../redux/actionCreators/Index/IndexPage_LoadingBackdrop_ActionCreator';
 import RoomTab from '../../components/Room/RoomTab-component';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -24,13 +27,63 @@ const useStyles = makeStyles((theme) => ({
   roomTab: {
     marginTop: theme.spacing(3),
   },
+  container: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(4),
+    paddingLeft: theme.spacing(4),
+    paddingRight: theme.spacing(4),
+  }, 
+  smallerContainer: {
+    paddingTop: theme.spacing(1),
+    paddingBottom: theme.spacing(1),
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+  },
+  root: {
+    maxWidth: 150,
+  },
 
-}));
+  paper: {
+    maxWidth: 150,
+    marginTop: 10,
+    marginBottom: 10
+  },
+  image: {
+    height: 100,
+    width: 100,
+    alignContent: 'center',
+    marginRight: 10,
+    marginLeft: 10,
+  },
+
+  usernameText: {
+    marginBottom: 10,
+  },
+
+  row: {
+    display: 'flex',
+    justifyContent: 'center',
+  },
+})); 
 
 
 export default function GameRoom() {
   const classes = useStyles();
   const params = useParams();
+
+  //States for waiting users
+  const [havePlayer1Info, setHavePlayer1Info] = useState(false);
+  const player1Username = useRef(null);
+  const player1Trophies = useRef(null);
+  const player1GamesWon = useRef(null);
+  const player1GamesLost = useRef(null);
+
+  const [havePlayer2Info, setHavePlayer2Info] = useState(false);
+  const player2Username = useRef(null);
+  const player2Trophies = useRef(null);
+  const player2GamesWon = useRef(null);
+  const player2GamesLost = useRef(null);
+
 
   const [roomInfo, setRoomInfo] = useState(null);
   const [chat, setChat] = useState(null);
@@ -58,7 +111,7 @@ export default function GameRoom() {
       // Redirect to index if not logged in user tries to enter a private room
       if (!authTokens && joinResult.data.room.RoomType.NumberId === 2) {
         const roomLink = `/`;
-        window.location.href = roomLink;
+        history.push(roomLink);
         return;
       }
 
@@ -95,6 +148,7 @@ export default function GameRoom() {
             break;
         }
       }
+
       socket.emit("join-room", joinRoomPayload);
 
       setLoadingPrompt(null);
@@ -122,8 +176,9 @@ export default function GameRoom() {
       if (room.IsDeleted) {
         CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator("Phòng chơi đã bị giải tán, mọi người sẽ về trang chủ..."));
         CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
+        CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
 
-        history.push(`/`);
+        history.push(`/`);  
         return;
       }
       setRoomInfo(room);
@@ -183,11 +238,42 @@ export default function GameRoom() {
     else {
       setWaiting(false);
     }
+
+    if(roomInfo){
+      // Thong tin nguoi dung 1
+      if(roomInfo.Player1){
+        player1Username.current = roomInfo.Player1.username;
+        player1Trophies.current = roomInfo.Player1.trophies;
+        player1GamesWon.current = roomInfo.Player1.gamesWon;
+        player1GamesLost.current = roomInfo.Player1.gamesLost;
+        setHavePlayer1Info(true);
+      }else{
+        player1Username.current = null;
+        player1Trophies.current = null;
+        player1GamesWon.current = null;
+        player1GamesLost.current = null;
+        setHavePlayer1Info(false);
+      }
+
+      // Thong tin nguoi dung 2
+      if(roomInfo.Player2){
+        player2Username.current = roomInfo.Player2.username;
+        player2Trophies.current = roomInfo.Player2.trophies;
+        player2GamesWon.current = roomInfo.Player2.gamesWon;
+        player2GamesLost.current = roomInfo.Player2.gamesLost;
+        setHavePlayer2Info(true);
+      }else {
+        player2Username.current = null;
+        player2Trophies.current = null;
+        player2GamesWon.current = null;
+        player2GamesLost.current = null;
+        setHavePlayer2Info(false);
+      }
+    }
   }, [roomInfo, game]);
 
   const callBackToServerOnQuit = () => {
-    if (playerNumber.current === 0) return;
-    console.log('aaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbb');
+    if(playerNumber.current === 0) return;
     const prompt = "Đang xử lý yêu cầu thoát game của bạn và đang điều hướng...";
     CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(prompt));
 
@@ -297,7 +383,61 @@ export default function GameRoom() {
 
             </div>
             :
-            <Button onClick={handleCreateGameClick}>{isWaiting ? "Waiting for player" : "Create Game"}</Button>
+            <Container maxWidth="lg" className={classes.container}>
+              <Grid container xs={12} spacing={1} className={classes.smallerContainer} style={{border:'2px solid #3F51B5', borderRadius: 5}} justify="center">
+                <Grid container item xs={12} md={5} style={{
+                  alignSelf: 'stretch',
+                }} justify="center">
+                  {havePlayer1Info?
+                    <PlayerCard
+                      username={player1Username.current}
+                      trophies={player1Trophies.current}
+                      won={player1GamesWon.current}
+                      lost={player1GamesLost.current}></PlayerCard>
+                  : 
+                    <Box border={2} className={classes.root} style={{ marginLeft: 10 }} borderRadius={10}>
+                      <Paper className={classes.paper} elevation={0}>
+                        <div className={classes.row}>
+                          <img src={defaultAvatar} className={classes.image} alt="player1 avatar"></img>
+                        </div>
+                        <Typography align='center' className={classes.usernameText}>
+                          Vị trí trống
+                        </Typography>
+                      </Paper>
+                    </Box>
+                  }
+                </Grid>
+                <Grid container item xs={12} md={2} justify="center">
+                  <img src={process.env.PUBLIC_URL + '/Index/VersusIcon.png'} className={classes.image} alt="vs image"></img>
+                </Grid>
+                <Grid container item xs={12} md={5} style={{
+                  alignSelf: 'stretch'
+                }} justify="center">
+                  {
+                    havePlayer2Info ? 
+                      <PlayerCard
+                      username={player2Username.current}
+                      trophies={player2Trophies.current}
+                      won={player2GamesWon.current}
+                      lost={player2GamesLost.current}></PlayerCard>
+                    :
+                    <Box border={2} className={classes.root} style={{ marginLeft: 10 }} borderRadius={10}>
+                      <Paper className={classes.paper} elevation={0}>
+                        <div className={classes.row}>
+                          <img src={defaultAvatar} className={classes.image} alt="player1 avatar"></img>
+                        </div>
+                        <Typography align='center' className={classes.usernameText}>
+                          Vị trí trống
+                        </Typography>
+                      </Paper>
+                    </Box>
+                  }
+                </Grid>
+                <Grid container item xs={12} justify="center">
+                  <Button onClick={handleCreateGameClick}>{isWaiting ? "Waiting for player" : "Create Game"}</Button>
+                </Grid>
+              </Grid>  
+            </Container>   
         }
 
 
@@ -328,12 +468,14 @@ export default function GameRoom() {
           </DialogActions>
         </Dialog>
         <Backdrop open={isLoadingPrompt !== null} style={{ color: "#fff", zIndex: 100, justifyContent: "center" }}>
-          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-            <CircularProgress color="inherit" />
-            <Typography variant="body1" style={{ color: 'white', marginTop: 5 }}>
-              {isLoadingPrompt}
-            </Typography>
-          </div>
+          <Grid container item justify="center">
+            <Grid container item xs={12} justify="center"><CircularProgress color="inherit" /></Grid>
+            <Grid container item xs={12} justify="center">
+              <Typography variant="body1" style={{ color: 'white' }}>
+                {isLoadingPrompt}
+              </Typography>
+            </Grid>
+          </Grid>
         </Backdrop>
       </div>
     </GameContext.Provider>
