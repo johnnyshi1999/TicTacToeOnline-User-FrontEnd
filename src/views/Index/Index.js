@@ -184,7 +184,7 @@ export default function Index() {
                     const {data} = newRoom.data;
 
                     const roomLink = `/room/${data[0]._id}`;
-                    window.location.href=roomLink;
+                    history.push(roomLink);
                   } catch (e) {
                     setOpenBackdrop(false);
                     setDisableForm(false);
@@ -324,7 +324,7 @@ export default function Index() {
                     });
 
                     const roomLink = `/room/${roomToTypePassword._id}`;
-                    window.location.href=roomLink;
+                    history.push(roomLink);
                   } catch (e) {
                     setOpenBackdrop(false);
                     setDisableForm(false);
@@ -424,7 +424,7 @@ export default function Index() {
             if(isInData.data){
               if(isInData.data.RoomType.NumberId !== 2){
                   const roomLink = `/room/${isInData.data._id.toString()}`;
-                  window.location.href=roomLink;
+                  history.push(roomLink);
               }else {
                 CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
                 CaroOnlineStore.dispatch(IndexPage_RoomPasswordPrompt_ActionCreator(isInData.data));

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, useHistory } from "react-router-dom";
 
 import { AuthProvider } from "./contexts/auth.js";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -16,7 +16,7 @@ import GameRoom from "./views/GameRoom/gameRoom-component";
 
 import PlayerCard from "./components/PlayerCard/playerCard-component";
 
-import {Backdrop, Grid, Typography, CircularProgress} from '@material-ui/core';
+import {Backdrop, Grid, Typography, CircularProgress, Paper} from '@material-ui/core';
 
 import CaroOnlineStore from './redux/store';
 import History from "./components/Room/history-component.js";
@@ -28,8 +28,15 @@ import ClientUserProfile from "./views/UserProfile/ClientUserProfile.js";
 
 import Global_IsAwaitingServerResponse_ActionCreator from "./redux/actionCreators/Global_IsAwaitingServerResponse_ActionCreator";
 
+import {makeStyles} from '@material-ui/core';
+
+const useStyles = makeStyles((theme) => ({
+  toolbar: theme.mixins.toolbar,
+}));
 
 function App() {
+  const classes = useStyles();
+  const history = useHistory();
   const [isLoadingPrompt, setLoadingPrompt] = useState(null);
 
   useEffect(() => {
@@ -54,7 +61,7 @@ function App() {
     socket.on('room-create-success', ({yourRoom}) => {
       const roomId = yourRoom._id.toString();
       const roomLink = `/room/${roomId}`;
-      window.location.href=roomLink; 
+      history.push(roomLink); 
       return;
     });
     
@@ -124,7 +131,7 @@ function App() {
                 </Route>
               </Switch>
             </main>
-          <OnlineList></OnlineList>
+            <OnlineList></OnlineList>
           </React.Fragment>
           <Backdrop open={isLoadingPrompt !== null} style={{color: "#fff" , zIndex: 100}}>
             <Grid container item justify="center">
