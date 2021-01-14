@@ -28,7 +28,7 @@ export function AuthProvider({ children }) {
   // const setLocalActive = (data) => {
   //   if (data) {
   //     localStorage.setItem("active", data);
-      
+
   //   }
   //   else {
   //     localStorage.removeItem("active");
@@ -37,13 +37,11 @@ export function AuthProvider({ children }) {
   //   setActive(data);
   // }
 
-  Axios.interceptors.request.use(
-    config => {
-      const token = localStorage.getItem('token');
-      config.headers.authorization = `Bearer ${token}`;
-      return config;
-    },
-  )
+  Axios.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token");
+    config.headers.authorization = `Bearer ${token}`;
+    return config;
+  });
 
   Axios.interceptors.response.use(
     function (response) {
