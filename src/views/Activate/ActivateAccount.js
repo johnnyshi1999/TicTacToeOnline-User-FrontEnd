@@ -37,9 +37,7 @@ export default function ActivateAccount() {
           {responseMsg && <Alert severity={severity}>{responseMsg}</Alert>}
         </div>
       ) : (
-        <Typography>
-          We are tried to activate your account but something went wrong.
-        </Typography>
+        <Typography>Your account was activated.</Typography>
       )}
     </div>
   );
