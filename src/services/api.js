@@ -1,5 +1,5 @@
 const API= {
-  url: "http://localhost:4000",
+  url: "https://caro-client-rest-api.herokuapp.com",
 }
 
 export default API;
