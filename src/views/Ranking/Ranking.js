@@ -72,12 +72,14 @@ export default function Ranking() {
       </DialogActions>
     </Dialog>
     <Backdrop open={isLoadingPrompt !== null} style={{ color: "#fff", zIndex: 100, justifyContent: "center" }}>
-      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-      <CircularProgress color="inherit" />
-      <Typography variant="body1" style={{ color: 'white', marginTop: 5, }}>
+      <Grid container item justify="center" width="100%">
+        <Grid container item xs={12} justify="center"><CircularProgress color="inherit" /></Grid>
+        <Grid container item xs={12} justify="center">
+          <Typography variant="body1" style={{ color: 'white' }}>
             {isLoadingPrompt}
           </Typography>
-      </div>
+        </Grid>
+      </Grid>
     </Backdrop>
   </Grid>);
 }
