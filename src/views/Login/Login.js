@@ -44,6 +44,16 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  fbLoginButton: {
+    backgroundColor: "#fff",
+    // textTransform: "none",
+    margin: theme.spacing(1, 0),
+    width: "100%",
+  },
+  ggLoginButton: {
+    margin: theme.spacing(1, 0),
+    width: "100%",
+  },
 }));
 
 export default function Login({ onLogin }) {
@@ -187,6 +197,7 @@ export default function Login({ onLogin }) {
             onSuccess={responseGoogle}
             onFailure={responseGoogle}
             cookiePolicy={"single_host_origin"}
+            className={classes.ggLoginButton}
           />
           <FacebookLogin
             appId="1111392969314436"
@@ -197,10 +208,11 @@ export default function Login({ onLogin }) {
                 onClick={renderProps.onClick}
                 variant="contained"
                 startIcon={<FacebookIcon style={{ color: "blue" }} />}
+                className={classes.fbLoginButton}
                 style={{
                   backgroundColor: "#fff",
                   textTransform: "none",
-                  height: 42,
+                  // height: 42,
                 }}
               >
                 Login with Facebook
@@ -208,7 +220,15 @@ export default function Login({ onLogin }) {
             )}
           />
 
-          <Grid container justify="flex-end">
+          <Grid
+            container
+            // justify="spacing-between"
+          >
+            <Grid item xs={5}>
+              <Link href="/forgot-password" variant="body2">
+                {"Forgot password"}
+              </Link>
+            </Grid>
             <Grid item>
               <Link href="/signup" variant="body2">
                 {"Don't have an account? Sign Up"}
