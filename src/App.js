@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from "react";
-import { BrowserRouter as Router, Switch, Route} from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import { AuthProvider } from "./contexts/auth.js";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -76,7 +76,7 @@ function App() {
     socket.on("room-create-success", ({ yourRoom }) => {
       const roomId = yourRoom._id.toString();
       const roomLink = `/room/${roomId}`;
-      window.location.href = roomLink; 
+      window.location.href = roomLink;
       return;
     });
 
@@ -94,8 +94,8 @@ function App() {
             style={
               isLoadingPrompt !== null
                 ? {
-                  display: "none",
-                }
+                    display: "none",
+                  }
                 : { display: "flex" }
             }
           ></CustomAppBar>
