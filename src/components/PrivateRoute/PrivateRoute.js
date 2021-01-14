@@ -28,7 +28,7 @@ function PrivateRoute({ children, ...rest }) {
     //     (<Redirect to='/login' />)
     //   }/>
 
-      <Route {...rest}>{authTokens ? children : <Redirect to="/login" />}</Route>
+      <Route {...rest}>{(authTokens) ? children : <Redirect to="/login" />}</Route>
 
   );
 }

@@ -5,7 +5,7 @@ import { AuthProvider } from "./contexts/auth.js";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute.js";
-import CustomAppBar from './components/CustomAppBar/CustomAppBar.js';
+import CustomAppBar from "./components/CustomAppBar/CustomAppBar.js";
 import ChatBox from "./components/ChatBox/ChatBox.js";
 
 import Index from "./views/Index/Index";
@@ -16,17 +16,22 @@ import GameRoom from "./views/GameRoom/gameRoom-component";
 
 import PlayerCard from "./components/PlayerCard/playerCard-component";
 
-import {Backdrop, Grid, Typography, CircularProgress, Paper} from '@material-ui/core';
+import { Backdrop, Grid, Typography, CircularProgress } from '@material-ui/core';
 
-import CaroOnlineStore from './redux/store';
+import CaroOnlineStore from "./redux/store";
 import History from "./components/Room/history-component.js";
 import RoomTab from "./components/Room/RoomTab-component.js";
 import OnlineList from "./components/OnlineList/onlineList-component.js";
-import socket from './services/socket';
+import socket from "./services/socket";
 import RewatchRoom from "./views/RewatchRoom/rewatchRoom-component.js";
 import ClientUserProfile from "./views/UserProfile/ClientUserProfile.js";
 
 import Global_IsAwaitingServerResponse_ActionCreator from "./redux/actionCreators/Global_IsAwaitingServerResponse_ActionCreator";
+import ForgotPassword from "./views/ForgotPassword/ForgotPassword.js";
+import ResetPassword from "./views/ForgotPassword/ResetPassword.js";
+import ActivateAccount from "./views/Activate/ActivateAccount.js";
+import { CustomBackdrop } from "./components/customBackdrop.js";
+import OtherUserProfile from "./views/otherUserProfile/OtherUserProfile.js";
 
 import {makeStyles} from '@material-ui/core';
 
@@ -45,29 +50,29 @@ function App() {
       setLoadingPrompt(appState.isAwaitingServerResponse);
     });
 
-    socket.on('is-matchmaking', ({state}) => {
+    socket.on('is-matchmaking', ({ state }) => {
       setLoadingPrompt(state ? 'Đang chờ đợi nối cặp từ phía server...' : null);
     });
 
-    socket.on('is-waiting-create-room', ({state}) => {
+    socket.on('is-waiting-create-room', ({ state }) => {
       setLoadingPrompt(state ? 'Tìm được người thích hợp, đang tạo phòng...' : null);
     });
 
-    socket.on('matchmake-success', ({yourUserId}) => {
+    socket.on('matchmake-success', ({ yourUserId }) => {
       CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator('Tìm được người thích hợp, đang tạo phòng...'));
-      socket.emit('accept matchmake', {myUserId : yourUserId});
+      socket.emit('accept matchmake', { myUserId: yourUserId });
     });
 
-    socket.on('room-create-success', ({yourRoom}) => {
+    socket.on('room-create-success', ({ yourRoom }) => {
       const roomId = yourRoom._id.toString();
       const roomLink = `/room/${roomId}`;
       history.push(roomLink); 
       return;
     });
-    
+
     return () => {
       unsubcribe();
-    }
+    };
   }, []);
 
   return (

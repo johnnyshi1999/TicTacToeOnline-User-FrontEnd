@@ -1,7 +1,7 @@
-import Axios from 'axios';
-import { createContext, useContext, useEffect, useState } from 'react';
-import API from '../services/api';
-import socket from '../services/socket';
+import Axios from "axios";
+import { createContext, useContext, useEffect, useState } from "react";
+import API from "../services/api";
+import socket from "../services/socket";
 
 export const AuthContext = createContext();
 
@@ -9,20 +9,34 @@ export function useAuth() {
   return useContext(AuthContext);
 }
 
-export function AuthProvider({children}) {
+export function AuthProvider({ children }) {
   const existingTokens = localStorage.getItem("token");
+  const existingActive = localStorage.getItem("active");
   const [authTokens, setAuthTokens] = useState(existingTokens);
- 
+  const [currentUser,setCurrentUser] = useState(existingActive);
+
+  const [isActive, setActive] = useState(false);
 
   const setTokens = (data) => {
     if (data) {
       localStorage.setItem("token", data);
-    }
-    else {
+    } else {
       localStorage.removeItem("token");
     }
 
     setAuthTokens(data);
+  };
+
+  const setLocalActive = (data) => {
+    if (data) {
+      localStorage.setItem("active", data);
+      
+    }
+    else {
+      localStorage.removeItem("active");
+    }
+
+    setActive(data);
   }
 
   Axios.interceptors.request.use(
@@ -47,28 +61,30 @@ export function AuthProvider({children}) {
       }
       throw error;
     }
-  )
+  );
 
   const emitLogin = async () => {
-    const result = await Axios.get(API.url + '/api/auth/');
+    const result = await Axios.get(API.url + "/api/auth/");
 
     const userId = result.data.user._id;
 
     socket.emit("login", userId);
-  }
+  };
 
   useEffect(() => {
     if (authTokens) {
       emitLogin();
     }
-  }, [authTokens])
+  }, [authTokens]);
 
-  const value = { authTokens: authTokens, setAuthTokens: setTokens};
+  const value = {
+    authTokens: authTokens,
+    setAuthTokens: setTokens,
+    isActive: isActive,
+    setActive: setLocalActive,
+    currentUser: currentUser,
+    setCurrentUser: setCurrentUser,
+  };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
-
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

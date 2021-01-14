@@ -127,20 +127,20 @@ export default function GameRoom() {
       // if he is player 1 or 2 in the room
       if (authTokens) {
         const currentRoom_Id = localStorage.getItem("isPlayingInRoomId");
-        if(!currentRoom_Id && joinResult.data.playerNumber !== 0){
+        if (!currentRoom_Id && joinResult.data.playerNumber !== 0) {
           localStorage.setItem("isPlayingInRoomId", params.id);
         }
       }
 
-      const joinRoomPayload = {roomId: joinResult.data.room._id};
-      if(joinResult.data.playerNumber !== 0){
+      const joinRoomPayload = { roomId: joinResult.data.room._id };
+      if (joinResult.data.playerNumber !== 0) {
         joinRoomPayload.playerNumber = joinResult.data.playerNumber;
-        switch(parseInt(joinResult.data.playerNumber)){
-          case 1: 
+        switch (parseInt(joinResult.data.playerNumber)) {
+          case 1:
             joinRoomPayload.playerId = joinResult.data.room.Player1._id;
             playerInfo.current = joinResult.data.room.Player1;
             break;
-          case 2: 
+          case 2:
             joinRoomPayload.playerId = joinResult.data.room.Player2._id;
             playerInfo.current = joinResult.data.room.Player2;
             break;
@@ -173,7 +173,7 @@ export default function GameRoom() {
     });
 
     socket.on("update-room", (room) => {
-      if(room.IsDeleted){
+      if (room.IsDeleted) {
         CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator("Phòng chơi đã bị giải tán, mọi người sẽ về trang chủ..."));
         CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
         CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
@@ -216,8 +216,8 @@ export default function GameRoom() {
   }, []);
 
   useEffect(() => {
-    socket.on('disconnect-other-tabs', ({player, roomId, socketIdNot}) => {
-      if(playerNumber.current === player){
+    socket.on('disconnect-other-tabs', ({ player, roomId, socketIdNot }) => {
+      if (playerNumber.current === player) {
         isRepeatedTab.current = true;
         CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator("Vui lòng kết nối lại nếu muốn chơi tiếp..."));
         CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
@@ -276,19 +276,19 @@ export default function GameRoom() {
     if(playerNumber.current === 0) return;
     const prompt = "Đang xử lý yêu cầu thoát game của bạn và đang điều hướng...";
     CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(prompt));
-    
-    try{
-      const payload = {roomId: params.id, playerNumber: playerNumber.current};
+
+    try {
+      const payload = { roomId: params.id, playerNumber: playerNumber.current };
       payload.player = playerInfo.current;
       socket.emit('leave-room', payload);
       localStorage.removeItem("isPlayingInRoomId");
       CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
     } catch (e) {
-      if(playerNumber.current !== 0){
+      if (playerNumber.current !== 0) {
         CaroOnlineStore.dispatch(IndexPage_ErrorPopUp_ActionCreator("Bạn thoát game không thành công, có thể rejoin lại từ nút ngay dưới đây"));
       }
       CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
-      history.push(`/`);         
+      history.push(`/`);
     }
   };
 
@@ -299,10 +299,10 @@ export default function GameRoom() {
 
       }
     }
-    
+
     return () => {
-      if(!isRepeatedTab.current){
-        callBackToServerOnQuit(); 
+      if (!isRepeatedTab.current) {
+        callBackToServerOnQuit();
       }
     }
   }, [history, playerInfo, params.id]);

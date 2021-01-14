@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
 export default function SignUp() {
   const classes = useStyles();
 
-  const { setAuthTokens } = useAuth();
+  const { setAuthTokens, setCurrentUser } = useAuth();
 
   const [usernameValue, setUsernameValue] = useState("");
   const [passwordValue, setPasswordValue] = useState("");
@@ -91,6 +91,7 @@ export default function SignUp() {
 
       if (data.token) {
         setAuthTokens(data.token);
+        setCurrentUser(data.user);
         setDoesSignedUp(true);
       } else {
         setSignUpMessage(data.message);
