@@ -35,9 +35,9 @@ export default function History() {
         {game.history.map((element) => {
           let username = "";
           if (element.player === 1) {
-            username = room.Player1.username;
+            username = game.player1.username;
           } else {
-            username = room.Player2.username;
+            username = game.player2.username;
           }
 
           const positionX = Math.floor(element.position / game.maxRow);
