@@ -177,7 +177,7 @@ function Game(props) {
               </Box>
             }
             <div style={{ flexGrow: 1 }} />
-            <div>{"Time remaining: " + props.timer}</div>
+            {/* <div>{"Time remaining: " + props.timer}</div> */}
             <div style={{ flexGrow: 1 }} />
             {
               havePlayer2Info ? 
