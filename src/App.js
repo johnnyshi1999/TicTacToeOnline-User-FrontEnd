@@ -1,115 +1,188 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { BrowserRouter as Router, Switch, Route, useParams, Redirect } from "react-router-dom";
-import Axios from 'axios';
+import { AuthProvider } from "./contexts/auth.js";
+import CssBaseline from "@material-ui/core/CssBaseline";
 
-import Index from './domains/Index/index-component.js';
-import Login from './domains/Login/login-component.js';
-import SignUp from "./domains/SignUp/signUp-component.js";
-import { AuthContext, AuthProvider, useAuth } from "./context/auth.js";
-import PrivateRoute from "./components/PrivateRoute.js";
-import CustomAppBar from './components/customAppBar-component.js'
+import PrivateRoute from "./components/PrivateRoute/PrivateRoute.js";
+import CustomAppBar from "./components/CustomAppBar/CustomAppBar.js";
+import ChatBox from "./components/ChatBox/ChatBox.js";
 
+import Index from "./views/Index/Index";
+import Login from "./views/Login/Login";
+import SignUp from "./views/SignUp/SignUp";
+import Ranking from "./views/Ranking/Ranking";
+import GameRoom from "./views/GameRoom/gameRoom-component";
+
+import PlayerCard from "./components/PlayerCard/playerCard-component";
+
+import {
+  Backdrop,
+  Grid,
+  Typography,
+  CircularProgress,
+} from "@material-ui/core";
+
+import CaroOnlineStore from "./redux/store";
+import History from "./components/Room/history-component.js";
+import RoomTab from "./components/Room/RoomTab-component.js";
+import OnlineList from "./components/OnlineList/onlineList-component.js";
+import socket from "./services/socket";
+import RewatchRoom from "./views/RewatchRoom/rewatchRoom-component.js";
+import ClientUserProfile from "./views/UserProfile/ClientUserProfile.js";
+
+import Global_IsAwaitingServerResponse_ActionCreator from "./redux/actionCreators/Global_IsAwaitingServerResponse_ActionCreator";
+import ForgotPassword from "./views/ForgotPassword/ForgotPassword.js";
+import ResetPassword from "./views/ForgotPassword/ResetPassword.js";
+import ActivateAccount from "./views/Activate/ActivateAccount.js";
+import { CustomBackdrop } from "./components/customBackdrop.js";
+import OtherUserProfile from "./views/otherUserProfile/OtherUserProfile.js";
+
+import { makeStyles } from "@material-ui/core";
+
+const useStyles = makeStyles((theme) => ({
+  toolbar: theme.mixins.toolbar,
+}));
 
 function App() {
-  // const existingTokens = localStorage.getItem("token");
-  // const [authTokens, setAuthTokens] = useState(existingTokens);
-  // const [isLoaded, setIsLoaded] = useState(true);
+  const classes = useStyles();
+  const [isLoadingPrompt, setLoadingPrompt] = useState(null);
 
-  // const setTokens = (data) => {
-  //   if (data) {
-  //     localStorage.setItem("token", data);
-  //   }
-  //   else {
-  //     localStorage.removeItem("token");
-  //   }
+  useEffect(() => {
+    const unsubcribe = CaroOnlineStore.subscribe(() => {
+      const appState = CaroOnlineStore.getState();
+      setLoadingPrompt(appState.isAwaitingServerResponse);
+    });
 
-  //   setAuthTokens(data);
-  // }
+    socket.on("is-matchmaking", ({ state }) => {
+      setLoadingPrompt(state ? "Đang chờ đợi nối cặp từ phía server..." : null);
+    });
 
-  // Axios.interceptors.request.use(
-  //   config => {
-  //     const token = localStorage.getItem('token');
-  //     config.headers.authorization = `Bearer ${token}`;
-  //     return config;
-  //   },
-  // )
+    socket.on("is-waiting-create-room", ({ state }) => {
+      setLoadingPrompt(
+        state ? "Tìm được người thích hợp, đang tạo phòng..." : null
+      );
+    });
 
-  // Axios.interceptors.response.use(
-  //   function (response) {
-  //     return response;
-  //   },
-  //   function (error) {
-  //     if (error.response) {
-  //       //if unauthorized, will direct back to login
-  //       if (error.response.status === 401) {
-  //         console.log("axios intercept");
-  //         setAuthTokens(null);
-  //       }
-  //     }
-  //     throw error;
-  //   }
-  // )
+    socket.on("matchmake-success", ({ yourUserId }) => {
+      CaroOnlineStore.dispatch(
+        Global_IsAwaitingServerResponse_ActionCreator(
+          "Tìm được người thích hợp, đang tạo phòng..."
+        )
+      );
+      socket.emit("accept matchmake", { myUserId: yourUserId });
+    });
+
+    socket.on("room-create-success", ({ yourRoom }) => {
+      const roomId = yourRoom._id.toString();
+      const roomLink = `/room/${roomId}`;
+      window.location.href = roomLink;
+      return;
+    });
+
+    return () => {
+      unsubcribe();
+    };
+  }, []);
 
   return (
     <AuthProvider>
       <Router>
         <React.Fragment>
           <CssBaseline />
-          {/* <Backdrop className={classes.backdrop} open={!isLoaded}>
-              <CircularProgress color="inherit" />
-            </Backdrop> */}
-          {/* <AppBar position="relative">
-            <Toolbar>
-              <Typography className={classes.title} variant="h6" color="inherit" noWrap>
-                Retro Board List
-              </Typography>
-              {authTokens ?
-                (
-                  <IconButton
-                    aria-label="account of current user"
-                    aria-controls="menu-appbar"
-                    aria-haspopup="true"
-                    color="inherit"
-                  >
-                    <AccountCircle />
-                  </IconButton>
-                ) :
-                (
-                  <div>
-                    <Button className={classes.signUpButton} color="inherit" href="/signup">
-                      Sign Up
-                    </Button>
-                    <Button className={classes.loginButton} color="inherit" href="/login">
-                      Login
-                    </Button>
-                  </div>
-                )}
-
-            </Toolbar>
-          </AppBar> */}
-          <CustomAppBar></CustomAppBar>
+          <CustomAppBar
+            style={
+              isLoadingPrompt !== null
+                ? {
+                    display: "none",
+                  }
+                : { display: "flex" }
+            }
+          ></CustomAppBar>
           <main>
-            
-            <PrivateRoute exact path="/" component={Index} />
-            <Route exact path="/login" component={Login} />
-            <Route exact path="/signup" component={SignUp} />
+            <Switch>
+              <PrivateRoute exact path="/">
+                <Index />
+              </PrivateRoute>
+              <Route exact path="/login">
+                <Login />
+              </Route>
+              <Route exact path="/signup">
+                <SignUp />
+              </Route>
+              <Route exact path="/activate/:activationToken">
+                <ActivateAccount />
+              </Route>
+              <Route exact path="/forgot-password">
+                <ForgotPassword />
+              </Route>
+              <Route exact path="/reset-password/:resetPasswordToken">
+                <ResetPassword />
+              </Route>
 
-            {/* Hero unit */}
+              <PrivateRoute exact path="/ranking">
+                <Ranking />
+              </PrivateRoute>
+              <PrivateRoute exact path="/room/:id">
+                <GameRoom />
+              </PrivateRoute>
 
+              <PrivateRoute exact path="/profile">
+                <ClientUserProfile></ClientUserProfile>
+              </PrivateRoute>
+
+              <PrivateRoute exact path="/users/:username">
+                <OtherUserProfile></OtherUserProfile>
+              </PrivateRoute>
+
+              <Route exact path="/game-records/:id">
+                <RewatchRoom></RewatchRoom>
+              </Route>
+
+              {/* Test area */}
+              <Route exact path="/test/chatBox">
+                <ChatBox />
+              </Route>
+              <Route exact path="/test/characterCard">
+                <PlayerCard></PlayerCard>
+              </Route>
+
+              <Route exact path="/test/history">
+                <History></History>
+              </Route>
+
+              <Route exact path="/test/RoomTab">
+                <RoomTab></RoomTab>
+              </Route>
+
+              <Route exact path="/test/online">
+                <OnlineList></OnlineList>
+              </Route>
+
+              <Route exact path="/test/record/:id">
+                <RewatchRoom></RewatchRoom>
+              </Route>
+            </Switch>
           </main>
-          {/* Footer */}
-          {/* <footer className={classes.footer}>
-            <Typography variant="h6" align="center" gutterBottom>
-              Footer
-        </Typography>
-            <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
-              Something here to give the footer a purpose!
-        </Typography>
-          </footer> */}
-          {/* End footer */}
+          {/* <Grid container>
+            <OnlineList></OnlineList>
+          </Grid> */}
         </React.Fragment>
+        <Backdrop
+          open={isLoadingPrompt !== null}
+          style={{ color: "#fff", zIndex: 100 }}
+        >
+          <Grid container item justify="center">
+            <Grid container item xs={12} justify="center">
+              <CircularProgress color="inherit" />
+            </Grid>
+            <Grid container item xs={12} justify="center">
+              <Typography variant="body1" style={{ color: "white" }}>
+                {isLoadingPrompt}
+              </Typography>
+            </Grid>
+          </Grid>
+        </Backdrop>
       </Router>
     </AuthProvider>
   );
