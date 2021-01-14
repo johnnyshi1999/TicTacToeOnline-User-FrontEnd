@@ -13,7 +13,7 @@ export function AuthProvider({children}) {
   const existingTokens = localStorage.getItem("token");
   const [authTokens, setAuthTokens] = useState(existingTokens);
 
-  const [activationToken, setActivationToken] = useState();
+  const [isActive, setActive] = useState(false);
  
 
   const setTokens = (data) => {
@@ -65,15 +65,11 @@ export function AuthProvider({children}) {
     }
   }, [authTokens])
 
-  const value = {
-    
-  }
-
   const value = { 
     authTokens: authTokens, 
     setAuthTokens: setTokens,
-    activationToken: activationToken, 
-    setActivationToken: setActivationToken};
+    isActive: isActive, 
+    setActive: setActive};
 
   return (
     <AuthContext.Provider value={value}>
