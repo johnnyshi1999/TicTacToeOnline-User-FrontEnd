@@ -5,7 +5,7 @@ import API from "../../services/api";
 
 import { Button, Typography, Dialog, Slide, Backdrop, Grid, CircularProgress, DialogActions, DialogTitle, DialogContent, DialogContentText } from '@material-ui/core';
 
-import {useHistory} from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -20,8 +20,8 @@ export default function Ranking() {
 
   useEffect(() => {
     //fetch ranking list
-    (async() => {
-      try{
+    (async () => {
+      try {
         const users = await Axios.get(API.url + '/api/users');
         const consequence = users.data.sort((user1, user2) => user2.trophies - user1.trophies);
         setUserList(consequence);
@@ -44,7 +44,7 @@ export default function Ranking() {
 
   return (<Grid container item xs={12}>
     {
-      userList ? <RankingTable rankData={userList}/> : null
+      userList ? <RankingTable rankData={userList} /> : null
     }
     <Dialog
       fullWidth
@@ -72,14 +72,12 @@ export default function Ranking() {
       </DialogActions>
     </Dialog>
     <Backdrop open={isLoadingPrompt !== null} style={{ color: "#fff", zIndex: 100, justifyContent: "center" }}>
-      <Grid container item justify="center" width="100%">
-        <Grid item xs={12}><CircularProgress color="inherit" /></Grid>
-        <Grid item xs={12}>
-          <Typography variant="body1" style={{ color: 'white' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+      <CircularProgress color="inherit" />
+      <Typography variant="body1" style={{ color: 'white', marginTop: 5, }}>
             {isLoadingPrompt}
           </Typography>
-        </Grid>
-      </Grid>
+      </div>
     </Backdrop>
   </Grid>);
 }

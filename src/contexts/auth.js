@@ -25,11 +25,25 @@ export function AuthProvider({ children }) {
     setAuthTokens(data);
   };
 
-  Axios.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token");
-    config.headers.authorization = `Bearer ${token}`;
-    return config;
-  });
+  // const setLocalActive = (data) => {
+  //   if (data) {
+  //     localStorage.setItem("active", data);
+      
+  //   }
+  //   else {
+  //     localStorage.removeItem("active");
+  //   }
+
+  //   setActive(data);
+  // }
+
+  Axios.interceptors.request.use(
+    config => {
+      const token = localStorage.getItem('token');
+      config.headers.authorization = `Bearer ${token}`;
+      return config;
+    },
+  )
 
   Axios.interceptors.response.use(
     function (response) {
