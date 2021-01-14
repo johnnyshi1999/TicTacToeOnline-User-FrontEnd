@@ -16,12 +16,7 @@ import GameRoom from "./views/GameRoom/gameRoom-component";
 
 import PlayerCard from "./components/PlayerCard/playerCard-component";
 
-import {
-  Backdrop,
-  Grid,
-  Typography,
-  CircularProgress,
-} from "@material-ui/core";
+import { Backdrop, Grid, Typography, CircularProgress } from '@material-ui/core';
 
 import CaroOnlineStore from "./redux/store";
 import History from "./components/Room/history-component.js";
@@ -35,6 +30,8 @@ import Global_IsAwaitingServerResponse_ActionCreator from "./redux/actionCreator
 import ForgotPassword from "./views/ForgotPassword/ForgotPassword.js";
 import ResetPassword from "./views/ForgotPassword/ResetPassword.js";
 import ActivateAccount from "./views/Activate/ActivateAccount.js";
+import { CustomBackdrop } from "./components/customBackdrop.js";
+
 
 function App() {
   const [isLoadingPrompt, setLoadingPrompt] = useState(null);
@@ -45,26 +42,20 @@ function App() {
       setLoadingPrompt(appState.isAwaitingServerResponse);
     });
 
-    socket.on("is-matchmaking", ({ state }) => {
-      setLoadingPrompt(state ? "Đang chờ đợi nối cặp từ phía server..." : null);
+    socket.on('is-matchmaking', ({ state }) => {
+      setLoadingPrompt(state ? 'Đang chờ đợi nối cặp từ phía server...' : null);
     });
 
-    socket.on("is-waiting-create-room", ({ state }) => {
-      setLoadingPrompt(
-        state ? "Tìm được người thích hợp, đang tạo phòng..." : null
-      );
+    socket.on('is-waiting-create-room', ({ state }) => {
+      setLoadingPrompt(state ? 'Tìm được người thích hợp, đang tạo phòng...' : null);
     });
 
-    socket.on("matchmake-success", ({ yourUserId }) => {
-      CaroOnlineStore.dispatch(
-        Global_IsAwaitingServerResponse_ActionCreator(
-          "Tìm được người thích hợp, đang tạo phòng..."
-        )
-      );
-      socket.emit("accept matchmake", { myUserId: yourUserId });
+    socket.on('matchmake-success', ({ yourUserId }) => {
+      CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator('Tìm được người thích hợp, đang tạo phòng...'));
+      socket.emit('accept matchmake', { myUserId: yourUserId });
     });
 
-    socket.on("room-create-success", ({ yourRoom }) => {
+    socket.on('room-create-success', ({ yourRoom }) => {
       const roomId = yourRoom._id.toString();
       const roomLink = `/room/${roomId}`;
       window.location.href = roomLink;
@@ -118,7 +109,7 @@ function App() {
                 <ClientUserProfile></ClientUserProfile>
               </PrivateRoute>
 
-              <Route exact path="/game-records/:id">
+              <Route exact path='/game-records/:id'>
                 <RewatchRoom></RewatchRoom>
               </Route>
 
@@ -138,31 +129,28 @@ function App() {
                 <RoomTab></RoomTab>
               </Route>
 
-              <Route exact path="/test/online">
+              <Route exact path='/test/online'>
                 <OnlineList></OnlineList>
               </Route>
 
-              <Route exact path="/test/record/:id">
+              <Route exact path='/test/backdrop'>
+                <CustomBackdrop open={true}></CustomBackdrop>
+              </Route>
+
+              <Route exact path='/test/record/:id'>
                 <RewatchRoom></RewatchRoom>
               </Route>
             </Switch>
           </main>
           <OnlineList></OnlineList>
         </React.Fragment>
-        <Backdrop
-          open={isLoadingPrompt !== null}
-          style={{ color: "#fff", zIndex: 100 }}
-        >
-          <Grid container item justify="center">
-            <Grid item xs={12}>
-              <CircularProgress color="inherit" />
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="body1" style={{ color: "white" }}>
-                {isLoadingPrompt}
-              </Typography>
-            </Grid>
-          </Grid>
+        <Backdrop open={isLoadingPrompt !== null} style={{ color: "#fff", zIndex: 100 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+            <CircularProgress color="inherit" />
+            <Typography variant="body1" style={{ color: 'white', marginTop: 5 }}>
+              {isLoadingPrompt}
+            </Typography>
+          </div>
         </Backdrop>
       </Router>
     </AuthProvider>
