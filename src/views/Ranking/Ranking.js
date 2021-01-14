@@ -3,7 +3,7 @@ import RankingTable from "../../components/RankingTable/RankingTable";
 import Axios from 'axios';
 import API from "../../services/api";
 
-import { Button, Typography, Dialog, Slide, Backdrop, Grid, CircularProgress, DialogActions, DialogTitle, DialogContent, DialogContentText } from '@material-ui/core';
+import { Button, Typography, Dialog, Slide, Backdrop, Grid, CircularProgress, DialogActions, DialogTitle, DialogContent, DialogContentText, Container } from '@material-ui/core';
 
 import { useHistory } from 'react-router-dom';
 
@@ -42,44 +42,49 @@ export default function Ranking() {
     history.push('/');
   };
 
-  return (<Grid container item xs={12}>
-    {
-      userList ? <RankingTable rankData={userList} /> : null
-    }
-    <Dialog
-      fullWidth
-      maxWidth="sm"
-      open={errorDialogText ? true : false}
-      TransitionComponent={Transition}
-      keepMounted
-      onClose={handleErrorDialogClose}
-      aria-labelledby="alert-dialog-slide-title"
-      aria-describedby="alert-dialog-slide-description">
-      <DialogTitle>
-        <Typography color="secondary">
-          {"Đã xảy ra lỗi..."}
-        </Typography>
-      </DialogTitle>
-      <DialogContent>
-        <DialogContentText id="alert-dialog-slide-description">
-          {errorDialogText}
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleErrorDialogClose} color="secondary">
-          Đóng
+  return (
+    <Container style = {{marginTop: 20,}}>
+      <Typography style = {{marginTop: 20, marginLeft: 10, marginBottom: 10}}>Ranking Table</Typography>
+      <Grid container item xs={12}>
+        {
+          userList ? <RankingTable rankData={userList} /> : null
+        }
+        <Dialog
+          fullWidth
+          maxWidth="sm"
+          open={errorDialogText ? true : false}
+          TransitionComponent={Transition}
+          keepMounted
+          onClose={handleErrorDialogClose}
+          aria-labelledby="alert-dialog-slide-title"
+          aria-describedby="alert-dialog-slide-description">
+          <DialogTitle>
+            <Typography color="secondary">
+              {"Đã xảy ra lỗi..."}
+            </Typography>
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-slide-description">
+              {errorDialogText}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleErrorDialogClose} color="secondary">
+              Đóng
       </Button>
-      </DialogActions>
-    </Dialog>
-    <Backdrop open={isLoadingPrompt !== null} style={{ color: "#fff", zIndex: 100, justifyContent: "center" }}>
-      <Grid container item justify="center" width="100%">
-        <Grid container item xs={12} justify="center"><CircularProgress color="inherit" /></Grid>
-        <Grid container item xs={12} justify="center">
-          <Typography variant="body1" style={{ color: 'white' }}>
-            {isLoadingPrompt}
-          </Typography>
-        </Grid>
+          </DialogActions>
+        </Dialog>
+        <Backdrop open={isLoadingPrompt !== null} style={{ color: "#fff", zIndex: 100, justifyContent: "center" }}>
+          <Grid container item justify="center" width="100%">
+            <Grid container item xs={12} justify="center"><CircularProgress color="inherit" /></Grid>
+            <Grid container item xs={12} justify="center">
+              <Typography variant="body1" style={{ color: 'white' }}>
+                {isLoadingPrompt}
+              </Typography>
+            </Grid>
+          </Grid>
+        </Backdrop>
       </Grid>
-    </Backdrop>
-  </Grid>);
+    </Container>
+  );
 }
