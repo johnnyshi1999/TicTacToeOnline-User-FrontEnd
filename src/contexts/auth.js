@@ -1,7 +1,7 @@
-import Axios from 'axios';
-import { createContext, useContext, useEffect, useState } from 'react';
-import API from '../services/api';
-import socket from '../services/socket';
+import Axios from "axios";
+import { createContext, useContext, useEffect, useState } from "react";
+import API from "../services/api";
+import socket from "../services/socket";
 
 export const AuthContext = createContext();
 
@@ -9,31 +9,27 @@ export function useAuth() {
   return useContext(AuthContext);
 }
 
-export function AuthProvider({children}) {
+export function AuthProvider({ children }) {
   const existingTokens = localStorage.getItem("token");
   const [authTokens, setAuthTokens] = useState(existingTokens);
 
   const [activationToken, setActivationToken] = useState();
- 
 
   const setTokens = (data) => {
     if (data) {
       localStorage.setItem("token", data);
-    }
-    else {
+    } else {
       localStorage.removeItem("token");
     }
 
     setAuthTokens(data);
-  }
+  };
 
-  Axios.interceptors.request.use(
-    config => {
-      const token = localStorage.getItem('token');
-      config.headers.authorization = `Bearer ${token}`;
-      return config;
-    },
-  )
+  Axios.interceptors.request.use((config) => {
+    const token = localStorage.getItem("token");
+    config.headers.authorization = `Bearer ${token}`;
+    return config;
+  });
 
   Axios.interceptors.response.use(
     function (response) {
@@ -49,36 +45,28 @@ export function AuthProvider({children}) {
       }
       throw error;
     }
-  )
+  );
 
   const emitLogin = async () => {
-    const result = await Axios.get(API.url + '/api/auth/');
+    const result = await Axios.get(API.url + "/api/auth/");
 
     const userId = result.data.user._id;
 
     socket.emit("login", userId);
-  }
+  };
 
   useEffect(() => {
     if (authTokens) {
       emitLogin();
     }
-  }, [authTokens])
+  }, [authTokens]);
 
   const value = {
-    
-  }
-
-  const value = { 
-    authTokens: authTokens, 
+    authTokens: authTokens,
     setAuthTokens: setTokens,
-    activationToken: activationToken, 
-    setActivationToken: setActivationToken};
+    activationToken: activationToken,
+    setActivationToken: setActivationToken,
+  };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
-
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
