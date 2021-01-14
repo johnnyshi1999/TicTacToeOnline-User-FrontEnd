@@ -16,6 +16,7 @@ import PlayerCard from '../../components/PlayerCard/playerCard-component';
 import CaroOnlineStore from '../../redux/store';
 import Global_IsAwaitingServerResponse_ActionCreator from '../../redux/actionCreators/Global_IsAwaitingServerResponse_ActionCreator';
 import IndexPage_ErrorPopUp_ActionCreator from '../../redux/actionCreators/Index/IndexPage_ErrorPopUp_ActionCreator';
+import IndexPage_LoadingBackdrop_ActionCreator from '../../redux/actionCreators/Index/IndexPage_LoadingBackdrop_ActionCreator';
 import RoomTab from '../../components/Room/RoomTab-component';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -175,7 +176,8 @@ export default function GameRoom() {
       if(room.IsDeleted){
         CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator("Phòng chơi đã bị giải tán, mọi người sẽ về trang chủ..."));
         CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator(null));
-        
+        CaroOnlineStore.dispatch(IndexPage_LoadingBackdrop_ActionCreator(false));
+
         history.push(`/`);  
         return;
       }
@@ -466,9 +468,9 @@ export default function GameRoom() {
           </DialogActions>
         </Dialog>
         <Backdrop open={isLoadingPrompt !== null} style={{ color: "#fff", zIndex: 100, justifyContent: "center" }}>
-          <Grid container item justify="center" width="100%">
-            <Grid item xs={12}><CircularProgress color="inherit" /></Grid>
-            <Grid item xs={12}>
+          <Grid container item justify="center">
+            <Grid container item xs={12} justify="center"><CircularProgress color="inherit" /></Grid>
+            <Grid container item xs={12} justify="center">
               <Typography variant="body1" style={{ color: 'white' }}>
                 {isLoadingPrompt}
               </Typography>

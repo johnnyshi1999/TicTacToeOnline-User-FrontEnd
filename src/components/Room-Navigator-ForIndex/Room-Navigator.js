@@ -122,9 +122,6 @@ export default function RoomNavigator({onCreateRoomClick}){
       })();
     }
 
-    useEffect(() => {
-    }, []);
-
     return (
         <Grid container item xs={12} className={classes.root}>
             <Grid container item xs={12} sm={8} className={classes.gridItem}>

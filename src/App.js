@@ -75,7 +75,9 @@ function App() {
         <Router>
           <React.Fragment>
             <CssBaseline />
-            <CustomAppBar></CustomAppBar>
+            <CustomAppBar style={isLoadingPrompt !== null? {
+              display: 'none'
+            } : {display: 'flex'}}></CustomAppBar>
             <main>
               <Switch>
                 {/* <PrivateRoute exact path="/" component={Index} /> */}
@@ -135,10 +137,10 @@ function App() {
           </React.Fragment>
           <Backdrop open={isLoadingPrompt !== null} style={{color: "#fff" , zIndex: 100}}>
             <Grid container item justify="center">
-              <Grid item xs={12}>
+              <Grid container item xs={12} justify="center">
                 <CircularProgress color="inherit" />
               </Grid>     
-              <Grid item xs={12}>
+              <Grid container item xs={12} justify="center">
                 <Typography variant="body1" style={{color: 'white'}}>
                   {isLoadingPrompt}
                 </Typography>

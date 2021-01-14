@@ -73,8 +73,8 @@ export default function Ranking() {
     </Dialog>
     <Backdrop open={isLoadingPrompt !== null} style={{ color: "#fff", zIndex: 100, justifyContent: "center" }}>
       <Grid container item justify="center" width="100%">
-        <Grid item xs={12}><CircularProgress color="inherit" /></Grid>
-        <Grid item xs={12}>
+        <Grid container item xs={12} justify="center"><CircularProgress color="inherit" /></Grid>
+        <Grid container item xs={12} justify="center">
           <Typography variant="body1" style={{ color: 'white' }}>
             {isLoadingPrompt}
           </Typography>
