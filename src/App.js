@@ -101,10 +101,6 @@ function App() {
           ></CustomAppBar>
           <main>
             <Switch>
-              {/* <PrivateRoute exact path="/" component={Index} /> */}
-              {/* <Route path="/login" component={Login} />
-                <Route path="/signup" component={SignUp} /> */}
-
               <PrivateRoute exact path="/">
                 <Index />
               </PrivateRoute>
@@ -114,6 +110,16 @@ function App() {
               <Route exact path="/signup">
                 <SignUp />
               </Route>
+              <Route exact path="/activate/:activationToken">
+                <ActivateAccount />
+              </Route>
+              <Route exact path="/forgot-password">
+                <ForgotPassword />
+              </Route>
+              <Route exact path="/reset-password/:resetPasswordToken">
+                <ResetPassword />
+              </Route>
+
               <PrivateRoute exact path="/ranking">
                 <Ranking />
               </PrivateRoute>
