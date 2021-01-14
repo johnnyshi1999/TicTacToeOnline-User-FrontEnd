@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import { BrowserRouter as Router, Switch, Route, useHistory } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route} from "react-router-dom";
 
 import { AuthProvider } from "./contexts/auth.js";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -41,7 +41,6 @@ const useStyles = makeStyles((theme) => ({
 
 function App() {
   const classes = useStyles();
-  const history = useHistory();
   const [isLoadingPrompt, setLoadingPrompt] = useState(null);
 
   useEffect(() => {
@@ -66,7 +65,7 @@ function App() {
     socket.on('room-create-success', ({ yourRoom }) => {
       const roomId = yourRoom._id.toString();
       const roomLink = `/room/${roomId}`;
-      history.push(roomLink); 
+      window.location.href = roomLink; 
       return;
     });
 
