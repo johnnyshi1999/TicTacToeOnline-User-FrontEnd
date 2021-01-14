@@ -46,7 +46,7 @@ export function AuthProvider({children}) {
     }
   )
 
-  const value = { authTokens: authTokens, setAuthTokens: setTokens};
+  const value = { authTokens: authTokens, setAuthTokens: setTokens };
 
   return (
     <AuthContext.Provider value={value}>
