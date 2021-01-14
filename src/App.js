@@ -1,5 +1,10 @@
-import React, {useState, useEffect} from "react";
-import { BrowserRouter as Router, Switch, Route, useHistory } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  useHistory,
+} from "react-router-dom";
 
 import { AuthProvider } from "./contexts/auth.js";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -16,7 +21,12 @@ import GameRoom from "./views/GameRoom/gameRoom-component";
 
 import PlayerCard from "./components/PlayerCard/playerCard-component";
 
-import { Backdrop, Grid, Typography, CircularProgress } from '@material-ui/core';
+import {
+  Backdrop,
+  Grid,
+  Typography,
+  CircularProgress,
+} from "@material-ui/core";
 
 import CaroOnlineStore from "./redux/store";
 import History from "./components/Room/history-component.js";
@@ -33,7 +43,7 @@ import ActivateAccount from "./views/Activate/ActivateAccount.js";
 import { CustomBackdrop } from "./components/customBackdrop.js";
 import OtherUserProfile from "./views/otherUserProfile/OtherUserProfile.js";
 
-import {makeStyles} from '@material-ui/core';
+import { makeStyles } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   toolbar: theme.mixins.toolbar,
@@ -50,23 +60,29 @@ function App() {
       setLoadingPrompt(appState.isAwaitingServerResponse);
     });
 
-    socket.on('is-matchmaking', ({ state }) => {
-      setLoadingPrompt(state ? 'Đang chờ đợi nối cặp từ phía server...' : null);
+    socket.on("is-matchmaking", ({ state }) => {
+      setLoadingPrompt(state ? "Đang chờ đợi nối cặp từ phía server..." : null);
     });
 
-    socket.on('is-waiting-create-room', ({ state }) => {
-      setLoadingPrompt(state ? 'Tìm được người thích hợp, đang tạo phòng...' : null);
+    socket.on("is-waiting-create-room", ({ state }) => {
+      setLoadingPrompt(
+        state ? "Tìm được người thích hợp, đang tạo phòng..." : null
+      );
     });
 
-    socket.on('matchmake-success', ({ yourUserId }) => {
-      CaroOnlineStore.dispatch(Global_IsAwaitingServerResponse_ActionCreator('Tìm được người thích hợp, đang tạo phòng...'));
-      socket.emit('accept matchmake', { myUserId: yourUserId });
+    socket.on("matchmake-success", ({ yourUserId }) => {
+      CaroOnlineStore.dispatch(
+        Global_IsAwaitingServerResponse_ActionCreator(
+          "Tìm được người thích hợp, đang tạo phòng..."
+        )
+      );
+      socket.emit("accept matchmake", { myUserId: yourUserId });
     });
 
-    socket.on('room-create-success', ({ yourRoom }) => {
+    socket.on("room-create-success", ({ yourRoom }) => {
       const roomId = yourRoom._id.toString();
       const roomLink = `/room/${roomId}`;
-      history.push(roomLink); 
+      history.push(roomLink);
       return;
     });
 
@@ -77,83 +93,94 @@ function App() {
 
   return (
     <AuthProvider>
-        <Router>
-          <React.Fragment>
-            <CssBaseline />
-            <CustomAppBar style={isLoadingPrompt !== null? {
-              display: 'none'
-            } : {display: 'flex'}}></CustomAppBar>
-            <main>
-              <Switch>
-                {/* <PrivateRoute exact path="/" component={Index} /> */}
-                {/* <Route path="/login" component={Login} />
+      <Router>
+        <React.Fragment>
+          <CssBaseline />
+          <CustomAppBar
+            style={
+              isLoadingPrompt !== null
+                ? {
+                    display: "none",
+                  }
+                : { display: "flex" }
+            }
+          ></CustomAppBar>
+          <main>
+            <Switch>
+              {/* <PrivateRoute exact path="/" component={Index} /> */}
+              {/* <Route path="/login" component={Login} />
                 <Route path="/signup" component={SignUp} /> */}
 
-                <PrivateRoute exact path="/">
-                  <Index />
-                </PrivateRoute>
-                <Route exact path="/login">
-                  <Login />
-                </Route>
-                <Route exact path="/signup">
-                  <SignUp />
-                </Route>
-                <PrivateRoute exact path="/ranking">
-                  <Ranking />
-                </PrivateRoute>
-                <PrivateRoute exact path="/room/:id">
-                  <GameRoom />
-                </PrivateRoute>
+              <PrivateRoute exact path="/">
+                <Index />
+              </PrivateRoute>
+              <Route exact path="/login">
+                <Login />
+              </Route>
+              <Route exact path="/signup">
+                <SignUp />
+              </Route>
+              <PrivateRoute exact path="/ranking">
+                <Ranking />
+              </PrivateRoute>
+              <PrivateRoute exact path="/room/:id">
+                <GameRoom />
+              </PrivateRoute>
 
-                <PrivateRoute exact path="/profile">
-                  <ClientUserProfile></ClientUserProfile>
-                </PrivateRoute>
+              <PrivateRoute exact path="/profile">
+                <ClientUserProfile></ClientUserProfile>
+              </PrivateRoute>
 
-                <Route exact path ='/game-records/:id'>
-                  <RewatchRoom></RewatchRoom>
-                </Route>
+              <Route exact path="/game-records/:id">
+                <RewatchRoom></RewatchRoom>
+              </Route>
 
-                {/* Test area */}
-                <Route exact path="/test/chatBox">
-                  <ChatBox />
-                </Route>
-                <Route exact path="/test/characterCard">
-                  <PlayerCard></PlayerCard>
-                </Route>
+              {/* Test area */}
+              <Route exact path="/test/chatBox">
+                <ChatBox />
+              </Route>
+              <Route exact path="/test/characterCard">
+                <PlayerCard></PlayerCard>
+              </Route>
 
-                <Route exact path="/test/history">
-                  <History></History>
-                </Route>
+              <Route exact path="/test/history">
+                <History></History>
+              </Route>
 
-                <Route exact path="/test/RoomTab">
-                  <RoomTab></RoomTab>
-                </Route>
+              <Route exact path="/test/RoomTab">
+                <RoomTab></RoomTab>
+              </Route>
 
-                <Route exact path ='/test/online'>
-                  <OnlineList></OnlineList>
-                </Route>
+              <Route exact path="/test/online">
+                <OnlineList></OnlineList>
+              </Route>
 
-                <Route exact path ='/test/record/:id'>
-                  <RewatchRoom></RewatchRoom>
-                </Route>
-              </Switch>
-            </main>
+              <Route exact path="/test/record/:id">
+                <RewatchRoom></RewatchRoom>
+              </Route>
+            </Switch>
+          </main>
+          {/* <Grid container>
             <OnlineList></OnlineList>
-          </React.Fragment>
-          <Backdrop open={isLoadingPrompt !== null} style={{color: "#fff" , zIndex: 100}}>
-            <Grid container item justify="center">
-              <Grid container item xs={12} justify="center">
-                <CircularProgress color="inherit" />
-              </Grid>     
-              <Grid container item xs={12} justify="center">
-                <Typography variant="body1" style={{color: 'white'}}>
-                  {isLoadingPrompt}
-                </Typography>
-              </Grid>
+          </Grid> */}
+        </React.Fragment>
+        <Backdrop
+          open={isLoadingPrompt !== null}
+          style={{ color: "#fff", zIndex: 100 }}
+        >
+          <Grid container item justify="center">
+            <Grid container item xs={12} justify="center">
+              <CircularProgress color="inherit" />
             </Grid>
-          </Backdrop>
-        </Router>
-      </AuthProvider>
+            <Grid container item xs={12} justify="center">
+              <Typography variant="body1" style={{ color: "white" }}>
+                {isLoadingPrompt}
+              </Typography>
+            </Grid>
+          </Grid>
+        </Backdrop>
+      </Router>
+    </AuthProvider>
   );
 }
 
