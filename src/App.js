@@ -31,6 +31,7 @@ import ForgotPassword from "./views/ForgotPassword/ForgotPassword.js";
 import ResetPassword from "./views/ForgotPassword/ResetPassword.js";
 import ActivateAccount from "./views/Activate/ActivateAccount.js";
 import { CustomBackdrop } from "./components/customBackdrop.js";
+import OtherUserProfile from "./views/otherUserProfile/OtherUserProfile.js";
 
 
 function App() {
@@ -107,6 +108,10 @@ function App() {
 
               <PrivateRoute exact path="/profile">
                 <ClientUserProfile></ClientUserProfile>
+              </PrivateRoute>
+
+              <PrivateRoute exact path="/users/:username">
+                <OtherUserProfile></OtherUserProfile>
               </PrivateRoute>
 
               <Route exact path='/game-records/:id'>
