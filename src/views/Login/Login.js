@@ -104,7 +104,7 @@ export default function Login({ onLogin }) {
     console.log("res", res);
     const { tokenId } = res;
     const response = await axios.post(
-      `http://localhost:4000/api/auth/login-google`,
+      `${API.url}/api/auth/login-google`,
       {
         tokenId,
       }
@@ -122,7 +122,7 @@ export default function Login({ onLogin }) {
     console.log("res", res);
 
     const responseFb = await axios.post(
-      `http://localhost:4000/api/auth/login-facebook`,
+      `${API.url}/api/auth/login-facebook`,
       {
         userID: res.userID,
         token: res.accessToken,
